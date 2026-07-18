@@ -1,6 +1,6 @@
 # rs3tk
 
-Open-source Jagex Launcher replacement written in Python.
+Open-source Jagex Launcher replacement written in Python. **Linux only.**
 
 A command-line tool to authenticate with your Jagex Account and launch
 Old School RuneScape (Official, RuneLite, HDOS) or RuneScape 3.
@@ -79,12 +79,12 @@ rs3tk auth logout
 
 ## Supported Clients
 
-| Client | Game | Platform |
-|--------|------|----------|
-| RS3 NXT | RS3 | Linux |
-| OSRS Official | OSRS | Linux |
-| RuneLite | OSRS | Linux |
-| HDOS | OSRS | Linux |
+| Client | Game |
+|--------|------|
+| RS3 NXT | RS3 |
+| OSRS Official | OSRS |
+| RuneLite | OSRS |
+| HDOS | OSRS |
 
 ## Configuration
 
