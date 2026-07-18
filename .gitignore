@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+.rs3tk/
+*.log
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.venv/
+
+# Wine prefix (generated at runtime)
+src/rs3tk/data/prefix/
+
+# Generated runtime files
+imgui.ini
+src/rs3tk/data/imgui.ini
+src/rs3tk/data/osclient.exe
