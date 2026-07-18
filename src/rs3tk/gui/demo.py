@@ -41,14 +41,14 @@ QMainWindow, QWidget {
     border-image: none;
 }
 
-#title {
+QLabel#title {
     font-size: 16px;
     font-weight: bold;
     color: #e1bb34;
     background: transparent;
 }
 
-#subtitle {
+QLabel#subtitle {
     font-size: 11px;
     color: #a9acad;
     background: transparent;
@@ -99,7 +99,7 @@ QMainWindow, QWidget {
 }
 
 #accountsTree {
-    background-color: transparent;
+    background-color: #0d1f2d;
     border: none;
     border-image: none;
     color: #d7dbe1;
@@ -146,18 +146,16 @@ QMainWindow, QWidget {
     border: 1px solid #355563;
 }
 
-#characterName {
+QLabel#characterName {
     font-size: 18px;
     font-weight: bold;
     color: #e1bb34;
-    min-height: 24px;
     background: transparent;
 }
 
-#characterInfo {
+QLabel#characterInfo {
     font-size: 12px;
     color: #a9acad;
-    min-height: 16px;
     background: transparent;
 }
 
@@ -175,22 +173,20 @@ QMainWindow, QWidget {
     border: 1px solid rgba(141, 176, 192, 0.3);
     border-image: none;
     border-radius: 6px;
-    padding: 8px 12px;
-    min-height: 20px;
+    padding: 12px 14px;
+    min-height: 50px;
 }
 
-#statusLabel {
+QLabel#statusLabel {
     color: #8eb0c0;
     font-size: 12px;
     font-weight: bold;
-    min-height: 16px;
     background: transparent;
 }
 
-#onlineCount {
+QLabel#onlineCount {
     color: #a9acad;
     font-size: 12px;
-    min-height: 16px;
     background: transparent;
 }
 
@@ -215,7 +211,7 @@ QMainWindow, QWidget {
     border-left: 1px solid #355563;
 }
 
-#clientTitle {
+QLabel#clientTitle {
     font-size: 14px;
     font-weight: bold;
     color: #e1bb34;
@@ -262,7 +258,7 @@ QMainWindow, QWidget {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #c8a42a, stop:1 #a88a20);
 }
 
-#lastPlayed {
+QLabel#lastPlayed {
     color: #536066;
     font-size: 11px;
     background: transparent;
