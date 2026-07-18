@@ -24,10 +24,10 @@ _ASSETS = Path(__file__).parent / "assets"
 
 _DARK_THEME = """
 /* ── RuneScape texture-based theme ────────────────────────── */
+/* border-image: url(...) 0 repeat; tiles the image */
 
 QMainWindow, QWidget {
-    background-image: url(src/rs3tk/gui/assets/bg-main.jpg);
-    background-repeat: repeat;
+    border-image: url(src/rs3tk/gui/assets/bg-main.jpg) 0 repeat;
     color: #d7dbe1;
     font-family: "Sofia Sans", "Segoe UI", "Noto Sans", sans-serif;
     font-size: 13px;
@@ -38,6 +38,7 @@ QMainWindow, QWidget {
 #topBar {
     background-color: #0d1f2d;
     border-bottom: 2px solid #355563;
+    border-image: none;
 }
 
 #title {
@@ -53,6 +54,7 @@ QMainWindow, QWidget {
 
 #logo {
     background: transparent;
+    border-image: none;
 }
 
 #dashboardButton, #settingsButton, #addAccountButton {
@@ -85,20 +87,19 @@ QMainWindow, QWidget {
 /* ── Left sidebar — accounts ─────────────────────────────── */
 
 #accountsPanel {
-    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
-    background-repeat: repeat-y;
+    border-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg) 0 repeat;
     border-right: 1px solid #355563;
 }
 
 #accountsHeader {
-    background-image: url(src/rs3tk/gui/assets/bg-box-top.jpg);
-    background-repeat: repeat-x;
+    border-image: url(src/rs3tk/gui/assets/bg-box-top.jpg) 0 repeat;
     border-bottom: 1px solid #355563;
 }
 
 #accountsTree {
     background-color: transparent;
     border: none;
+    border-image: none;
     color: #d7dbe1;
     outline: none;
 }
@@ -133,13 +134,11 @@ QMainWindow, QWidget {
 /* ── Center — dashboard ──────────────────────────────────── */
 
 #dashboard {
-    background-image: url(src/rs3tk/gui/assets/bg-main.jpg);
-    background-repeat: repeat;
+    border-image: url(src/rs3tk/gui/assets/bg-main.jpg) 0 repeat;
 }
 
 #characterHeader {
-    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
-    background-repeat: repeat;
+    border-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg) 0 repeat;
     border-radius: 8px;
     margin: 8px 12px;
     border: 1px solid #355563;
@@ -161,12 +160,14 @@ QMainWindow, QWidget {
     color: #a9acad;
     border-radius: 28px;
     border: 2px solid #e1bb34;
+    border-image: none;
     font-size: 14px;
 }
 
 #statusArea {
     background-color: rgba(141, 176, 192, 0.1);
     border: 1px solid rgba(141, 176, 192, 0.3);
+    border-image: none;
     border-radius: 6px;
     padding: 6px;
 }
@@ -184,12 +185,12 @@ QMainWindow, QWidget {
 
 #navigationTabs {
     background: transparent;
+    border-image: none;
     color: #a9acad;
 }
 
 #metricsCard, #questsCard, #activityCard, #skillsCard {
-    background-image: url(src/rs3tk/gui/assets/bg-tabbed.jpg);
-    background-repeat: repeat-y;
+    border-image: url(src/rs3tk/gui/assets/bg-tabbed.jpg) 0 repeat;
     border: 1px solid #355563;
     border-radius: 8px;
     margin: 4px 12px;
@@ -199,8 +200,7 @@ QMainWindow, QWidget {
 /* ── Right sidebar — clients ─────────────────────────────── */
 
 #clientPanel {
-    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
-    background-repeat: repeat-y;
+    border-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg) 0 repeat;
     border-left: 1px solid #355563;
 }
 
@@ -213,6 +213,7 @@ QMainWindow, QWidget {
 #clientList {
     background-color: transparent;
     border: none;
+    border-image: none;
     color: #d7dbe1;
     outline: none;
 }
@@ -237,6 +238,7 @@ QMainWindow, QWidget {
     font-size: 15px;
     font-weight: bold;
     border: none;
+    border-image: none;
     border-radius: 6px;
 }
 
@@ -258,6 +260,7 @@ QMainWindow, QWidget {
 #bottomBar {
     background-color: #0d1f2d;
     border-top: 2px solid #355563;
+    border-image: none;
 }
 
 #launcherVersion, #updateStatus {
@@ -267,6 +270,7 @@ QMainWindow, QWidget {
 
 #discordButton, #newsButton, #supportButton {
     background: transparent;
+    border-image: none;
     color: #536066;
     border: none;
     font-size: 11px;
