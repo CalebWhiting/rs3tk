@@ -148,11 +148,13 @@ QMainWindow, QWidget {
     font-size: 18px;
     font-weight: bold;
     color: #e1bb34;
+    min-height: 24px;
 }
 
 #characterInfo {
     font-size: 12px;
     color: #a9acad;
+    min-height: 16px;
 }
 
 #avatar {
@@ -169,18 +171,21 @@ QMainWindow, QWidget {
     border: 1px solid rgba(141, 176, 192, 0.3);
     border-image: none;
     border-radius: 6px;
-    padding: 6px;
+    padding: 8px 12px;
+    min-height: 20px;
 }
 
 #statusLabel {
     color: #8eb0c0;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
+    min-height: 16px;
 }
 
 #onlineCount {
     color: #a9acad;
-    font-size: 11px;
+    font-size: 12px;
+    min-height: 16px;
 }
 
 #navigationTabs {
