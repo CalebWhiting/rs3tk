@@ -127,6 +127,7 @@ def _do_accounts() -> None:
     settings = load_settings()
     table = Table(title="Characters")
     table.add_column("Name", style="bold")
+    table.add_column("ID", style="dim")
     table.add_column("Account", style="dim")
     table.add_column("Membership", justify="center")
     table.add_column("Default", justify="center")
@@ -135,7 +136,7 @@ def _do_accounts() -> None:
         tag = "[green]Yes[/]" if char.is_member else "[dim]No[/]"
         default = "[green]*[/]" if settings.default_character == char.display_name else ""
         last = "[green]*[/]" if settings.last_character == char.display_name else ""
-        table.add_row(char.display_name, char.username, tag, default, last)
+        table.add_row(char.display_name, char.account_id, char.username, tag, default, last)
     console.print(table)
 
 

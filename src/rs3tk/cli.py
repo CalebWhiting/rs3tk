@@ -126,6 +126,7 @@ def accounts_list(ctx: click.Context) -> None:
     settings = load_settings()
     table = Table()
     table.add_column("Name", style="bold")
+    table.add_column("ID", style="dim")
     table.add_column("Account", style="dim")
     table.add_column("Membership", justify="center")
     table.add_column("Default", justify="center")
@@ -133,9 +134,10 @@ def accounts_list(ctx: click.Context) -> None:
     for char in all_characters:
         tag = "[green]Yes[/]" if char.is_member else "[dim]No[/]"
         account = _censor_value(char.username) if ctx.obj["censor"] else char.username
+        char_id = _censor_value(char.account_id) if ctx.obj["censor"] else char.account_id
         default = "[green]*[/]" if settings.default_character == char.display_name else ""
         last = "[green]*[/]" if settings.last_character == char.display_name else ""
-        table.add_row(char.display_name, account, tag, default, last)
+        table.add_row(char.display_name, char_id, account, tag, default, last)
     console.print(table)
 
 
