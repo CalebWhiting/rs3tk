@@ -46,7 +46,7 @@ rs3tk play hdos              # HDOS
 rs3tk play -i
 
 # Launch with a specific character
-rs3tk play runelite -c "Giant dwarf"
+rs3tk play runelite -c "Cow31337Killer"
 
 # Check game status
 rs3tk status
