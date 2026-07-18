@@ -31,14 +31,14 @@ pre-commit install
 
 ```bash
 # Log in
-rs3tk login
+rs3tk auth login
 
 # List your characters
-rs3tk accounts
+rs3tk accounts list
 
 # Launch a game
 rs3tk play rs3               # RS3
-rs3tk play osrs              # OSRS official
+rs3tk play official          # OSRS official
 rs3tk play runelite          # RuneLite
 rs3tk play hdos              # HDOS
 
@@ -53,41 +53,42 @@ rs3tk status
 
 # View latest news
 rs3tk news
-rs3tk news -n 10 -g rs3
+rs3tk news -n 10 --game rs3
 
-# View/set settings
-rs3tk config
+# Show/update settings
 rs3tk config set --game osrs --client runelite
 
 # Show detected clients
-rs3tk clients
+rs3tk clients list
 
 # Log out
-rs3tk logout
+rs3tk auth logout
 ```
 
 ## Options
 
 - `-v` / `--verbose` — Enable debug logging
 - `-#` / `--censor` — Censor sensitive data (account IDs, etc.)
+
+### play options
+
 - `-c` / `--character` — Select a specific character
+- `-i` / `--interactive` — Interactive mode
+- `-f` / `--foreground` — Run client in foreground (show logs)
+- `-n` / `--no-character` — Launch without JX_* env variables
 
 ## Supported Clients
 
 | Client | Game | Platform |
 |--------|------|----------|
-| RS3 NXT | RS3 | Windows, macOS, Linux |
-| OSRS Official | OSRS | Windows, macOS, Linux |
-| RuneLite | OSRS | Windows, macOS, Linux |
-| HDOS | OSRS | Windows, macOS, Linux |
+| RS3 NXT | RS3 | Linux |
+| OSRS Official | OSRS | Linux |
+| RuneLite | OSRS | Linux |
+| HDOS | OSRS | Linux |
 
 ## Configuration
 
-Settings are stored at:
-
-- **Linux:** `~/.config/rs3tk/`
-- **macOS:** `~/Library/Application Support/rs3tk/`
-- **Windows:** `%LOCALAPPDATA%\rs3tk\`
+Settings are stored at `~/.config/rs3tk/`.
 
 ## Development
 
@@ -96,16 +97,13 @@ Settings are stored at:
 pip install -e ".[dev]"
 
 # Run linter
-ruff check src/ tests/
+ruff check src/
 
 # Format code
-ruff format src/ tests/
+ruff format src/
 
 # Type check
 mypy src/
-
-# Run tests
-pytest
 ```
 
 ## License
