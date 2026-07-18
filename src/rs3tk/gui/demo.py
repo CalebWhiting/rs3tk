@@ -23,22 +23,11 @@ from rs3tk.gui.launcher_ui import Ui_RuneLauncher
 _ASSETS = Path(__file__).parent / "assets"
 
 _DARK_THEME = """
-/* ── RuneScape Adventurer's Log theme ────────────────────── */
-/* Colors extracted from runescape.com:
-   - Main background: #071b25
-   - Gold accent: #e1bb34
-   - Hover gold: #fff2c5
-   - Text light: #d7dbe1
-   - Secondary text: #a9acad
-   - Content bg: #2E3F49
-   - Header bg: #355563
-   - Blue link: #b2dbee
-   - Selection: #8eb0c0
-   - Orange accent: #ff8614
-*/
+/* ── RuneScape texture-based theme ────────────────────────── */
 
 QMainWindow, QWidget {
-    background-color: #071b25;
+    background-image: url(src/rs3tk/gui/assets/bg-main.jpg);
+    background-repeat: repeat;
     color: #d7dbe1;
     font-family: "Sofia Sans", "Segoe UI", "Noto Sans", sans-serif;
     font-size: 13px;
@@ -96,12 +85,14 @@ QMainWindow, QWidget {
 /* ── Left sidebar — accounts ─────────────────────────────── */
 
 #accountsPanel {
-    background-color: #0d1f2d;
+    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
+    background-repeat: repeat-y;
     border-right: 1px solid #355563;
 }
 
 #accountsHeader {
-    background-color: #1a3040;
+    background-image: url(src/rs3tk/gui/assets/bg-box-top.jpg);
+    background-repeat: repeat-x;
     border-bottom: 1px solid #355563;
 }
 
@@ -118,12 +109,12 @@ QMainWindow, QWidget {
 }
 
 #accountsTree::item:selected {
-    background-color: #2E3F49;
+    background-color: rgba(46, 63, 73, 0.8);
     color: #fff2c5;
 }
 
 #accountsTree::item:hover {
-    background-color: #1a3040;
+    background-color: rgba(26, 48, 64, 0.6);
 }
 
 #addJagexAccountButton {
@@ -142,13 +133,16 @@ QMainWindow, QWidget {
 /* ── Center — dashboard ──────────────────────────────────── */
 
 #dashboard {
-    background-color: #071b25;
+    background-image: url(src/rs3tk/gui/assets/bg-main.jpg);
+    background-repeat: repeat;
 }
 
 #characterHeader {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1a3040, stop:1 #0d1f2d);
+    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
+    background-repeat: repeat;
     border-radius: 8px;
     margin: 8px 12px;
+    border: 1px solid #355563;
 }
 
 #characterName {
@@ -194,7 +188,8 @@ QMainWindow, QWidget {
 }
 
 #metricsCard, #questsCard, #activityCard, #skillsCard {
-    background-color: #0d1f2d;
+    background-image: url(src/rs3tk/gui/assets/bg-tabbed.jpg);
+    background-repeat: repeat-y;
     border: 1px solid #355563;
     border-radius: 8px;
     margin: 4px 12px;
@@ -204,7 +199,8 @@ QMainWindow, QWidget {
 /* ── Right sidebar — clients ─────────────────────────────── */
 
 #clientPanel {
-    background-color: #0d1f2d;
+    background-image: url(src/rs3tk/gui/assets/bg-content-repeat.jpg);
+    background-repeat: repeat-y;
     border-left: 1px solid #355563;
 }
 
@@ -227,12 +223,12 @@ QMainWindow, QWidget {
 }
 
 #clientList::item:selected {
-    background-color: #2E3F49;
+    background-color: rgba(46, 63, 73, 0.8);
     color: #fff2c5;
 }
 
 #clientList::item:hover {
-    background-color: #1a3040;
+    background-color: rgba(26, 48, 64, 0.6);
 }
 
 #playButton {
@@ -337,7 +333,7 @@ def _populate_demo_data(window: QMainWindow) -> None:
             ]
             for title in news_items:
                 row = QLabel(f"  {title}")
-                row.setStyleSheet("color: #e1bb34; font-size: 11px; padding: 4px 0;")
+                row.setStyleSheet("color: #e1bb34; font-size: 11px; padding: 4px 0; background: transparent;")
                 layout.addWidget(row)
 
 
