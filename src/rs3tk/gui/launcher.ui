@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RuneLauncher</class>
+
+ <widget class="QMainWindow" name="RuneLauncher">
+  <property name="windowTitle">
+   <string>RS3TK</string>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1100</width>
+    <height>700</height>
+   </size>
+  </property>
+
+  <widget class="QWidget" name="centralWidget">
+
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+
+    <!-- ====================================================== -->
+    <!-- TOP BAR -->
+    <!-- ====================================================== -->
+
+    <item>
+     <widget class="QFrame" name="topBar">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>48</height>
+       </size>
+      </property>
+
+      <layout class="QHBoxLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+
+       <item>
+        <widget class="QWidget" name="branding">
+         <layout class="QHBoxLayout">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="logo">
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>R</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="title">
+              <property name="text">
+               <string>RS3TK</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="subtitle">
+              <property name="text">
+               <string>RuneScape ToolKit</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="dashboardButton">
+         <property name="text">
+          <string>Dashboard</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="settingsButton">
+         <property name="text">
+          <string>Settings</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="addAccountButton">
+         <property name="text">
+          <string>+ Add Account</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <spacer name="topSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="minimizeButton">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="maximizeButton">
+         <property name="text">
+          <string>□</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="closeButton">
+         <property name="text">
+          <string>×</string>
+         </property>
+        </widget>
+       </item>
+
+      </layout>
+     </widget>
+    </item>
+
+    <!-- ====================================================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ====================================================== -->
+
+    <item>
+     <layout class="QHBoxLayout" name="contentLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+
+      <!-- ====================================== -->
+      <!-- LEFT SIDEBAR — ACCOUNTS -->
+      <!-- ====================================== -->
+
+      <item>
+       <widget class="QFrame" name="accountsPanel">
+        <property name="minimumSize">
+         <size>
+          <width>220</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>16777215</height>
+         </size>
+        </property>
+
+        <layout class="QVBoxLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+
+         <item>
+          <widget class="QFrame" name="accountsHeader">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QTreeWidget" name="accountsTree">
+           <property name="headerHidden">
+            <bool>true</bool>
+           </property>
+           <property name="indentation">
+            <number>12</number>
+           </property>
+           <property name="rootIsDecorated">
+            <bool>true</bool>
+           </property>
+           <column>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QPushButton" name="addJagexAccountButton">
+           <property name="text">
+            <string>+ Add Jagex Account</string>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>36</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+
+        </layout>
+       </widget>
+      </item>
+
+      <!-- ====================================== -->
+      <!-- CENTER — DASHBOARD -->
+      <!-- ====================================== -->
+
+      <item>
+       <widget class="QWidget" name="dashboard">
+        <layout class="QVBoxLayout">
+
+         <!-- Character Header -->
+         <item>
+          <widget class="QFrame" name="characterHeader">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>80</height>
+            </size>
+           </property>
+
+           <layout class="QHBoxLayout">
+            <property name="leftMargin">
+             <number>16</number>
+            </property>
+            <property name="rightMargin">
+             <number>16</number>
+            </property>
+
+            <item>
+             <widget class="QLabel" name="avatar">
+              <property name="minimumSize">
+               <size>
+                <width>56</width>
+                <height>56</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>56</width>
+                <height>56</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Avatar</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+
+            <item>
+             <layout class="QVBoxLayout">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="characterName">
+                <property name="text">
+                 <string>Cow31337Killer</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="characterInfo">
+                <property name="text">
+                 <string>Combat 151 | Rank 89,609 | Total XP 1.28B</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabBar" name="navigationTabs">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Overview</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Skills</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Quests</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Activity</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+
+            <item>
+             <spacer name="headerSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+
+            <item>
+             <widget class="QFrame" name="statusArea">
+              <property name="minimumSize">
+               <size>
+                <width>140</width>
+                <height>0</height>
+               </size>
+              </property>
+              <layout class="QVBoxLayout">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="statusLabel">
+                 <property name="text">
+                  <string>All Systems Operational</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="onlineCount">
+                 <property name="text">
+                  <string>151,698 online</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+
+           </layout>
+          </widget>
+         </item>
+
+         <!-- Metrics Row -->
+         <item>
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QFrame" name="metricsCard"/>
+           </item>
+           <item>
+            <widget class="QFrame" name="questsCard"/>
+           </item>
+          </layout>
+         </item>
+
+         <!-- Bottom Row -->
+         <item>
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QFrame" name="activityCard"/>
+           </item>
+           <item>
+            <widget class="QFrame" name="skillsCard"/>
+           </item>
+          </layout>
+         </item>
+
+        </layout>
+       </widget>
+      </item>
+
+      <!-- ====================================== -->
+      <!-- RIGHT SIDEBAR — CLIENTS -->
+      <!-- ====================================== -->
+
+      <item>
+       <widget class="QFrame" name="clientPanel">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+
+        <layout class="QVBoxLayout">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <property name="topMargin">
+          <number>12</number>
+         </property>
+         <property name="rightMargin">
+          <number>8</number>
+         </property>
+         <property name="bottomMargin">
+          <number>8</number>
+         </property>
+
+         <item>
+          <widget class="QLabel" name="clientTitle">
+           <property name="text">
+            <string>Game Clients</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QListWidget" name="clientList">
+           <property name="currentRow">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QPushButton" name="playButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>PLAY</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QLabel" name="lastPlayed">
+           <property name="text">
+            <string>Last played: 2 hours ago</string>
+           </property>
+          </widget>
+         </item>
+
+        </layout>
+       </widget>
+      </item>
+
+     </layout>
+    </item>
+
+    <!-- ====================================================== -->
+    <!-- BOTTOM BAR -->
+    <!-- ====================================================== -->
+
+    <item>
+     <widget class="QFrame" name="bottomBar">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>32</height>
+       </size>
+      </property>
+
+      <layout class="QHBoxLayout">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+
+       <item>
+        <widget class="QLabel" name="launcherVersion">
+         <property name="text">
+          <string>v0.1.0</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QLabel" name="updateStatus">
+         <property name="text">
+          <string>Up to date</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <spacer name="bottomSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="discordButton">
+         <property name="text">
+          <string>Discord</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="newsButton">
+         <property name="text">
+          <string>News</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QToolButton" name="supportButton">
+         <property name="text">
+          <string>Support</string>
+         </property>
+        </widget>
+       </item>
+
+      </layout>
+     </widget>
+    </item>
+
+   </layout>
+
+  </widget>
+ </widget>
+
+ <resources/>
+ <connections/>
+</ui>

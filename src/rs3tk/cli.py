@@ -357,6 +357,33 @@ def config_set(game: str | None, client: str | None, locale: int | None) -> None
         console.print("[dim]No changes.[/]")
 
 
+# ── gui ──────────────────────────────────────────────────────────────────────
+
+
+@main.command()
+def gui() -> None:
+    """Open graphical launcher (requires PySide6)."""
+    try:
+        from PySide6.QtWidgets import QApplication, QMainWindow  # noqa: F811
+    except ImportError:
+        raise click.ClickException("PySide6 is required. Install with: pip install rs3tk[gui]") from None
+
+    from rs3tk.gui.demo import _DARK_THEME, _populate_demo_data
+    from rs3tk.gui.launcher_ui import Ui_RuneLauncher
+
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    app.setStyleSheet(_DARK_THEME)  # type: ignore[attr-defined]
+
+    window = QMainWindow()
+    ui = Ui_RuneLauncher()
+    ui.setupUi(window)  # type: ignore[no-untyped-call]
+    _populate_demo_data(window)
+    window.show()
+    app.exec()
+
+
 # ── ui ───────────────────────────────────────────────────────────────────────
 
 
