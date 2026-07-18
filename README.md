@@ -7,7 +7,6 @@ Old School RuneScape (Official, RuneLite, HDOS) or RuneScape 3.
 
 ## Features
 
-- **Jagex Accounts** — Log in via your Jagex Account(s) with OAuth2
 - **Multiple clients** — Launch RS3, OSRS Official, RuneLite, or HDOS
 - **Secure token storage** — Credentials stored in your OS keyring
 - **Multi-account support** — Supports being logged into multiple Jagex accounts at once.
