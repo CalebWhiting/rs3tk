@@ -7,11 +7,11 @@ Old School RuneScape (Official, RuneLite, HDOS) or RuneScape 3.
 
 ## Features
 
-- **Unified authentication** — Log in via your Jagex Account with OAuth2
+- **Jagex Accounts** — Log in via your Jagex Account(s) with OAuth2
 - **Multiple clients** — Launch RS3, OSRS Official, RuneLite, or HDOS
 - **Secure token storage** — Credentials stored in your OS keyring
-- **Multi-account support** — Switch between characters
-- **Browser login** — Opens your default browser for OAuth2 login
+- **Multi-account support** — Supports being logged into multiple Jagex accounts at once.
+- **Browser login** — Login with in-built electron browser for a seamless experience, alternatively use the system browser.
 - **Game status** — Check server status and latest news
 
 ## Installation
@@ -85,6 +85,25 @@ rs3tk auth logout
 | OSRS Official | OSRS |
 | RuneLite | OSRS |
 | HDOS | OSRS |
+
+## Autoinstall
+
+rs3tk can automatically download and install game clients:
+
+```bash
+# Install a client
+rs3tk clients install runelite
+rs3tk clients install rs3
+
+# Remove a client
+rs3tk clients remove runelite
+
+# List installed clients
+rs3tk clients list
+```
+
+Clients are installed to `~/.config/rs3tk/clients/{client}/` and include
+self-updating launchers that check for new versions on each run.
 
 ## Configuration
 
