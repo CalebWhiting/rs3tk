@@ -45,11 +45,13 @@ QMainWindow, QWidget {
     font-size: 16px;
     font-weight: bold;
     color: #e1bb34;
+    background: transparent;
 }
 
 #subtitle {
     font-size: 11px;
     color: #a9acad;
+    background: transparent;
 }
 
 #logo {
@@ -149,12 +151,14 @@ QMainWindow, QWidget {
     font-weight: bold;
     color: #e1bb34;
     min-height: 24px;
+    background: transparent;
 }
 
 #characterInfo {
     font-size: 12px;
     color: #a9acad;
     min-height: 16px;
+    background: transparent;
 }
 
 #avatar {
@@ -180,12 +184,14 @@ QMainWindow, QWidget {
     font-size: 12px;
     font-weight: bold;
     min-height: 16px;
+    background: transparent;
 }
 
 #onlineCount {
     color: #a9acad;
     font-size: 12px;
     min-height: 16px;
+    background: transparent;
 }
 
 #navigationTabs {
@@ -213,6 +219,7 @@ QMainWindow, QWidget {
     font-size: 14px;
     font-weight: bold;
     color: #e1bb34;
+    background: transparent;
 }
 
 #clientList {
@@ -258,6 +265,7 @@ QMainWindow, QWidget {
 #lastPlayed {
     color: #536066;
     font-size: 11px;
+    background: transparent;
 }
 
 /* ── Bottom bar ──────────────────────────────────────────── */
