@@ -104,6 +104,12 @@ SCOPES = (
 CONSENT_CLIENT_ID = "1fddee4e-b100-4f4e-b2b0-097f9088f9d2"
 
 
+# A Bearer token is a credential that grants the holder access to a
+# protected resource.  It is sent in the HTTP Authorization header as
+# "Authorization: Bearer <token>".  The server validates the token and
+# uses its embedded claims (e.g. account ID, scopes) to authorize the
+# request.  Unlike session cookies, bearer tokens are stateless and
+# suitable for API-to-API calls.
 def _bearer(tok: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {tok}", "Accept": "application/json"}
 
