@@ -23,55 +23,62 @@ from rs3tk.gui.launcher_ui import Ui_RuneLauncher
 _ASSETS = Path(__file__).parent / "assets"
 
 _DARK_THEME = """
+/* ── RuneScape-inspired theme ──────────────────────────────── */
+/* Colors extracted from runescape.com:
+   - Logo gradient: #ffecc2 → #b6977b
+   - Text gold: #f7da96, #f2d593
+   - Orange accent: #ff8614
+   - Backgrounds: #141414, #1a1a1a
+   - White: #ffffff
+   - Gray: #a6a6a6
+   - Blue: #0099ff
+*/
+
 QMainWindow, QWidget {
-    background-color: #1b1b2f;
-    color: #e2e8f0;
-    font-family: "Segoe UI", "Noto Sans", sans-serif;
+    background-color: #0e0e14;
+    color: #e0e0e0;
+    font-family: "Sofia Sans", "Segoe UI", "Noto Sans", sans-serif;
     font-size: 13px;
 }
 
 /* ── Top bar ─────────────────────────────────────────────── */
 
 #topBar {
-    background-color: #16213e;
-    border-bottom: 1px solid #2a2a4a;
+    background-color: #141414;
+    border-bottom: 2px solid #2a2218;
 }
 
 #title {
     font-size: 16px;
     font-weight: bold;
-    color: #ffffff;
+    color: #f7da96;
 }
 
 #subtitle {
     font-size: 11px;
-    color: #94a3b8;
+    color: #a6a6a6;
 }
 
 #logo {
-    background-color: #e94560;
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 6px;
+    background: transparent;
 }
 
 #dashboardButton, #settingsButton, #addAccountButton {
     background: transparent;
-    color: #94a3b8;
+    color: #a6a6a6;
     border: none;
     padding: 6px 12px;
     font-size: 12px;
 }
 
 #dashboardButton:checked, #settingsButton:checked {
-    color: #ffffff;
-    border-bottom: 2px solid #e94560;
+    color: #f7da96;
+    border-bottom: 2px solid #f7da96;
 }
 
 #minimizeButton, #maximizeButton, #closeButton {
     background: transparent;
-    color: #94a3b8;
+    color: #a6a6a6;
     border: none;
     font-size: 16px;
     min-width: 28px;
@@ -79,64 +86,64 @@ QMainWindow, QWidget {
 }
 
 #closeButton:hover {
-    background-color: #e94560;
+    background-color: #ff8614;
     color: #ffffff;
 }
 
 /* ── Left sidebar — accounts ─────────────────────────────── */
 
 #accountsPanel {
-    background-color: #16213e;
-    border-right: 1px solid #2a2a4a;
+    background-color: #141414;
+    border-right: 1px solid #2a2218;
 }
 
 #accountsHeader {
-    background-color: #1a1a36;
-    border-bottom: 1px solid #2a2a4a;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #2a2218;
 }
 
 #accountsTree {
     background-color: transparent;
     border: none;
-    color: #e2e8f0;
+    color: #e0e0e0;
     outline: none;
 }
 
 #accountsTree::item {
     padding: 8px 12px;
-    border-bottom: 1px solid #1e1e3a;
+    border-bottom: 1px solid #1e1e1e;
 }
 
 #accountsTree::item:selected {
-    background-color: #1f4068;
-    color: #ffffff;
+    background-color: #2a2218;
+    color: #f7da96;
 }
 
 #accountsTree::item:hover {
-    background-color: #1a2744;
+    background-color: #1e1e1e;
 }
 
 #addJagexAccountButton {
-    background-color: #1f4068;
-    color: #94a3b8;
-    border: 1px dashed #3a3a5c;
+    background-color: #1a1a1a;
+    color: #a6a6a6;
+    border: 1px dashed #3a3a3a;
     border-radius: 4px;
     margin: 8px;
 }
 
 #addJagexAccountButton:hover {
-    background-color: #254a78;
-    color: #ffffff;
+    background-color: #2a2218;
+    color: #f7da96;
 }
 
 /* ── Center — dashboard ──────────────────────────────────── */
 
 #dashboard {
-    background-color: #1b1b2f;
+    background-color: #0e0e14;
 }
 
 #characterHeader {
-    background-color: #1f4068;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2a2218, stop:1 #1a1a1a);
     border-radius: 8px;
     margin: 8px 12px;
 }
@@ -144,47 +151,48 @@ QMainWindow, QWidget {
 #characterName {
     font-size: 18px;
     font-weight: bold;
-    color: #ffffff;
+    color: #f7da96;
 }
 
 #characterInfo {
     font-size: 12px;
-    color: #94a3b8;
+    color: #a6a6a6;
 }
 
 #avatar {
-    background-color: #2a2a4a;
-    color: #94a3b8;
+    background-color: #1a1a1a;
+    color: #a6a6a6;
     border-radius: 28px;
+    border: 2px solid #b6977b;
     font-size: 14px;
 }
 
 #statusArea {
-    background-color: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.3);
+    background-color: rgba(255, 134, 20, 0.1);
+    border: 1px solid rgba(255, 134, 20, 0.3);
     border-radius: 6px;
     padding: 6px;
 }
 
 #statusLabel {
-    color: #4ade80;
+    color: #ff8614;
     font-size: 11px;
     font-weight: bold;
 }
 
 #onlineCount {
-    color: #94a3b8;
+    color: #a6a6a6;
     font-size: 11px;
 }
 
 #navigationTabs {
     background: transparent;
-    color: #94a3b8;
+    color: #a6a6a6;
 }
 
 #metricsCard, #questsCard, #activityCard, #skillsCard {
-    background-color: #16213e;
-    border: 1px solid #2a2a4a;
+    background-color: #141414;
+    border: 1px solid #2a2218;
     border-radius: 8px;
     margin: 4px 12px;
     min-height: 160px;
@@ -193,39 +201,39 @@ QMainWindow, QWidget {
 /* ── Right sidebar — clients ─────────────────────────────── */
 
 #clientPanel {
-    background-color: #16213e;
-    border-left: 1px solid #2a2a4a;
+    background-color: #141414;
+    border-left: 1px solid #2a2218;
 }
 
 #clientTitle {
     font-size: 14px;
     font-weight: bold;
-    color: #ffffff;
+    color: #f7da96;
 }
 
 #clientList {
     background-color: transparent;
     border: none;
-    color: #e2e8f0;
+    color: #e0e0e0;
     outline: none;
 }
 
 #clientList::item {
     padding: 10px 12px;
-    border-bottom: 1px solid #1e1e3a;
+    border-bottom: 1px solid #1e1e1e;
 }
 
 #clientList::item:selected {
-    background-color: #1f4068;
-    color: #ffffff;
+    background-color: #2a2218;
+    color: #f7da96;
 }
 
 #clientList::item:hover {
-    background-color: #1a2744;
+    background-color: #1e1e1e;
 }
 
 #playButton {
-    background-color: #e94560;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff8614, stop:1 #ff6a00);
     color: #ffffff;
     font-size: 15px;
     font-weight: bold;
@@ -234,39 +242,39 @@ QMainWindow, QWidget {
 }
 
 #playButton:hover {
-    background-color: #d63050;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffa040, stop:1 #ff8020);
 }
 
 #playButton:pressed {
-    background-color: #c02040;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e07010, stop:1 #c05000);
 }
 
 #lastPlayed {
-    color: #64748b;
+    color: #666666;
     font-size: 11px;
 }
 
 /* ── Bottom bar ──────────────────────────────────────────── */
 
 #bottomBar {
-    background-color: #16213e;
-    border-top: 1px solid #2a2a4a;
+    background-color: #141414;
+    border-top: 2px solid #2a2218;
 }
 
 #launcherVersion, #updateStatus {
-    color: #64748b;
+    color: #666666;
     font-size: 11px;
 }
 
 #discordButton, #newsButton, #supportButton {
     background: transparent;
-    color: #64748b;
+    color: #666666;
     border: none;
     font-size: 11px;
 }
 
 #discordButton:hover, #newsButton:hover, #supportButton:hover {
-    color: #94a3b8;
+    color: #f7da96;
 }
 """
 
@@ -326,7 +334,7 @@ def _populate_demo_data(window: QMainWindow) -> None:
             ]
             for title in news_items:
                 row = QLabel(f"  {title}")
-                row.setStyleSheet("color: #e2e8f0; font-size: 11px; padding: 4px 0;")
+                row.setStyleSheet("color: #f7da96; font-size: 11px; padding: 4px 0;")
                 layout.addWidget(row)
 
 
