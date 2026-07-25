@@ -21,6 +21,8 @@ from rs3tk.app import (
     get_news,
     launch_game,
     list_accounts,
+    set_default_character,
+    unset_default_character,
     update_config,
 )
 from rs3tk.clients import detect_client, get_client_keys
@@ -174,28 +176,25 @@ def accounts_list(ctx: click.Context) -> None:
 @click.argument("name")
 def accounts_set_default(name: str) -> None:
     """Set a default character for quick launching."""
-    from rs3tk.config import load_settings, save_settings
-
     all_characters = get_all_characters()
     if not any(c.display_name.lower() == name.lower() for c in all_characters):
         raise click.ClickException(f"Character '{name}' not found in any stored account.")
 
-    settings = load_settings()
-    save_settings(settings.model_copy(update={"default_character": name}))
+    set_default_character(name)
     console.print(f"[bold green]Default character set to {name}.[/]")
 
 
 @accounts.command("unset-default")
 def accounts_unset_default() -> None:
     """Clear the default character."""
-    from rs3tk.config import load_settings, save_settings
+    from rs3tk.config import load_settings
 
     settings = load_settings()
     if not settings.default_character:
         console.print("[dim]No default character set.[/]")
         return
 
-    save_settings(settings.model_copy(update={"default_character": None}))
+    unset_default_character()
     console.print("[bold yellow]Default character cleared.[/]")
 
 

@@ -146,9 +146,24 @@ def remove_account(username: str) -> None:
     from rs3tk.auth.session import logout_account as _logout_account
 
     _logout_account(username)
+    _remove_account_from_settings(username)
+
+
+def _remove_account_from_settings(username: str) -> Settings:
     settings = load_settings()
     settings = settings.model_copy(update={"accounts": [a for a in settings.accounts if a.username != username]})
     save_settings(settings)
+    return settings
+
+
+def set_default_character(name: str) -> None:
+    settings = load_settings()
+    save_settings(settings.model_copy(update={"default_character": name}))
+
+
+def unset_default_character() -> None:
+    settings = load_settings()
+    save_settings(settings.model_copy(update={"default_character": None}))
 
 
 def check_game_status() -> dict[str, Any]:
@@ -241,10 +256,7 @@ def launch_game(
         if not username:
             raise AppError(f"Character '{character_name}' not found in any stored account.")
 
-        try:
-            session_id, profile = get_session_and_profile(username)
-        except AppError:
-            raise
+        session_id, profile = get_session_and_profile(username)
 
         character_id, display_name = resolve_character(character_name, profile)
         settings = load_settings()
