@@ -29,10 +29,6 @@ def config_dir() -> Path:
     return config
 
 
-def settings_file() -> Path:
-    return config_dir() / "settings.json"
-
-
 class Game(StrEnum):
     RS3 = "rs3"
     OSRS = "osrs"
@@ -73,7 +69,7 @@ def load_settings() -> Settings:
     if not _permissions_fixed:
         fix_permissions()
         _permissions_fixed = True
-    path = settings_file()
+    path = config_dir() / "settings.json"
     if path.exists():
         try:
             _settings = Settings.model_validate(json.loads(path.read_text(encoding="utf-8")))
@@ -88,7 +84,7 @@ def load_settings() -> Settings:
 def save_settings(settings: Settings) -> None:
     global _settings  # noqa: PLW0603
     _settings = settings
-    path = settings_file()
+    path = config_dir() / "settings.json"
     path.write_text(settings.model_dump_json(indent=2), encoding="utf-8")
     path.chmod(0o600)
 
@@ -135,11 +131,6 @@ def delete_account_token(username: str, key: str) -> None:
 def clear_account(username: str) -> None:
     for key in _ACCOUNT_TOKENS:
         delete_account_token(username, key)
-
-
-def clear_all() -> None:
-    for key in _ACCOUNT_TOKENS:
-        delete_token(key)
 
 
 def fix_permissions() -> None:

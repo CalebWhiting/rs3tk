@@ -319,7 +319,7 @@ def news(ctx: click.Context, count: int, game: str | None) -> None:
 
     resolved_game = game or load_settings().default_game
 
-    articles = get_news(game=game, count=count)
+    articles = get_news(game=resolved_game, count=count)
 
     if not articles:
         console.print("[yellow]No news found.[/]")

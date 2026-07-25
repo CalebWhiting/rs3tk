@@ -11,8 +11,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from rs3tk.app import get_all_characters, get_client_info, launch_game, list_accounts, remove_account
-from rs3tk.config import load_settings
+from rs3tk.app import get_all_characters, get_client_info, launch_game, list_accounts
 from rs3tk.rs_api import get_rune_metrics
 
 
@@ -158,13 +157,14 @@ class RS3TKHandler(BaseHTTPRequestHandler):
 
     def _logout(self, body: dict[str, Any]) -> dict[str, str]:
         username = body.get("username")
-        if username:
-            remove_account(username)
-        else:
-            settings = load_settings()
-            for account in settings.accounts:
-                remove_account(account.username)
-        return {"status": "logged_out"}
+        all_accounts = body.get("all", False)
+        try:
+            from rs3tk.app import do_logout
+
+            do_logout(username=username, all_accounts=all_accounts)
+            return {"status": "logged_out"}
+        except Exception as e:
+            return {"error": str(e)}
 
     def log_message(self, fmt: str, *args: object) -> None:
         if args:
