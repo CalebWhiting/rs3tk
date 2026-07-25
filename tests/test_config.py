@@ -51,8 +51,8 @@ class TestSettingsModel:
         )
         json_str = settings.model_dump_json()
         data = json.loads(json_str)
-        assert data["defaultGame"] == "osrs"
-        assert data["lastCharacter"] == "TestChar"
+        assert data["default_game"] == "osrs"
+        assert data["last_character"] == "TestChar"
 
 
 class TestEnumTypes:

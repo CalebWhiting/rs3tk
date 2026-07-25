@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -29,11 +29,11 @@ class TestCheckStatus:
 
     def test_sync_check_status(self):
         """Test the current sync check_status implementation."""
-        # This should work with the current implementation
         with patch('httpx.get') as mock_get:
-            mock_response = type('obj', (object,), {'json': lambda: {'status': 'ok'}})()
+            mock_response = MagicMock()
+            mock_response.json.return_value = {'status': 'ok'}
+            mock_response.raise_for_status.return_value = None
             mock_get.return_value = mock_response
-            mock_response.raise_for_status = lambda: None
 
             result = check_status()
             assert result == {'status': 'ok'}
