@@ -15,12 +15,12 @@ from rs3tk.app import (
     get_all_characters,
     get_client_info,
     get_config,
+    get_game_client,
     get_news,
     launch_game,
-    pick_character,
-    pick_client,
     update_config,
 )
+from rs3tk.cli import pick_character, pick_client
 from rs3tk.output import console
 
 _MENU = [
@@ -69,7 +69,7 @@ def _do_play() -> None:
 
     if no_character:
         try:
-            game_client = __import__("rs3tk.app", fromlist=["get_game_client"]).get_game_client(client_key)
+            game_client = get_game_client(client_key)
         except AppError as e:
             console.print(f"[bold red]Error:[/] {e}")
             return

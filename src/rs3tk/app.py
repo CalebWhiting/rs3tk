@@ -9,13 +9,10 @@ import subprocess
 from dataclasses import dataclass
 from typing import Any
 
-from rich.console import Console
-
 from rs3tk.clients import CLIENTS_DIR, GameClient, detect_client, get_client_keys, update_client_config
 from rs3tk.config import AccountInfo, Settings, load_settings, save_settings
 
 logger = logging.getLogger(__name__)
-console = Console()
 
 
 class AppError(Exception):
@@ -114,7 +111,7 @@ def get_all_characters() -> list[CharacterInfo]:
 
         results = await asyncio.gather(*[_fetch_one(a.username) for a in settings.accounts])
         if failed:
-            console.print(f"[yellow]Failed to fetch profiles for: {', '.join(failed)}[/]")
+            logger.warning("Failed to fetch profiles for: %s", ", ".join(failed))
         return [char for batch in results for char in batch]
 
     return asyncio.run(_fetch_all())
@@ -134,12 +131,11 @@ def resolve_character(character_name: str, profile: Any) -> tuple[str, str]:  # 
     raise AppError(f"Character '{character_name}' not found.")
 
 
-def find_default_char_index(characters: list[CharacterInfo], last_character: str | None) -> str:
-    if last_character:
-        for i, char in enumerate(characters, 1):
-            if char.display_name.lower() == last_character.lower():
-                return str(i)
-    return "1"
+def get_game_client(name: str) -> GameClient:
+    client = detect_client(name)
+    if not client.is_installed():
+        raise AppError(f"{client.name} is not installed.")
+    return client
 
 
 def list_accounts() -> list[AccountInfo]:
@@ -228,52 +224,6 @@ def do_autoinstall(client_key: str, remove: bool = False) -> str:
     return proc.stdout.strip() + f"\nInstalled {client_key} -> {exe_path}"
 
 
-def pick_client(settings: Settings) -> str:
-    from rich.prompt import Prompt
-
-    keys = get_client_keys()
-    console.print("[bold]Available clients:[/]")
-    for i, key in enumerate(keys, 1):
-        c = detect_client(key)
-        tag = "[green]installed[/]" if c.is_installed() else "[red]not installed[/]"
-        console.print(f"  {i}. {c.name} ({tag})")
-
-    default_idx = keys.index(settings.default_client) + 1 if settings.default_client in keys else 1
-    choice = Prompt.ask(
-        "\n[bold]Select client[/]",
-        choices=[str(i) for i in range(1, len(keys) + 1)],
-        default=str(default_idx),
-    )
-    return keys[int(choice) - 1]
-
-
-def pick_character(characters: list[CharacterInfo], settings: Settings) -> str | None:
-    from rich.prompt import Prompt
-
-    if not characters:
-        return None
-
-    console.print("\n[bold]Characters:[/]")
-    for i, char in enumerate(characters, 1):
-        console.print(f"  {i}. {char.display_name}")
-
-    preferred = settings.default_character or settings.last_character
-    default_char = find_default_char_index(characters, preferred)
-    ch = Prompt.ask(
-        "\n[bold]Select character[/]",
-        choices=[str(i) for i in range(1, len(characters) + 1)],
-        default=default_char,
-    )
-    return characters[int(ch) - 1].display_name
-
-
-def get_game_client(name: str) -> GameClient:
-    client = detect_client(name)
-    if not client.is_installed():
-        raise AppError(f"{client.name} is not installed.")
-    return client
-
-
 def launch_game(
     client_key: str,
     character_name: str | None = None,
@@ -299,6 +249,8 @@ def launch_game(
         character_id, display_name = resolve_character(character_name, profile)
         settings = load_settings()
         save_settings(settings.model_copy(update={"last_character": display_name}))
+
+    from rs3tk.output import console
 
     console.print(f"[bold green]Launching {game_client.name}...[/]")
     try:

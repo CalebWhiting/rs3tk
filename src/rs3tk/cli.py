@@ -9,6 +9,7 @@ from rich.table import Table
 
 from rs3tk import __version__
 from rs3tk.app import (
+    CharacterInfo,
     check_game_status,
     do_autoinstall,
     do_login,
@@ -20,15 +21,62 @@ from rs3tk.app import (
     get_news,
     launch_game,
     list_accounts,
-    pick_character,
-    pick_client,
     update_config,
 )
+from rs3tk.clients import detect_client, get_client_keys
+from rs3tk.config import Settings
 from rs3tk.output import cli_error, console
 
 
 def _censor_value(value: str) -> str:
     return "*" * len(value)
+
+
+def find_default_char_index(characters: list[CharacterInfo], last_character: str | None) -> int | None:
+    if last_character:
+        for i, char in enumerate(characters, 1):
+            if char.display_name.lower() == last_character.lower():
+                return i
+    return None
+
+
+def pick_client(settings: Settings) -> str:
+    from rich.prompt import Prompt
+
+    keys = get_client_keys()
+    console.print("[bold]Available clients:[/]")
+    for i, key in enumerate(keys, 1):
+        c = detect_client(key)
+        tag = "[green]installed[/]" if c.is_installed() else "[red]not installed[/]"
+        console.print(f"  {i}. {c.name} ({tag})")
+
+    default_idx = keys.index(settings.default_client) + 1 if settings.default_client in keys else 1
+    choice = Prompt.ask(
+        "\n[bold]Select client[/]",
+        choices=[str(i) for i in range(1, len(keys) + 1)],
+        default=str(default_idx),
+    )
+    return keys[int(choice) - 1]
+
+
+def pick_character(characters: list[CharacterInfo], settings: Settings) -> str | None:
+    from rich.prompt import Prompt
+
+    if not characters:
+        return None
+
+    console.print("\n[bold]Characters:[/]")
+    for i, char in enumerate(characters, 1):
+        console.print(f"  {i}. {char.display_name}")
+
+    preferred = settings.default_character or settings.last_character
+    default_idx = find_default_char_index(characters, preferred)
+    ch = Prompt.ask(
+        "\n[bold]Select character[/]",
+        choices=[str(i) for i in range(1, len(characters) + 1)],
+        default=str(default_idx) if default_idx is not None else "1",
+    )
+    return characters[int(ch) - 1].display_name
 
 
 @click.group()
