@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
 
 _ELECTRON_DIR = Path(__file__).parent / "electron"
 _MAIN_JS = _ELECTRON_DIR / "main.js"
-_USER_DATA_DIR = Path(tempfile.gettempdir()) / "rs3tk-electron"
+_USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
 
 
 def _find_electron() -> list[str]:

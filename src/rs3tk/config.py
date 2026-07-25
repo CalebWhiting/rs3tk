@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import json
+import logging
 import os
 from enum import StrEnum
 from pathlib import Path
@@ -12,6 +13,7 @@ import keyring
 from pydantic import BaseModel
 
 _SERVICE = "rs3tk"
+logger = logging.getLogger(__name__)
 
 _config_dir: Path | None = None
 
@@ -76,6 +78,7 @@ def load_settings() -> Settings:
         try:
             _settings = Settings.model_validate(json.loads(path.read_text(encoding="utf-8")))
         except Exception:
+            logger.warning("Failed to parse %s, using defaults", path)
             _settings = Settings()
     else:
         _settings = Settings()

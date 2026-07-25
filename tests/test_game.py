@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import httpx
 import pytest
 
-from rs3tk.game import GameError, check_status, fetch_news
+from rs3tk.game import GameError, _fetch_with_retry, check_status, fetch_news
 
 
 class TestGameError:
@@ -74,3 +75,10 @@ class TestFetchNews:
 
             result = fetch_news('osrs', count=5)
             assert result == []
+
+
+class TestFetchWithRetry:
+    def test_raises_after_exhaustion(self) -> None:
+        with patch("rs3tk.game.httpx.get", side_effect=httpx.ConnectError("fail")):
+            with pytest.raises(GameError, match="Failed to fetch"):
+                _fetch_with_retry("http://example.com")

@@ -110,7 +110,7 @@ async def ensure_valid_token(username: str) -> Tokens:
             tokens = await refresh_tokens(tokens.refresh_token)
             _store_tokens(username, tokens)
         except Exception:
-            logger.debug("Token refresh failed for %s", username, exc_info=True)
+            logger.error("Token refresh failed for %s", username, exc_info=True)
             raise RuntimeError(f"Session expired for {username}. Please run `rs3tk login` again.") from None
     return tokens
 

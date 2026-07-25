@@ -168,7 +168,7 @@ class RS3TKHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt: str, *args: object) -> None:
         if args:
-            print(f"[backend] {args[0]}")
+            print(f"[backend] {fmt % args}")
 
 
 class ReusableHTTPServer(HTTPServer):
