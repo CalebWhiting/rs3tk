@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import shutil
 import stat
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -24,60 +25,50 @@ def _write_script(path: Path, content: str) -> None:
 
 
 class ClientInstaller(ABC):
-    @abstractmethod
+    script_name: str
+    template_file: str
+
     def install(self, target_dir: Path) -> Path:
-        """Write launcher script to target_dir. Returns path to script."""
+        target = target_dir / self.script_name
+        content = (_DATA_DIR / self.template_file).read_text(encoding="utf-8")
+        _write_script(target, content)
+        return target
 
     @abstractmethod
     def is_available(self) -> bool:
         """Check if installation is possible (e.g., platform/dependencies)."""
 
-    def _read_template(self, name: str) -> str:
-        return (_DATA_DIR / name).read_text(encoding="utf-8")
-
 
 class RuneLiteInstaller(ClientInstaller):
+    script_name = "runelite"
+    template_file = "runelite.py"
+
     def is_available(self) -> bool:
         return True
-
-    def install(self, target_dir: Path) -> Path:
-        script = target_dir / "runelite"
-        _write_script(script, self._read_template("runelite.py"))
-        return script
 
 
 class HDOSInstaller(ClientInstaller):
+    script_name = "hdos"
+    template_file = "hdos.py"
+
     def is_available(self) -> bool:
-        import shutil
-
         return shutil.which("java") is not None
-
-    def install(self, target_dir: Path) -> Path:
-        script = target_dir / "hdos"
-        _write_script(script, self._read_template("hdos.py"))
-        return script
 
 
 class OfficialInstaller(ClientInstaller):
+    script_name = "osclient"
+    template_file = "osclient.py"
+
     def is_available(self) -> bool:
-        import shutil
-
         return shutil.which("wine") is not None or shutil.which("umu-run") is not None
-
-    def install(self, target_dir: Path) -> Path:
-        script = target_dir / "osclient"
-        _write_script(script, self._read_template("osclient.py"))
-        return script
 
 
 class RS3Installer(ClientInstaller):
+    script_name = "runescape"
+    template_file = "rs3.py"
+
     def is_available(self) -> bool:
         return True
-
-    def install(self, target_dir: Path) -> Path:
-        script = target_dir / "runescape"
-        _write_script(script, self._read_template("rs3.py"))
-        return script
 
 
 INSTALLERS: dict[str, ClientInstaller] = {
