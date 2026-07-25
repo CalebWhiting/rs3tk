@@ -46,6 +46,7 @@ class ClientType(StrEnum):
 class AccountInfo(BaseModel):
     username: str
     display_name: str | None = None
+    email: str | None = None
 
 
 class Settings(BaseModel):
