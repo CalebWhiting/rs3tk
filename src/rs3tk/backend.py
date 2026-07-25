@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import json
 import socket
@@ -11,7 +10,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from rs3tk.app import get_all_characters, get_client_info, launch_game, list_accounts
+from rs3tk.app import _run_sync, get_all_characters, get_client_info, launch_game, list_accounts
 from rs3tk.rs_api import get_rune_metrics
 
 
@@ -120,8 +119,8 @@ class RS3TKHandler(BaseHTTPRequestHandler):
         ]
 
     def _get_metrics(self, name: str) -> dict[str, Any]:
-        profile = asyncio.run(get_rune_metrics(name, 10))
-        return profile.model_dump()
+        profile = _run_sync(get_rune_metrics(name, 10))
+        return profile.model_dump()  # type: ignore[no-any-return]
 
     def _serve_avatar(self, name: str) -> None:
         from rs3tk.config import config_dir

@@ -19,6 +19,16 @@ class AppError(Exception):
     pass
 
 
+def _run_sync(coro: Any) -> Any:  # noqa: ANN401
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+    if loop and loop.is_running():
+        raise RuntimeError("Cannot call asyncio.run() from within an event loop")
+    return asyncio.run(coro)
+
+
 @dataclass(slots=True)
 class CharacterInfo:
     account_id: str
@@ -31,7 +41,7 @@ def do_login(system_browser: bool = False) -> tuple[str, int]:
     from rs3tk.auth.session import login as _login
 
     try:
-        tokens, username = asyncio.run(_login(system_browser=system_browser))
+        tokens, username = _run_sync(_login(system_browser=system_browser))
     except RuntimeError as e:
         raise AppError(str(e)) from e
 
@@ -77,7 +87,7 @@ def get_session_and_profile(username: str | None = None) -> tuple[str, Any]:
         username = settings.accounts[0].username
 
     try:
-        return asyncio.run(get_session(username))
+        return _run_sync(get_session(username))  # type: ignore[no-any-return]
     except RuntimeError as e:
         raise AppError(str(e)) from e
 
@@ -114,7 +124,7 @@ def get_all_characters() -> list[CharacterInfo]:
             logger.warning("Failed to fetch profiles for: %s", ", ".join(failed))
         return [char for batch in results for char in batch]
 
-    return asyncio.run(_fetch_all())
+    return _run_sync(_fetch_all())  # type: ignore[no-any-return]
 
 
 def get_account_for_character(character_name: str) -> str | None:
