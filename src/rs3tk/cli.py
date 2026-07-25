@@ -26,6 +26,7 @@ from rs3tk.app import (
 from rs3tk.clients import detect_client, get_client_keys
 from rs3tk.config import Settings
 from rs3tk.output import cli_error, console
+from rs3tk.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
 
 
 def _censor_value(value: str) -> str:
@@ -165,20 +166,7 @@ def accounts_list(ctx: click.Context) -> None:
     from rs3tk.config import load_settings
 
     settings = load_settings()
-    table = Table()
-    table.add_column("Name", style="bold")
-    table.add_column("ID", style="dim")
-    table.add_column("Account", style="dim")
-    table.add_column("Membership", justify="center")
-    table.add_column("Default", justify="center")
-    table.add_column("Last Played", justify="center")
-    for char in all_characters:
-        tag = "[green]Yes[/]" if char.is_member else "[dim]No[/]"
-        account = _censor_value(char.username) if ctx.obj["censor"] else char.username
-        char_id = _censor_value(char.account_id) if ctx.obj["censor"] else char.account_id
-        default = "[green]*[/]" if settings.default_character == char.display_name else ""
-        last = "[green]*[/]" if settings.last_character == char.display_name else ""
-        table.add_row(char.display_name, char_id, account, tag, default, last)
+    table = build_characters_table(all_characters, settings, censor=ctx.obj["censor"])
     console.print(table)
 
 
@@ -225,13 +213,7 @@ def clients(ctx: click.Context) -> None:
 @clients.command("list")
 def clients_list() -> None:
     """Show detected game clients and their install paths."""
-    table = Table()
-    table.add_column("Client", style="bold")
-    table.add_column("Installed", justify="center")
-    table.add_column("Path")
-    for client, installed, path in get_client_info():
-        tag = "[green]Yes[/]" if installed else "[red]No[/]"
-        table.add_row(client.name, tag, path or "-")
+    table = build_clients_table(get_client_info())
     console.print(table)
 
 
@@ -343,11 +325,7 @@ def news(ctx: click.Context, count: int, game: str | None) -> None:
         console.print("[yellow]No news found.[/]")
         return
 
-    table = Table(title=f"Latest {resolved_game.upper()} News")
-    table.add_column("Title", style="bold")
-    table.add_column("Date", style="dim")
-    for article in articles:
-        table.add_row(article.get("title", "Untitled"), article.get("formattedDate", ""))
+    table = build_news_table(articles, f"Latest {resolved_game.upper()} News")
     console.print(table)
 
 
@@ -360,14 +338,8 @@ def config(ctx: click.Context) -> None:
     """View or modify rs3tk settings."""
     if ctx.invoked_subcommand is None:
         s = get_config()
-        for label, val in [
-            ("Default game", s.default_game),
-            ("Default client", s.default_client),
-            ("Default character", s.default_character or "(none)"),
-            ("Last character", s.last_character or "(none)"),
-            ("Locale", f"{s.locale} (0=en, 1=de, 2=fr, 3=pt-br)"),
-        ]:
-            console.print(f"{label}: [bold]{val}[/]")
+        table = build_config_display(s)
+        console.print(table)
 
 
 @config.command("set")
