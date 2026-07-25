@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from rs3tk.jagex_api import _client
 
@@ -82,7 +82,9 @@ class RuneMetricsProfile(BaseModel):
 
     model_config = {"populate_by_name": True}
 
-    def __init__(self, **data: object) -> None:
+    @model_validator(mode="before")
+    @classmethod
+    def _remap_camel_case(cls, data: dict[str, object]) -> dict[str, object]:
         raw = dict(data)
         raw["combat_level"] = raw.pop("combatlevel", 0)
         raw["total_skill"] = raw.pop("totalskill", 0)
@@ -92,7 +94,7 @@ class RuneMetricsProfile(BaseModel):
         raw["quests_not_started"] = raw.pop("questsnotstarted", 0)
         raw["logged_in"] = str(raw.pop("loggedIn", "false")).lower() == "true"
         raw["skill_values"] = raw.pop("skillvalues", [])
-        super().__init__(**raw)
+        return raw
 
 
 async def get_rune_metrics(name: str, activities: int = 5) -> RuneMetricsProfile:
