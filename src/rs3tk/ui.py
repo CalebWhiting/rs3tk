@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import contextlib
 
-from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
@@ -22,8 +21,7 @@ from rs3tk.app import (
     pick_client,
     update_config,
 )
-
-console = Console()
+from rs3tk.output import console
 
 _MENU = [
     ("1", "Play"),
@@ -112,8 +110,11 @@ def _do_login() -> None:
 
 
 def _do_logout() -> None:
-    do_logout()
-    console.print("[bold yellow]Logged out.[/]")
+    try:
+        do_logout()
+        console.print("[bold yellow]Logged out.[/]")
+    except AppError as e:
+        console.print(f"[bold red]Error:[/] {e}")
 
 
 def _do_accounts() -> None:

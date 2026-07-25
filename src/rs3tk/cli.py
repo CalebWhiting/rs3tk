@@ -5,12 +5,10 @@ from __future__ import annotations
 import logging
 
 import click
-from rich.console import Console
 from rich.table import Table
 
 from rs3tk import __version__
 from rs3tk.app import (
-    AppError,
     check_game_status,
     do_autoinstall,
     do_login,
@@ -26,8 +24,7 @@ from rs3tk.app import (
     pick_client,
     update_config,
 )
-
-console = Console()
+from rs3tk.output import cli_error, console
 
 
 def _censor_value(value: str) -> str:
@@ -63,24 +60,20 @@ def auth() -> None:
 
 @auth.command("login")
 @click.option("-b", "--system-browser", is_flag=True, help="Use system browser with manual URL paste.")
-def auth_login(system_browser: bool) -> None:
+@cli_error
+def auth_login(ctx: click.Context, system_browser: bool) -> None:
     """Log in to your Jagex Account."""
-    try:
-        username, count = do_login(system_browser=system_browser)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    username, count = do_login(system_browser=system_browser)
     console.print(f"[bold green]Logged in as {username}. Stored accounts: {count}[/]")
 
 
 @auth.command("logout")
 @click.option("-a", "--all", "all_accounts", is_flag=True, help="Log out of all accounts.")
 @click.option("-u", "--username", default=None, help="Account username to log out.")
-def auth_logout(all_accounts: bool, username: str | None) -> None:
+@cli_error
+def auth_logout(ctx: click.Context, all_accounts: bool, username: str | None) -> None:
     """Log out and clear stored tokens."""
-    try:
-        do_logout(username, all_accounts=all_accounts)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    do_logout(username, all_accounts=all_accounts)
     console.print("[bold yellow]Logged out.[/]")
 
 
@@ -196,25 +189,21 @@ def clients_list() -> None:
 
 @clients.command("install")
 @click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
-def clients_install(client: str) -> None:
+@cli_error
+def clients_install(ctx: click.Context, client: str) -> None:
     """Install a game client."""
     with console.status(f"[bold green]Installing {client}..."):
-        try:
-            result = do_autoinstall(client)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
+        result = do_autoinstall(client)
     console.print(f"[bold green]{result}[/]")
 
 
 @clients.command("remove")
 @click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
-def clients_remove(client: str) -> None:
+@cli_error
+def clients_remove(ctx: click.Context, client: str) -> None:
     """Remove a game client."""
     with console.status(f"[bold yellow]Removing {client}..."):
-        try:
-            result = do_autoinstall(client, remove=True)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
+        result = do_autoinstall(client, remove=True)
     console.print(f"[bold green]{result}[/]")
 
 
@@ -239,6 +228,7 @@ def clients_set_default(client: str) -> None:
 @click.option("-f", "--foreground", is_flag=True, help="Run client in foreground (show logs).")
 @click.option("-n", "--no-character", is_flag=True, help="Launch without JX_* env variables.")
 @click.pass_context
+@cli_error
 def play(
     ctx: click.Context,
     client: str | None,
@@ -256,16 +246,10 @@ def play(
         client = pick_client(settings)
 
     if no_character:
-        try:
-            game_client = get_game_client(client)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
+        game_client = get_game_client(client)
         console.print(f"[bold green]Launching {game_client.name}...[/]")
-        try:
-            process = game_client.launch("", None, None, foreground=foreground)
-            console.print(f"  [dim]PID {process.pid}[/]")
-        except (FileNotFoundError, RuntimeError) as e:
-            raise click.ClickException(str(e)) from None
+        process = game_client.launch("", None, None, foreground=foreground)
+        console.print(f"  [dim]PID {process.pid}[/]")
         return
 
     characters = get_all_characters()
@@ -275,22 +259,17 @@ def play(
     if not character:
         character = pick_character(characters, settings)
 
-    try:
-        launch_game(client, character, foreground=foreground)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    launch_game(client, character, foreground=foreground)
 
 
 # ── info ─────────────────────────────────────────────────────────────────────
 
 
 @main.command()
-def status() -> None:
+@cli_error
+def status(ctx: click.Context) -> None:
     """Check game server status."""
-    try:
-        data = check_game_status()
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    data = check_game_status()
 
     if data.get("playDisabled"):
         console.print("[bold red]Game is currently offline for maintenance.[/]")
@@ -303,16 +282,14 @@ def status() -> None:
 @main.command()
 @click.option("--count", "-n", default=5, help="Number of news items.")
 @click.option("--game", type=click.Choice(["rs3", "osrs"], case_sensitive=False), default=None)
-def news(count: int, game: str | None) -> None:
+@cli_error
+def news(ctx: click.Context, count: int, game: str | None) -> None:
     """Fetch latest game news."""
     from rs3tk.config import load_settings
 
     resolved_game = game or load_settings().default_game
 
-    try:
-        articles = get_news(game=game, count=count)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    articles = get_news(game=game, count=count)
 
     if not articles:
         console.print("[yellow]No news found.[/]")
