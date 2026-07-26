@@ -78,10 +78,18 @@ function App() {
     }
   }, [refetchChars, refetchAccounts])
 
+  const handleOpenSettings = useCallback(() => setShowSettings(true), [])
+  const handleCloseSettings = useCallback(() => setShowSettings(false), [])
+  const handleSettingsChanged = useCallback(() => {
+    refetchChars()
+    refetchAccounts()
+    setSelectedCharacter(null)
+  }, [refetchChars, refetchAccounts])
+
   return (
     <NoiseBackground>
       <div className="h-screen flex flex-col border border-rs-border">
-        <TitleBar onSettings={() => setShowSettings(true)} />
+        <TitleBar onSettings={handleOpenSettings} />
         <div className="flex-1 flex gap-3 p-3 overflow-hidden min-w-0">
           <AccountsPanel
             accounts={accounts}
@@ -107,7 +115,7 @@ function App() {
         <BottomBar selectedClient={selectedClient} />
         <LoadingOverlay visible={loadingChars || loadingAccounts || loadingClients} />
       </div>
-      {showSettings && <SettingsView accounts={accounts} onClose={() => setShowSettings(false)} onSettingsChanged={() => { refetchChars(); refetchAccounts(); setSelectedCharacter(null) }} />}
+      {showSettings && <SettingsView accounts={accounts} onClose={handleCloseSettings} onSettingsChanged={handleSettingsChanged} />}
     </NoiseBackground>
   )
 }
