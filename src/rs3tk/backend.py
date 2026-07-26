@@ -10,7 +10,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from rs3tk.app import _run_sync, get_all_characters, get_client_info, launch_game, list_accounts
+from rs3tk.app import _get_characters_result, _run_sync, get_client_info, launch_game, list_accounts
 from rs3tk.rs_api import get_rune_metrics
 
 
@@ -85,16 +85,19 @@ class RS3TKHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
-    def _get_characters(self) -> list[dict[str, Any]]:
-        characters = get_all_characters()
-        return [
-            {
-                "display_name": c.display_name,
-                "username": c.username,
-                "is_member": c.is_member,
-            }
-            for c in characters
-        ]
+    def _get_characters(self) -> dict[str, Any]:
+        result = _get_characters_result()
+        return {
+            "characters": [
+                {
+                    "display_name": c.display_name,
+                    "username": c.username,
+                    "is_member": c.is_member,
+                }
+                for c in result.characters
+            ],
+            "auth_errors": result.auth_errors,
+        }
 
     def _get_accounts(self) -> list[dict[str, Any]]:
         accounts = list_accounts()

@@ -4,6 +4,12 @@ export interface Character {
   is_member: boolean
 }
 
+export interface CharactersResponse {
+  characters?: Character[]
+  auth_errors?: string[]
+  error?: string
+}
+
 export interface Account {
   username: string
   display_name: string | null

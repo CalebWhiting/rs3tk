@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { Character, Account, Client, RuneMetrics } from '../types'
+import type { Character, CharactersResponse, Account, Client, RuneMetrics } from '../types'
 
 const BACKEND_STARTUP_RETRIES = 15
 const BACKEND_STARTUP_BASE_DELAY = 500
@@ -44,7 +44,44 @@ function useApi<T>(endpoint: string, errorMsg: string) {
 }
 
 export function useCharacters() {
-  return useApi<Character[]>('/api/characters', 'Failed to load characters')
+  const [data, setData] = useState<Character[]>([])
+  const [authErrors, setAuthErrors] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const ignore = useRef(false)
+  const retryTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  const refetch = useCallback(async (attempt = 0) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result: CharactersResponse = await window.api.callBackend('/api/characters')
+      if (!ignore.current) {
+        if (result.error) throw new Error(result.error)
+        setData(result.characters ?? [])
+        setAuthErrors(result.auth_errors ?? [])
+      }
+    } catch (e) {
+      if (ignore.current) return
+      const msg = e instanceof Error ? e.message : 'Failed to load characters'
+      if (msg === 'Backend not available' && attempt < BACKEND_STARTUP_RETRIES) {
+        const delay = Math.min(BACKEND_STARTUP_BASE_DELAY * Math.pow(1.5, attempt), 5000)
+        retryTimer.current = setTimeout(() => refetch(attempt + 1), delay)
+        return
+      }
+      setError(msg)
+    } finally {
+      if (!ignore.current) setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    ignore.current = false
+    refetch()
+    return () => { ignore.current = true; clearTimeout(retryTimer.current) }
+  }, [refetch])
+
+  return { data, authErrors, loading, error, refetch }
 }
 
 export function useAccounts() {

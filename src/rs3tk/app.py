@@ -92,15 +92,25 @@ def get_session_and_profile(username: str | None = None) -> tuple[str, Any]:
         raise AppError(str(e)) from e
 
 
+@dataclass(slots=True)
+class CharactersResult:
+    characters: list[CharacterInfo]
+    auth_errors: list[str]
+
+
 def get_all_characters() -> list[CharacterInfo]:
+    return _get_characters_result().characters
+
+
+def _get_characters_result() -> CharactersResult:
     settings = load_settings()
     if not settings.accounts:
-        return []
+        return CharactersResult(characters=[], auth_errors=[])
 
-    async def _fetch_all() -> list[CharacterInfo]:
+    async def _fetch_all() -> CharactersResult:
         from rs3tk.auth.session import get_session
 
-        failed: list[str] = []
+        auth_errors: list[str] = []
 
         async def _fetch_one(username: str) -> list[CharacterInfo]:
             try:
@@ -114,15 +124,19 @@ def get_all_characters() -> list[CharacterInfo]:
                     )
                     for char in profile.characters
                 ]
+            except RuntimeError as e:
+                msg = str(e)
+                logger.warning("Auth error for %s: %s", username, msg)
+                auth_errors.append(msg)
+                return []
             except Exception:
                 logger.debug("Failed to fetch profile for %s", username, exc_info=True)
-                failed.append(username)
+                auth_errors.append(f"Failed to load profile for {username}")
                 return []
 
         results = await asyncio.gather(*[_fetch_one(a.username) for a in settings.accounts])
-        if failed:
-            logger.warning("Failed to fetch profiles for: %s", ", ".join(failed))
-        return [char for batch in results for char in batch]
+        characters = [char for batch in results for char in batch]
+        return CharactersResult(characters=characters, auth_errors=auth_errors)
 
     return _run_sync(_fetch_all())  # type: ignore[no-any-return]
 

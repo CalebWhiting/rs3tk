@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from rs3tk.app import AppError, CharacterInfo, get_all_characters, get_config
+from rs3tk.app import AppError, CharacterInfo, _get_characters_result, get_all_characters, get_config
 from rs3tk.cli import find_default_char_index
 
 
@@ -42,3 +42,23 @@ def test_get_all_characters_empty(mock_load: object) -> None:
     mock_load.return_value = Settings(accounts=[])
     result = get_all_characters()
     assert result == []
+
+
+@patch("rs3tk.app.load_settings")
+def test_get_characters_result_empty(mock_load: object) -> None:
+    from rs3tk.config import Settings
+
+    mock_load.return_value = Settings(accounts=[])
+    result = _get_characters_result()
+    assert result.characters == []
+    assert result.auth_errors == []
+
+
+@patch("rs3tk.app.load_settings")
+def test_get_characters_result_no_accounts(mock_load: object) -> None:
+    from rs3tk.config import Settings
+
+    mock_load.return_value = Settings(accounts=[])
+    result = _get_characters_result()
+    assert isinstance(result.characters, list)
+    assert isinstance(result.auth_errors, list)

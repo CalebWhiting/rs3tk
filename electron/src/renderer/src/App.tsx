@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import TitleBar from './components/TitleBar'
 import AccountsPanel from './components/AccountsPanel'
+import AuthBanner from './components/AuthBanner'
 import Dashboard from './components/Dashboard'
 import ClientPanel from './components/ClientPanel'
 import BottomBar from './components/BottomBar'
@@ -11,7 +12,7 @@ import { useCharacters, useAccounts, useClients, useMetrics, login, logout } fro
 import { initSettings } from './lib/settings'
 
 function App() {
-  const { data: characters, loading: loadingChars, refetch: refetchChars } = useCharacters()
+  const { data: characters, authErrors, loading: loadingChars, refetch: refetchChars } = useCharacters()
   const { data: accounts, loading: loadingAccounts, refetch: refetchAccounts } = useAccounts()
   const { data: clients, loading: loadingClients } = useClients()
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
@@ -19,6 +20,7 @@ function App() {
     try { return localStorage.getItem('rs3tk-selected-client') || 'official' } catch { return 'official' }
   })
   const [showSettings, setShowSettings] = useState(false)
+  const [authBannerDismissed, setAuthBannerDismissed] = useState(false)
 
   const charactersRef = useRef(characters)
   charactersRef.current = characters
@@ -86,10 +88,28 @@ function App() {
     setSelectedCharacter(null)
   }, [refetchChars, refetchAccounts])
 
+  const handleAuthLogin = useCallback(async () => {
+    try {
+      await login()
+      setAuthBannerDismissed(false)
+      refetchChars()
+      refetchAccounts()
+    } catch (e) {
+      console.error('Login failed:', e)
+    }
+  }, [refetchChars, refetchAccounts])
+
+  const visibleAuthErrors = authBannerDismissed ? [] : authErrors
+
   return (
     <NoiseBackground>
       <div className="h-screen flex flex-col border border-rs-border">
         <TitleBar onSettings={handleOpenSettings} />
+        <AuthBanner
+          errors={visibleAuthErrors}
+          onLogin={handleAuthLogin}
+          onDismiss={() => setAuthBannerDismissed(true)}
+        />
         <div className="flex-1 flex gap-3 p-3 overflow-hidden min-w-0">
           <AccountsPanel
             accounts={accounts}
