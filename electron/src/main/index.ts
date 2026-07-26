@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, session, Tray, Menu, nativeImage, screen, dialog } from 'electron'
 import { join } from 'path'
-import { spawn, ChildProcess } from 'child_process'
+import { spawn, execSync, ChildProcess } from 'child_process'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -360,7 +360,7 @@ app.whenReady().then(async () => {
       const response = await fetch(`http://127.0.0.1:${BACKEND_PORT}${endpoint}`, { signal: controller.signal })
       clearTimeout(timeout)
       const result = await response.json()
-      console.log(`[${ts()}] [main] api-call result: ${endpoint} → ${JSON.stringify(result).slice(0, 120)}`)
+      console.log(`[${ts()}] [main] api-call result: ${endpoint} ok`)
       return result
     } catch (e) {
       console.log(`[${ts()}] [main] api-call error: ${endpoint} → ${e}`)
@@ -384,7 +384,7 @@ app.whenReady().then(async () => {
       })
       clearTimeout(timeout)
       const result = await response.json()
-      console.log(`[${ts()}] [main] api-post result: ${endpoint} → ${JSON.stringify(result).slice(0, 120)}`)
+      console.log(`[${ts()}] [main] api-post result: ${endpoint} ok`)
       return result
     } catch (e) {
       console.log(`[${ts()}] [main] api-post error: ${endpoint} → ${e}`)

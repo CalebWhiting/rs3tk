@@ -10,16 +10,8 @@ const api = {
   getPersistentSettings: () => ipcRenderer.invoke('get-persistent-settings') as Promise<Record<string, unknown>>,
   launchGame: () => ipcRenderer.send('launch-game'),
   getSessionCookies: (url: string) => ipcRenderer.invoke('get-session-cookies', url),
-  callBackend: (endpoint: string) => {
-    return ipcRenderer.invoke('api-call', endpoint).then((result) => {
-      return result
-    })
-  },
-  callBackendPost: (endpoint: string, body: unknown) => {
-    return ipcRenderer.invoke('api-post', endpoint, body).then((result) => {
-      return result
-    })
-  }
+  callBackend: (endpoint: string) => ipcRenderer.invoke('api-call', endpoint),
+  callBackendPost: (endpoint: string, body: unknown) => ipcRenderer.invoke('api-post', endpoint, body)
 }
 
 if (process.contextIsolated) {

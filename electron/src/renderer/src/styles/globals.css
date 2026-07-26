@@ -10,12 +10,6 @@
   font-display: swap;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root {
   --rs-bg: #0e171d;
   --rs-bg-light: #1a2332;

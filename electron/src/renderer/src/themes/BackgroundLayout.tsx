@@ -38,7 +38,7 @@ export default function BackgroundLayout({
         className={`absolute inset-0 pointer-events-none ${vignetteClassName}`}
         style={vignetteStyle ?? (vignetteClassName ? undefined : { background: vignette })}
       />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
       <div className={`relative z-10 ${contentClassName}`}>{children}</div>
     </div>
   )
