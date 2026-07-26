@@ -1,12 +1,46 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import type { RuneMetrics } from '../types'
+import { CARD_SHELL, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   metrics: RuneMetrics | null
 }
 
 const COLORS = { complete: 'var(--rs-pie-complete)', started: 'var(--rs-pie-started)', notStarted: 'var(--rs-pie-not-started)' } as const
+const RADIUS = 42.5
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+
+function PieChart({ data, total }: { data: { name: string; value: number; color: string }[]; total: number }) {
+  let offset = 0
+
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      {total > 0 && data.map((segment) => {
+        const arcLength = (segment.value / total) * CIRCUMFERENCE
+        const dashOffset = -offset
+        offset += arcLength
+
+        return (
+          <circle
+            key={segment.name}
+            cx="50"
+            cy="50"
+            r={RADIUS}
+            fill="none"
+            stroke={segment.color}
+            strokeWidth="25"
+            strokeDasharray={`${arcLength} ${CIRCUMFERENCE}`}
+            strokeDashoffset={dashOffset}
+            transform="rotate(-90 50 50)"
+          />
+        )
+      })}
+      {total === 0 && (
+        <circle cx="50" cy="50" r={RADIUS} fill="none" stroke="var(--rs-card)" strokeWidth="25" />
+      )}
+    </svg>
+  )
+}
 
 export default function QuestsCard({ metrics }: Props) {
   const qc = metrics?.quests_complete ?? 0
@@ -19,8 +53,6 @@ export default function QuestsCard({ metrics }: Props) {
     { name: 'Started', value: qs, color: COLORS.started },
     { name: 'Not Started', value: qn, color: COLORS.notStarted },
   ], [qc, qs, qn])
-
-  const pieData = useMemo(() => total > 0 ? data : [{ name: 'Empty', value: 1, color: 'var(--rs-card)' }], [data, total])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [showChart, setShowChart] = useState(true)
@@ -36,32 +68,15 @@ export default function QuestsCard({ metrics }: Props) {
   }, [])
 
   return (
-    <div ref={containerRef} className="bg-rs-card border border-rs-border rs-card h-full">
-      <div className="px-4 py-3 border-b border-rs-border">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">QUESTS</h2>
+    <div ref={containerRef} className={CARD_SHELL}>
+      <div className={CARD_HEADER}>
+        <h2 className={CARD_TITLE}>QUESTS</h2>
       </div>
       <div className="p-4">
         <div className={`flex items-center ${showChart ? 'justify-center gap-8' : 'justify-center'}`}>
           {showChart && (
-            <div className="w-[120px] h-[120px] rounded-full border-[3px] border-rs-bg overflow-hidden flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={30}
-                    outerRadius={55}
-                    dataKey="value"
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="w-[120px] h-[120px] flex-shrink-0">
+              <PieChart data={data} total={total} />
             </div>
           )}
           <div className="space-y-3">

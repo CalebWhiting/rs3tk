@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Client } from '../types'
 import { launchGame } from '../hooks/useData'
+import { ChevronDownIcon } from './icons'
+import { PANEL_SIDEBAR, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   clients: Client[]
@@ -24,9 +26,9 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
   }
 
   return (
-    <div className="w-[260px] flex-shrink-0 bg-rs-card border border-rs-border rs-card flex flex-col">
-      <div className="px-4 py-3 border-b border-rs-border">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">SELECT CLIENT</h2>
+    <div className={PANEL_SIDEBAR}>
+      <div className={CARD_HEADER}>
+        <h2 className={CARD_TITLE}>SELECT CLIENT</h2>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {clients.map((client) => (
@@ -40,7 +42,7 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
             }`}
           >
             <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center">
-              <img src={`/clients/${client.key}.png`} alt={client.name} className="w-9 h-9" />
+              <img src={`clients/${client.key}.png`} alt={client.name} className="w-9 h-9" />
             </div>
             <div className="flex-1 text-left">
               <div className="text-sm font-bold text-rs-text">{client.name}</div>
@@ -69,7 +71,7 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
             disabled={!selectedCharacter}
             className="gold-button gold-button-split-right px-3 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
+            <ChevronDownIcon />
           </button>
         </div>
         {launchError && (

@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import { useCanvasParticles, type Particle, type ParticleConfig } from '../particles'
+import BackgroundLayout from '../BackgroundLayout'
 
 const ORB_COUNT = 20
 
@@ -35,14 +36,11 @@ function drawOrb(ctx: CanvasRenderingContext2D, p: Particle, alpha: number) {
   ctx.fill()
 }
 
-function ambientGlow(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  const flicker = Math.sin(t * 0.03) * 0.02 + Math.sin(t * 0.08) * 0.01
-  const ambGrad = ctx.createRadialGradient(w * 0.7, h * 0.2, 0, w * 0.7, h * 0.2, w * 0.6)
-  ambGrad.addColorStop(0, `rgba(0, 200, 200, ${0.12 + flicker})`)
-  ambGrad.addColorStop(0.4, `rgba(0, 120, 140, ${0.06 + flicker * 0.5})`)
-  ambGrad.addColorStop(1, 'rgba(0, 40, 50, 0)')
-  ctx.fillStyle = ambGrad
-  ctx.fillRect(0, 0, w, h)
+const GLOW_STYLE: React.CSSProperties = {
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  background: 'radial-gradient(ellipse at 70% 20%, rgba(0,200,200,0.12) 0%, rgba(0,120,140,0.04) 40%, transparent 70%)',
 }
 
 export default function NecromancyBackground({ children }: { children: ReactNode }) {
@@ -50,25 +48,18 @@ export default function NecromancyBackground({ children }: { children: ReactNode
     count: ORB_COUNT,
     init: initOrb,
     draw: drawOrb,
-    ambient: ambientGlow,
   }), [])
 
   const canvasRef = useCanvasParticles(config)
 
   return (
-    <div className="fixed inset-0 z-[-1]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/necromancy-wallpaper.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(5, 15, 20, 0.7) 100%)' }} />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
-      <div className="relative z-10">{children}</div>
-    </div>
+    <BackgroundLayout
+      wallpaper="necromancy-wallpaper.png"
+      vignette="radial-gradient(ellipse at center, transparent 30%, rgba(5, 15, 20, 0.7) 100%)"
+      canvasRef={canvasRef}
+    >
+      <div style={GLOW_STYLE} />
+      {children}
+    </BackgroundLayout>
   )
 }

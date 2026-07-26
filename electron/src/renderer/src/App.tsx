@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import TitleBar from './components/TitleBar'
 import AccountsPanel from './components/AccountsPanel'
 import Dashboard from './components/Dashboard'
@@ -19,6 +19,9 @@ function App() {
     try { return localStorage.getItem('rs3tk-selected-client') || 'official' } catch { return 'official' }
   })
   const [showSettings, setShowSettings] = useState(false)
+
+  const charactersRef = useRef(characters)
+  charactersRef.current = characters
 
   useEffect(() => {
     initSettings()
@@ -68,14 +71,12 @@ function App() {
       await logout(username)
       refetchChars()
       refetchAccounts()
-      if (selectedCharacter) {
-        const remaining = characters.filter(c => c.username !== username)
-        setSelectedCharacter(remaining.length > 0 ? remaining[0].display_name : null)
-      }
+      const remaining = charactersRef.current.filter(c => c.username !== username)
+      setSelectedCharacter(remaining.length > 0 ? remaining[0].display_name : null)
     } catch (e) {
       console.error('Logout failed:', e)
     }
-  }, [refetchChars, refetchAccounts, selectedCharacter, characters])
+  }, [refetchChars, refetchAccounts])
 
   return (
     <NoiseBackground>

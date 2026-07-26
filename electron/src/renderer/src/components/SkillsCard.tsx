@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import type { RuneMetrics, SkillValue } from '../types'
 import { SKILL_NAMES } from '../types'
 import { formatXpScaled, formatXp } from '../lib/format'
+import { CARD_SHELL_FLEX, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   metrics: RuneMetrics | null
@@ -36,9 +37,9 @@ export default function SkillsCard({ metrics }: Props) {
   }, [])
 
   return (
-    <div ref={containerRef} className="bg-rs-card border border-rs-border rs-card h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-rs-border flex items-center justify-between">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">SKILL SUMMARY</h2>
+    <div ref={containerRef} className={CARD_SHELL_FLEX}>
+      <div className={`${CARD_HEADER} flex items-center justify-between`}>
+        <h2 className={CARD_TITLE}>SKILL SUMMARY</h2>
         {metrics && (
           <span className="text-xs text-rs-muted">
             Total Level: {metrics.total_skill.toLocaleString()} • Total XP: {formatXp(metrics.total_xp)}
@@ -58,7 +59,7 @@ export default function SkillsCard({ metrics }: Props) {
                 className="flex items-center gap-1.5 px-1 py-1 bg-rs-card-hover border border-rs-border rs-card-sm h-[44px] hover:bg-rs-card-hover hover:border-rs-border transition-colors duration-150"
               >
                 <img
-                  src={`/skills/${name}.png`}
+                  src={`skills/${name}.png`}
                   alt={name}
                   className="w-7 h-7 flex-shrink-0"
                 />

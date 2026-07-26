@@ -4,6 +4,7 @@ import NecromancyBackground from '../themes/necromancy/NecromancyBackground'
 import CityOfUmBackground from '../themes/city-of-um/CityOfUmBackground'
 import KharidEtBackground from '../themes/kharid-et/KharidEtBackground'
 import AmberfellBackground from '../themes/amberfell/AmberfellBackground'
+import SoulWarsBackground from '../themes/soul-wars/SoulWarsBackground'
 
 export interface ThemeSlots {
   titlebar?: ComponentType<{ theme: Theme }>
@@ -427,6 +428,56 @@ export const themes: Theme[] = [
     `,
     slots: {
       background: AmberfellBackground,
+    },
+  },
+  {
+    id: 'soul-wars',
+    name: 'Soul Wars',
+    vars: {
+      '--rs-bg': '#0a0e1a',
+      '--rs-bg-light': '#121a2a',
+      '--rs-card': 'rgba(18, 26, 42, 0.85)',
+      '--rs-card-hover': 'rgba(25, 35, 55, 0.95)',
+      '--rs-divider': 'rgba(0, 180, 200, 0.1)',
+      '--rs-text': '#dce8f0',
+      '--rs-muted': '#6a7a90',
+      '--rs-header': '#00d4e0',
+      '--rs-border': '#1a2a3a',
+      '--rs-gold': '#d050a0',
+      '--rs-gold-light': '#e870c0',
+      '--rs-gold-dark': '#a03080',
+      '--rs-green': '#40c8a0',
+      '--rs-blue': '#00c8e0',
+      '--rs-yellow': '#e0a0e8',
+      '--rs-red': '#e05070',
+      '--rs-btn-text': '#0a0e1a',
+      '--rs-gold-btn-start': '#e870c0',
+      '--rs-gold-btn-mid': '#d050a0',
+      '--rs-gold-btn-end': '#a03080',
+      '--rs-gold-btn-border': '#702060',
+      '--rs-gold-btn-text': '#0a0e1a',
+      '--rs-gold-btn-text-shadow': 'rgba(232, 112, 192, 0.6)',
+      '--rs-noise-r': '10',
+      '--rs-noise-g': '14',
+      '--rs-noise-b': '26',
+    },
+    css: `
+      .gold-button {
+        box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.3), inset 0 -4px 6px rgba(80, 20, 60, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+      .gold-button:hover {
+        box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.4), inset 0 -4px 6px rgba(80, 20, 60, 0.8), 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(208, 80, 160, 0.2);
+      }
+      .gold-button:active {
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(80, 20, 60, 0.8), 0 2px 6px rgba(0, 0, 0, 0.5);
+      }
+      ::selection {
+        background: rgba(208, 80, 160, 0.3);
+        color: #dce8f0;
+      }
+    `,
+    slots: {
+      background: SoulWarsBackground,
     },
   },
 ]

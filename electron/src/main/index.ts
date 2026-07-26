@@ -1,10 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, session, Tray, Menu, nativeImage, screen } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, session, Tray, Menu, nativeImage, screen, dialog } from 'electron'
 import { join } from 'path'
 import { spawn, ChildProcess } from 'child_process'
 import { readFile, writeFile, mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-
-app.commandLine.appendSwitch('disable-gpu')
 
 interface PersistentSettings {
   theme?: string
@@ -111,25 +110,63 @@ function saveWindowBounds(): void {
 }
 
 function startBackend(): void {
-  const projectRoot = join(__dirname, '..', '..', '..')
-  const python = process.env.PYTHON_PATH || join(projectRoot, '.venv', 'bin', 'python3')
-  console.log(`[${ts()}] [main] Starting backend: ${python}`)
+  console.log(`[${ts()}] [main] Starting backend`)
 
   const { execSync } = require('child_process') as typeof import('child_process')
+
   try {
-    const pids = execSync(`fuser ${BACKEND_PORT}/tcp 2>/dev/null`, { encoding: 'utf-8' }).trim()
-    if (pids) {
-      for (const pid of pids.split(/\s+/)) {
-        try { process.kill(Number(pid), 'SIGTERM') } catch {}
-      }
-      console.log(`[${ts()}] [main] Killed old process(es) on port ${BACKEND_PORT}: ${pids}`)
+    execSync(`fuser ${BACKEND_PORT}/tcp 2>/dev/null`, { encoding: 'utf-8' })
+    console.log(`[${ts()}] [main] Backend already running on port ${BACKEND_PORT}`)
+    return
+  } catch {}
+
+  const venvLocations = is.dev
+    ? [join(__dirname, '..', '..', '..', '.venv', 'bin', 'python3')]
+    : [
+        join(app.getPath('exe'), '..', '..', '..', '..', '.venv', 'bin', 'python3'),
+        join(app.getPath('exe'), '..', '..', '..', '.venv', 'bin', 'python3'),
+        join(app.getPath('exe'), '..', '..', '.venv', 'bin', 'python3'),
+      ]
+
+  for (const venvPython of venvLocations) {
+    if (existsSync(venvPython)) {
+      const projectRoot = join(venvPython, '..', '..', '..')
+      spawnBackend(venvPython, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], projectRoot, { ...process.env, PYTHONPATH: join(projectRoot, 'src') })
+      return
+    }
+  }
+
+  try {
+    const backendBin = execSync('which rs3tk-backend 2>/dev/null', { encoding: 'utf-8' }).trim()
+    if (backendBin) {
+      spawnBackend(backendBin, [String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
+      return
     }
   } catch {}
 
-  backendProcess = spawn(python, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], {
+  try {
+    const py = execSync('which python3 2>/dev/null', { encoding: 'utf-8' }).trim()
+    if (py) {
+      spawnBackend(py, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
+      return
+    }
+  } catch {}
+
+  console.error(`[${ts()}] [main] Could not find Python or rs3tk-backend`)
+  dialog.showErrorBox(
+    'Backend Not Found',
+    'Could not find rs3tk-backend or Python with rs3tk installed.\n\n'
+    + 'Install rs3tk with: pip install rs3tk\n\n'
+    + 'The application will open but cannot function without the backend.'
+  )
+}
+
+function spawnBackend(command: string, args: string[], cwd: string, env: Record<string, string>): void {
+  console.log(`[${ts()}] [main] Spawning: ${command} ${args.join(' ')}`)
+  backendProcess = spawn(command, args, {
     stdio: 'pipe',
-    cwd: projectRoot,
-    env: { ...process.env, PYTHONPATH: join(projectRoot, 'src') }
+    cwd,
+    env
   })
   backendProcess.stdout?.on('data', (data) => console.log(`[${ts()}] [backend] ${data.toString().trim()}`))
   backendProcess.stderr?.on('data', (data) => console.error(`[${ts()}] [backend] ${data.toString().trim()}`))
@@ -141,15 +178,23 @@ function startBackend(): void {
 
 function stopBackend(): void {
   if (backendProcess) {
+    backendProcess.stdout?.removeAllListeners()
+    backendProcess.stderr?.removeAllListeners()
+    backendProcess.removeAllListeners()
     backendProcess.kill()
     backendProcess = null
   }
 }
 
+function getIconPath(): string {
+  if (is.dev) {
+    return join(__dirname, '..', '..', 'src', 'renderer', 'public', 'logo.png')
+  }
+  return join(__dirname, '..', 'renderer', 'logo.png')
+}
+
 function createTray(): void {
-  const iconPath = is.dev
-    ? join(__dirname, '..', '..', 'src', 'renderer', 'public', 'logo.png')
-    : join(__dirname, '..', 'renderer', 'logo.png')
+  const iconPath = getIconPath()
   const icon = nativeImage.createFromPath(iconPath)
   tray = new Tray(icon)
 
@@ -185,9 +230,7 @@ function createTray(): void {
 }
 
 function createWindow(): BrowserWindow {
-  const iconPath = is.dev
-    ? join(__dirname, '..', '..', 'src', 'renderer', 'public', 'logo.png')
-    : join(__dirname, '..', 'renderer', 'logo.png')
+  const iconPath = getIconPath()
 
   const saved = persistentSettings.windowBounds
   const defaults = { width: 1200, height: 800 }

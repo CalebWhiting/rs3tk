@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import type { RuneMetrics } from '../types'
 import { SKILL_NAMES } from '../types'
 import { formatXpScaled, formatXp } from '../lib/format'
+import { CARD_SHELL, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   metrics: RuneMetrics | null
@@ -23,9 +24,9 @@ export default function MetricsCard({ metrics }: Props) {
   }, [])
 
   return (
-    <div ref={containerRef} className="bg-rs-card border border-rs-border rs-card h-full">
-      <div className="px-4 py-3 border-b border-rs-border">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">METRICS</h2>
+    <div ref={containerRef} className={CARD_SHELL}>
+      <div className={CARD_HEADER}>
+        <h2 className={CARD_TITLE}>METRICS</h2>
       </div>
       <div className="flex flex-col divide-y divide-rs-divider border-b border-rs-divider">
         {narrow ? (
@@ -76,7 +77,7 @@ function MetricCell({ label, value, icon }: { label: string; value: string; icon
         <div className="text-base font-bold text-rs-text font-mono truncate">{value}</div>
       </div>
       {icon && (
-        <img src={`/skills/${icon}.png`} alt={icon} className="w-6 h-6 flex-shrink-0" />
+        <img src={`skills/${icon}.png`} alt={icon} className="w-6 h-6 flex-shrink-0" />
       )}
     </div>
   )

@@ -1,7 +1,29 @@
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, useEffect, type ReactNode } from 'react'
 import { useCanvasParticles, type Particle, type ParticleConfig } from '../particles'
+import BackgroundLayout from '../BackgroundLayout'
 
 const WISP_COUNT = 18
+
+const IMAGE_W = 1920
+const IMAGE_H = 1080
+const LIGHTHOUSE_CX = 767
+const LIGHTHOUSE_CY = 171.5
+
+function imageToViewport(ix: number, iy: number, vw: number, vh: number): { x: number; y: number } {
+  const imageAspect = IMAGE_W / IMAGE_H
+  const viewportAspect = vw / vh
+
+  if (viewportAspect > imageAspect) {
+    const scale = vw / IMAGE_W
+    const scaledH = IMAGE_H * scale
+    const offsetY = (vh - scaledH) / 2
+    return { x: ix * scale, y: iy * scale + offsetY }
+  }
+  const scale = vh / IMAGE_H
+  const scaledW = IMAGE_W * scale
+  const offsetX = (vw - scaledW) / 2
+  return { x: ix * scale + offsetX, y: iy * scale }
+}
 
 function initWisp(p: Particle, w: number, h: number, randomizeLife: boolean) {
   p.x = Math.random() * w
@@ -34,46 +56,46 @@ function drawWisp(ctx: CanvasRenderingContext2D, p: Particle, alpha: number) {
   ctx.fill()
 }
 
-function ambientGlow(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  const flicker = Math.sin(t * 0.025) * 0.015 + Math.sin(t * 0.06) * 0.008
-  const ambGrad = ctx.createRadialGradient(w * 0.35, h * 0.45, 0, w * 0.35, h * 0.45, w * 0.6)
-  ambGrad.addColorStop(0, `rgba(0, 180, 160, ${0.10 + flicker})`)
-  ambGrad.addColorStop(0.5, `rgba(0, 100, 120, ${0.04 + flicker * 0.5})`)
-  ambGrad.addColorStop(1, 'rgba(0, 40, 60, 0)')
-  ctx.fillStyle = ambGrad
-  ctx.fillRect(0, 0, w, h)
-
-  const glowGrad = ctx.createRadialGradient(w * 0.4, h * 0.15, 0, w * 0.4, h * 0.15, w * 0.3)
-  glowGrad.addColorStop(0, `rgba(80, 255, 160, ${0.04 + flicker * 0.3})`)
-  glowGrad.addColorStop(1, 'rgba(40, 200, 120, 0)')
-  ctx.fillStyle = glowGrad
-  ctx.fillRect(0, 0, w, h)
-}
-
 export default function CityOfUmBackground({ children }: { children: ReactNode }) {
   const config: ParticleConfig = useMemo(() => ({
     count: WISP_COUNT,
     init: initWisp,
     draw: drawWisp,
-    ambient: ambientGlow,
   }), [])
 
   const canvasRef = useCanvasParticles(config)
 
+  const [glowStyle, setGlowStyle] = useState<React.CSSProperties>({})
+
+  useEffect(() => {
+    const update = () => {
+      const lh = imageToViewport(LIGHTHOUSE_CX, LIGHTHOUSE_CY, window.innerWidth, window.innerHeight)
+      const pxPct = (lh.x / window.innerWidth) * 100
+      const pyPct = (lh.y / window.innerHeight) * 100
+      setGlowStyle({
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        background: [
+          `radial-gradient(ellipse at ${pxPct}% ${pyPct}%, rgba(0,180,160,0.12) 0%, rgba(0,80,100,0.04) 40%, transparent 70%)`,
+          `radial-gradient(ellipse at ${pxPct}% ${pyPct}%, rgba(80,255,160,0.04) 0%, transparent 30%)`,
+          'rgba(0,64,80,0.08)',
+        ].join(', '),
+      })
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
   return (
-    <div className="fixed inset-0 z-[-1]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/city-of-um-wallpaper.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 25%, rgba(5, 10, 20, 0.7) 100%)' }} />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
-      <div className="relative z-10">{children}</div>
-    </div>
+    <BackgroundLayout
+      wallpaper="city-of-um-wallpaper.jpg"
+      vignette=""
+      canvasRef={canvasRef}
+    >
+      <div style={glowStyle} />
+      {children}
+    </BackgroundLayout>
   )
 }

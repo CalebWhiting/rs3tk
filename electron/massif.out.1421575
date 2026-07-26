@@ -1,0 +1,918 @@
+desc: (none)
+cmd: dist/RS3TK-1.0.0.AppImage
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=301543
+mem_heap_B=472
+mem_heap_extra_B=16
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=303179
+mem_heap_B=4568
+mem_heap_extra_B=24
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=306977
+mem_heap_B=4568
+mem_heap_extra_B=24
+mem_stacks_B=0
+heap_tree=detailed
+n2: 4568 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 4096 0x4950327: _IO_file_doallocate (in /usr/lib/libc.so.6)
+  n1: 4096 0x49609C5: _IO_doallocbuf (in /usr/lib/libc.so.6)
+   n1: 4096 0x495F7D5: ??? (in /usr/lib/libc.so.6)
+    n1: 4096 0x4951603: fread (in /usr/lib/libc.so.6)
+     n1: 4096 0x40601C: appimage_get_elf_size (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n0: 4096 0x405547: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 472 0x4950FAF: ??? (in /usr/lib/libc.so.6)
+  n1: 472 0x405FF7: appimage_get_elf_size (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 472 0x405547: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=4
+#-----------
+time=307105
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=316351
+mem_heap_B=22
+mem_heap_extra_B=18
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=316899
+mem_heap_B=1297
+mem_heap_extra_B=55
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=322157
+mem_heap_B=1353
+mem_heap_extra_B=71
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=326988
+mem_heap_B=1953
+mem_heap_extra_B=87
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=614689
+mem_heap_B=1961
+mem_heap_extra_B=103
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=614969
+mem_heap_B=4761
+mem_heap_extra_B=103
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=626498
+mem_heap_B=4822
+mem_heap_extra_B=114
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=639578
+mem_heap_B=4883
+mem_heap_extra_B=125
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=639764
+mem_heap_B=4916
+mem_heap_extra_B=156
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=641172
+mem_heap_B=4922
+mem_heap_extra_B=174
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=642623
+mem_heap_B=4922
+mem_heap_extra_B=174
+mem_stacks_B=0
+heap_tree=detailed
+n6: 4922 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n3: 139 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n1: 61 0x490F226: realpath (in /usr/lib/libc.so.6)
+   n0: 61 0x405CE5: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 61 0x4F06540: fuse_opt_add_arg (fuse_opt.c:57)
+   n1: 61 0x4F07197: UnknownInlinedFun (fuse_opt.c:114)
+    n1: 61 0x4F07197: UnknownInlinedFun (fuse_opt.c:374)
+     n1: 61 0x4F07197: fuse_opt_parse (fuse_opt.c:414)
+      n1: 61 0x40E5C8: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 61 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n0: 17 in 1 place, below massif's threshold (1.00%)
+ n0: 66 in 7 places, all below massif's threshold (1.00%)
+ n1: 56 0x4003FBC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 56 0x400DD4F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 56 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 56 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 56 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 56 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 56 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 56 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 56 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=16
+#-----------
+time=642999
+mem_heap_B=4941
+mem_heap_extra_B=195
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=643229
+mem_heap_B=4952
+mem_heap_extra_B=208
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=643778
+mem_heap_B=5034
+mem_heap_extra_B=254
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=645317
+mem_heap_B=5040
+mem_heap_extra_B=272
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=645396
+mem_heap_B=5037
+mem_heap_extra_B=251
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=645959
+mem_heap_B=5087
+mem_heap_extra_B=273
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=22
+#-----------
+time=646259
+mem_heap_B=5090
+mem_heap_extra_B=294
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=646619
+mem_heap_B=5109
+mem_heap_extra_B=315
+mem_stacks_B=0
+heap_tree=detailed
+n8: 5109 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n3: 220 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n2: 159 0x4F06540: fuse_opt_add_arg (fuse_opt.c:57)
+   n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:114)
+    n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:374)
+     n2: 122 0x4F07197: fuse_opt_parse (fuse_opt.c:414)
+      n1: 61 0x40E5C8: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 61 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 61 0x4F08FE5: fuse_parse_cmdline (helper.c:154)
+       n1: 61 0x40E606: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+        n0: 61 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 37 in 2 places, all below massif's threshold (1.00%)
+  n1: 61 0x490F226: realpath (in /usr/lib/libc.so.6)
+   n0: 61 0x405CE5: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n0: 0 in 1 place, below massif's threshold (1.00%)
+ n2: 72 0x4F0655D: fuse_opt_add_arg (fuse_opt.c:61)
+  n1: 72 0x4F06B31: UnknownInlinedFun (fuse_opt.c:78)
+   n2: 72 0x4F06B31: fuse_opt_insert_arg (fuse_opt.c:92)
+    n1: 72 0x4F07319: UnknownInlinedFun (fuse_opt.c:384)
+     n1: 72 0x4F07319: fuse_opt_parse (fuse_opt.c:414)
+      n0: 72 in 2 places, all below massif's threshold (1.00%)
+    n0: 0 in 1 place, below massif's threshold (1.00%)
+  n0: 0 in 2 places, all below massif's threshold (1.00%)
+ n1: 56 0x4003FBC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 56 0x400DD4F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 56 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 56 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 56 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 56 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 56 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 56 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 56 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 56 0x4F04ABA: add_opt_common (fuse_opt.c:120)
+  n0: 56 in 3 places, all below massif's threshold (1.00%)
+ n0: 44 in 5 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=24
+#-----------
+time=646916
+mem_heap_B=5055
+mem_heap_extra_B=233
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=647399
+mem_heap_B=5086
+mem_heap_extra_B=242
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=647521
+mem_heap_B=5010
+mem_heap_extra_B=246
+mem_stacks_B=0
+heap_tree=detailed
+n6: 5010 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n3: 159 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n2: 98 0x4F06540: fuse_opt_add_arg (fuse_opt.c:57)
+   n1: 61 0x4F07197: UnknownInlinedFun (fuse_opt.c:114)
+    n1: 61 0x4F07197: UnknownInlinedFun (fuse_opt.c:374)
+     n2: 61 0x4F07197: fuse_opt_parse (fuse_opt.c:414)
+      n1: 61 0x4F08FE5: fuse_parse_cmdline (helper.c:154)
+       n1: 61 0x40E606: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+        n0: 61 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n0: 0 in 1 place, below massif's threshold (1.00%)
+   n0: 37 in 3 places, all below massif's threshold (1.00%)
+  n1: 61 0x490F226: realpath (in /usr/lib/libc.so.6)
+   n0: 61 0x405CE5: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n0: 0 in 1 place, below massif's threshold (1.00%)
+ n0: 134 in 8 places, all below massif's threshold (1.00%)
+ n1: 56 0x4003FBC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 56 0x400DD4F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 56 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 56 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 56 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 56 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 56 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 56 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 56 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 56 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=27
+#-----------
+time=648683
+mem_heap_B=5458
+mem_heap_extra_B=254
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=653012
+mem_heap_B=5466
+mem_heap_extra_B=270
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=653344
+mem_heap_B=5474
+mem_heap_extra_B=286
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=654959
+mem_heap_B=5538
+mem_heap_extra_B=294
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=655521
+mem_heap_B=5890
+mem_heap_extra_B=366
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=656663
+mem_heap_B=5951
+mem_heap_extra_B=377
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=656849
+mem_heap_B=5970
+mem_heap_extra_B=406
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=661055
+mem_heap_B=5970
+mem_heap_extra_B=406
+mem_stacks_B=0
+heap_tree=detailed
+n8: 5970 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 448 0x40DF18: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 448 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 448 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n2: 256 0x40B371: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n2: 192 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 128 0x4080F2: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 128 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 128 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 128 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 128 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 64 in 2 places, all below massif's threshold (1.00%)
+  n1: 64 0x407A8C: sqfs_blockidx_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 64 0x40813B: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 64 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 64 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 64 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 64 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n2: 223 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n2: 159 0x4F06540: fuse_opt_add_arg (fuse_opt.c:57)
+   n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:114)
+    n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:374)
+     n1: 122 0x4F07197: fuse_opt_parse (fuse_opt.c:414)
+      n0: 122 in 3 places, all below massif's threshold (1.00%)
+   n0: 37 in 3 places, all below massif's threshold (1.00%)
+  n0: 64 in 2 places, all below massif's threshold (1.00%)
+ n0: 222 in 10 places, all below massif's threshold (1.00%)
+ n2: 160 0x40B354: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n2: 96 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 64 0x4080F2: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 64 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 64 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 64 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 64 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 32 in 2 places, all below massif's threshold (1.00%)
+  n1: 64 0x407A8C: sqfs_blockidx_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 64 0x40813B: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 64 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 64 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 64 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 64 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=35
+#-----------
+time=661150
+mem_heap_B=5996
+mem_heap_extra_B=396
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=662344
+mem_heap_B=6017
+mem_heap_extra_B=415
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=663239
+mem_heap_B=6075
+mem_heap_extra_B=429
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=666466
+mem_heap_B=6075
+mem_heap_extra_B=429
+mem_stacks_B=0
+heap_tree=detailed
+n9: 6075 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 448 0x40DF18: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 448 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 448 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n2: 270 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n2: 159 0x4F06540: fuse_opt_add_arg (fuse_opt.c:57)
+   n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:114)
+    n1: 122 0x4F07197: UnknownInlinedFun (fuse_opt.c:374)
+     n1: 122 0x4F07197: fuse_opt_parse (fuse_opt.c:414)
+      n0: 122 in 3 places, all below massif's threshold (1.00%)
+   n0: 37 in 3 places, all below massif's threshold (1.00%)
+  n0: 111 in 3 places, all below massif's threshold (1.00%)
+ n2: 256 0x40B371: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n2: 192 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 128 0x4080F2: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 128 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 128 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 128 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 128 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 64 in 2 places, all below massif's threshold (1.00%)
+  n0: 64 in 1 place, below massif's threshold (1.00%)
+ n0: 172 in 9 places, all below massif's threshold (1.00%)
+ n2: 160 0x40B354: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 96 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 96 in 3 places, all below massif's threshold (1.00%)
+  n0: 64 in 1 place, below massif's threshold (1.00%)
+ n1: 108 0x4F04ABA: add_opt_common (fuse_opt.c:120)
+  n0: 108 in 4 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=39
+#-----------
+time=666691
+mem_heap_B=5908
+mem_heap_extra_B=308
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=667122
+mem_heap_B=5929
+mem_heap_extra_B=327
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=667613
+mem_heap_B=38745
+mem_heap_extra_B=335
+mem_stacks_B=0
+heap_tree=peak
+n6: 38745 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 32816 0x49B4CC8: ??? (in /usr/lib/libc.so.6)
+  n1: 32816 0x4F09C7F: UnknownInlinedFun (mount_util.c:322)
+   n1: 32816 0x4F09C7F: UnknownInlinedFun (mount.c:452)
+    n1: 32816 0x4F09C7F: UnknownInlinedFun (mount.c:607)
+     n1: 32816 0x4F09C7F: fuse_mount_compat25 (helper.c:488)
+      n1: 32816 0x4F0C09B: fuse_mount_common (helper.c:248)
+       n1: 32816 0x40DE3C: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+        n1: 32816 0x40E6A1: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+         n0: 32816 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n0: 820 in 14 places, all below massif's threshold (1.00%)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 448 0x40DF18: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 448 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 448 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=42
+#-----------
+time=667613
+mem_heap_B=5929
+mem_heap_extra_B=327
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=669269
+mem_heap_B=6021
+mem_heap_extra_B=339
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=669702
+mem_heap_B=6134
+mem_heap_extra_B=370
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=670104
+mem_heap_B=6082
+mem_heap_extra_B=350
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=46
+#-----------
+time=670464
+mem_heap_B=6094
+mem_heap_extra_B=354
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=671166
+mem_heap_B=6021
+mem_heap_extra_B=339
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=671559
+mem_heap_B=6781
+mem_heap_extra_B=299
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=671832
+mem_heap_B=6858
+mem_heap_extra_B=318
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=671945
+mem_heap_B=6797
+mem_heap_extra_B=307
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=51
+#-----------
+time=671975
+mem_heap_B=6781
+mem_heap_extra_B=299
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=672099
+mem_heap_B=6853
+mem_heap_extra_B=331
+mem_stacks_B=0
+heap_tree=detailed
+n10: 6853 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2808 0x4005A6E: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 2808 0x400E17C: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 2808 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 2808 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 2808 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 2808 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 2808 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 2808 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 2808 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 2808 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 1253 0x400CDAC: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 1253 0x400828F: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 1253 0x4009D88: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 1253 0x400E420: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 1253 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+        n1: 1253 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 1253 0x4963633: ??? (in /usr/lib/libc.so.6)
+          n1: 1253 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+           n1: 1253 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+            n1: 1253 0x4963122: ??? (in /usr/lib/libc.so.6)
+             n1: 1253 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+              n0: 1253 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 888 0x4F075B9: fuse_lowlevel_new_common (fuse_lowlevel.c:2717)
+  n1: 888 0x40E6C9: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 888 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 600 0x401553D: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+  n1: 600 0x400DDB5: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+   n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+    n1: 600 0x400D2C2: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+     n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+      n1: 600 0x400D829: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+       n1: 600 0x4963633: ??? (in /usr/lib/libc.so.6)
+        n1: 600 0x4002468: _dl_catch_exception (in /usr/lib/ld-linux-x86-64.so.2)
+         n1: 600 0x40025B8: ??? (in /usr/lib/ld-linux-x86-64.so.2)
+          n1: 600 0x4963122: ??? (in /usr/lib/libc.so.6)
+           n1: 600 0x49636EA: dlopen (in /usr/lib/libc.so.6)
+            n0: 600 0x405BF1: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n1: 448 0x40DF18: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 448 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 448 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+ n2: 256 0x40B371: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n2: 192 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n1: 128 0x4080F2: sqfs_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n1: 128 0x40A56A: sqfs_open_image (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+     n1: 128 0x40DF6D: ??? (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+      n1: 128 0x40E65E: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+       n0: 128 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 64 in 2 places, all below massif's threshold (1.00%)
+  n0: 64 in 1 place, below massif's threshold (1.00%)
+ n0: 246 in 15 places, all below massif's threshold (1.00%)
+ n2: 160 0x40B354: sqfs_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+  n1: 96 0x40B5E5: sqfs_block_cache_init (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+   n0: 96 in 3 places, all below massif's threshold (1.00%)
+  n0: 64 in 1 place, below massif's threshold (1.00%)
+ n1: 122 0x497E4FF: strdup (in /usr/lib/libc.so.6)
+  n0: 122 in 4 places, all below massif's threshold (1.00%)
+ n1: 72 0x4F074E1: fuse_session_new (fuse_session.c:36)
+  n1: 72 0x4F076E2: fuse_lowlevel_new_common (fuse_lowlevel.c:2750)
+   n1: 72 0x40E6C9: fusefs_main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+    n0: 72 0x405D3B: main (in /home/caleb/Sources/rs3tk/electron/dist/RS3TK-1.0.0.AppImage)
+#-----------
+snapshot=53
+#-----------
+time=675005
+mem_heap_B=6797
+mem_heap_extra_B=315
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=675107
+mem_heap_B=3989
+mem_heap_extra_B=299
+mem_stacks_B=0
+heap_tree=empty

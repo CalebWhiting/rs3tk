@@ -42,16 +42,20 @@ def _run_electron(url: str, redirect_host: str) -> dict[str, str | None]:
     )
 
     result: dict[str, str | None] = {}
-    if proc.stdout is not None:
-        for line in proc.stdout:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                result = json.loads(line)
-                break
-            except json.JSONDecodeError:
-                continue
+    try:
+        if proc.stdout is not None:
+            for line in proc.stdout:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    result = json.loads(line)
+                    break
+                except json.JSONDecodeError:
+                    continue
+    finally:
+        if proc.stdout is not None:
+            proc.stdout.close()
 
     try:
         proc.wait(timeout=300)

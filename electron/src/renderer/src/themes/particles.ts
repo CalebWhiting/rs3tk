@@ -42,7 +42,7 @@ export function useDisableEffects(): boolean {
   return disabled
 }
 
-function loadMask(url: string): Promise<{ data: Uint8ClampedArray; w: number; h: number; brightPixels: { x: number; y: number }[] } | null> {
+function loadMask(url: string): Promise<{ w: number; h: number; brightPixels: { x: number; y: number }[] } | null> {
   return new Promise((resolve) => {
     const img = new Image()
     img.crossOrigin = 'anonymous'
@@ -63,7 +63,7 @@ function loadMask(url: string): Promise<{ data: Uint8ClampedArray; w: number; h:
           }
         }
       }
-      resolve({ data: imageData.data, w: img.width, h: img.height, brightPixels })
+      resolve({ w: img.width, h: img.height, brightPixels })
     }
     img.onerror = () => resolve(null)
     img.src = url
@@ -75,7 +75,9 @@ export function useCanvasParticles(config: ParticleConfig) {
   const particlesRef = useRef<Particle[]>([])
   const animRef = useRef<number>(0)
   const timeRef = useRef<number>(0)
-  const maskRef = useRef<{ data: Uint8ClampedArray; w: number; h: number; brightPixels: { x: number; y: number }[] } | null>(null)
+  const configRef = useRef(config)
+  configRef.current = config
+  const maskRef = useRef<{ w: number; h: number; brightPixels: { x: number; y: number }[] } | null>(null)
   const disabled = useDisableEffects()
 
   useEffect(() => {
@@ -97,12 +99,14 @@ export function useCanvasParticles(config: ParticleConfig) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const cfg = configRef.current
+
     if (disabled) {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       return
     }
 
-    const dpr = window.devicePixelRatio || 1
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
     let w = canvas.width
     let h = canvas.height
     const resize = () => {
@@ -118,43 +122,51 @@ export function useCanvasParticles(config: ParticleConfig) {
     window.addEventListener('resize', resize)
 
     if (particlesRef.current.length === 0) {
-      for (let i = 0; i < config.count; i++) {
+      for (let i = 0; i < cfg.count; i++) {
         const p: Particle = { x: 0, y: 0, vx: 0, vy: 0, size: 0, life: 0, maxLife: 0 }
-        config.init(p, w, h, true, sampleMask)
+        cfg.init(p, w, h, true, sampleMask)
         particlesRef.current.push(p)
       }
     }
 
-    const animate = () => {
+    let lastFrameTime = 0
+    const FRAME_INTERVAL = 1000 / 30
+
+    const animate = (now: number) => {
+      animRef.current = requestAnimationFrame(animate)
+
+      if (document.hidden) return
+      if (now - lastFrameTime < FRAME_INTERVAL) return
+      lastFrameTime = now
+
       timeRef.current++
       const t = timeRef.current
+      const currentCfg = configRef.current
       ctx.clearRect(0, 0, w, h)
 
-      if (config.ambient) config.ambient(ctx, w, h, t)
+      if (currentCfg.ambient) currentCfg.ambient(ctx, w, h, t)
 
       const particles = particlesRef.current
-      for (let i = 0; i < config.count; i++) {
+      for (let i = 0; i < currentCfg.count; i++) {
         const p = particles[i]
         p.life++
         p.x += p.vx + Math.sin(t * 0.015 + i * 1.2) * 0.15
         p.y += p.vy
 
         const alpha = particleAlpha(p)
-        config.draw(ctx, p, alpha, t, i)
+        currentCfg.draw(ctx, p, alpha, t, i)
 
         if (p.life > p.maxLife || p.y < -10) {
-          config.init(p, w, h, false, sampleMask)
+          currentCfg.init(p, w, h, false, sampleMask)
         }
       }
       ctx.globalAlpha = 1
-
-      animRef.current = requestAnimationFrame(animate)
     }
 
-    animate()
+    animRef.current = requestAnimationFrame(animate)
 
     return () => { window.removeEventListener('resize', resize); cancelAnimationFrame(animRef.current) }
-  }, [disabled, config, sampleMask])
+  }, [disabled, sampleMask])
 
   return canvasRef
 }

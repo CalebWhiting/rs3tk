@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import { useCanvasParticles, type Particle, type ParticleConfig, type MaskSample } from '../particles'
+import BackgroundLayout from '../BackgroundLayout'
 
 const PARTICLE_COUNT = 20
 
@@ -67,25 +68,19 @@ export default function AmberfellBackground({ children }: { children: ReactNode 
     count: PARTICLE_COUNT,
     init: initParticle,
     draw: drawParticle,
-    maskUrl: '/amberfell-wallpaper-mask.jpg',
+    maskUrl: 'amberfell-wallpaper-mask.jpg',
   }), [])
 
   const canvasRef = useCanvasParticles(config)
 
   return (
-    <div className="fixed inset-0 z-[-1]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/amberfell-wallpaper.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 40%',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 15%, rgba(30, 20, 10, 0.6) 100%)' }} />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
-      <div className="relative z-10">{children}</div>
-    </div>
+    <BackgroundLayout
+      wallpaper="amberfell-wallpaper.jpg"
+      wallpaperPosition="center 40%"
+      vignette="radial-gradient(ellipse at center, transparent 15%, rgba(30, 20, 10, 0.6) 100%)"
+      canvasRef={canvasRef}
+    >
+      {children}
+    </BackgroundLayout>
   )
 }

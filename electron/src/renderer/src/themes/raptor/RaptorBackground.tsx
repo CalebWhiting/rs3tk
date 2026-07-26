@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import { useCanvasParticles, type Particle, type ParticleConfig } from '../particles'
+import BackgroundLayout from '../BackgroundLayout'
 
 const EMBER_COUNT = 15
 
@@ -39,19 +40,14 @@ export default function RaptorBackground({ children }: { children: ReactNode }) 
   const canvasRef = useCanvasParticles(config)
 
   return (
-    <div className="fixed inset-0 z-[-1]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/raptor-wallpaper.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: '75% center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 raptor-vignette pointer-events-none" />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
-      <div className="relative z-10 raptor-content-backdrop">{children}</div>
-    </div>
+    <BackgroundLayout
+      wallpaper="raptor-wallpaper.jpg"
+      wallpaperPosition="75% center"
+      vignetteClassName="raptor-vignette"
+      canvasRef={canvasRef}
+      contentClassName="raptor-content-backdrop"
+    >
+      {children}
+    </BackgroundLayout>
   )
 }

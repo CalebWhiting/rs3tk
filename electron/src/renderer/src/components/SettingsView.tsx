@@ -3,6 +3,8 @@ import { useTheme, themes } from '../lib/theme'
 import { loadSettings, updateSetting, type Settings } from '../lib/settings'
 import { logout } from '../hooks/useData'
 import type { Account } from '../types'
+import { CloseIcon } from './icons'
+import { SECTION_TITLE } from '../lib/styles'
 
 interface Props {
   accounts: Account[]
@@ -57,12 +59,12 @@ export default function SettingsView({ accounts, onClose, onSettingsChanged }: P
             aria-label="Close settings"
             className="w-8 h-8 flex items-center justify-center text-rs-muted hover:text-rs-text rounded transition-colors cursor-pointer"
           >
-            ×
+            <CloseIcon />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
           <section>
-            <h3 className="text-sm font-bold text-rs-header tracking-wider mb-4">Appearance</h3>
+            <h3 className={SECTION_TITLE}>Appearance</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-rs-muted block mb-2">Theme</label>
@@ -93,7 +95,7 @@ export default function SettingsView({ accounts, onClose, onSettingsChanged }: P
           </section>
 
           <section>
-            <h3 className="text-sm font-bold text-rs-header tracking-wider mb-4">Behavior</h3>
+            <h3 className={SECTION_TITLE}>Behavior</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -113,7 +115,7 @@ export default function SettingsView({ accounts, onClose, onSettingsChanged }: P
           </section>
 
           <section>
-            <h3 className="text-sm font-bold text-rs-header tracking-wider mb-4">Accounts</h3>
+            <h3 className={SECTION_TITLE}>Accounts</h3>
             <div className="space-y-3">
               {accounts.length === 0 ? (
                 <p className="text-xs text-rs-muted">No accounts added</p>
@@ -145,7 +147,7 @@ export default function SettingsView({ accounts, onClose, onSettingsChanged }: P
           </section>
 
           <section>
-            <h3 className="text-sm font-bold text-rs-header tracking-wider mb-4">About</h3>
+            <h3 className={SECTION_TITLE}>About</h3>
             <div className="text-xs text-rs-muted space-y-1">
               <p>RS3TK</p>
               <p>RuneScape Third-party Client Launcher</p>

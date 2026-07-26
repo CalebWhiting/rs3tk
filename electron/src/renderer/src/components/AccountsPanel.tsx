@@ -1,4 +1,6 @@
 import type { Character, Account } from '../types'
+import { RefreshIcon } from './icons'
+import { PANEL_SIDEBAR, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   accounts: Account[]
@@ -16,9 +18,9 @@ function avatarCdnUrl(name: string): string {
 
 export default function AccountsPanel({ accounts, characters, selectedCharacter, onSelectCharacter, onAddAccount, onLogout, onRefresh }: Props) {
   return (
-    <div className="w-[260px] flex-shrink-0 bg-rs-card border border-rs-border rs-card flex flex-col">
-      <div className="px-4 py-3 border-b border-rs-border">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">ACCOUNTS & CHARACTERS</h2>
+    <div className={PANEL_SIDEBAR}>
+      <div className={CARD_HEADER}>
+        <h2 className={CARD_TITLE}>ACCOUNTS & CHARACTERS</h2>
       </div>
       <div className="flex-1 overflow-y-auto">
         {accounts.map((account) => {
@@ -74,12 +76,7 @@ export default function AccountsPanel({ accounts, characters, selectedCharacter,
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onRefresh() } }}
                       className="w-5 h-5 rounded-full bg-rs-gold flex items-center justify-center shadow-[0_0_8px_var(--rs-gold)] text-rs-btn-text hover:brightness-110 transition-all flex-shrink-0 cursor-pointer"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 2v6h-6"/>
-                        <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-                        <path d="M3 22v-6h6"/>
-                        <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
-                      </svg>
+                      <RefreshIcon />
                     </div>
                   )}
                 </button>

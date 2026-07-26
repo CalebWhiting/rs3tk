@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { RuneMetrics } from '../types'
+import { CARD_SHELL_FLEX, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
 interface Props {
   metrics: RuneMetrics | null
@@ -26,9 +27,9 @@ export default function ActivityCard({ metrics }: Props) {
   const activities = allActivities.slice(0, maxItems)
 
   return (
-    <div ref={containerRef} className="bg-rs-card border border-rs-border rs-card h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-rs-border">
-        <h2 className="text-xs font-bold text-rs-header tracking-wider">RECENT ACTIVITY</h2>
+    <div ref={containerRef} className={CARD_SHELL_FLEX}>
+      <div className={CARD_HEADER}>
+        <h2 className={CARD_TITLE}>RECENT ACTIVITY</h2>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         {activities.length === 0 ? (

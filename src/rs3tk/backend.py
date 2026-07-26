@@ -133,7 +133,9 @@ class RS3TKHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Cache-Control", "public, max-age=3600")
             self.end_headers()
-            self.wfile.write(avatar_path.read_bytes())
+            with open(avatar_path, "rb") as f:
+                while chunk := f.read(8192):
+                    self.wfile.write(chunk)
         else:
             self.send_response(404)
             self.send_header("Access-Control-Allow-Origin", "*")

@@ -4,15 +4,33 @@
   "type": "module",
   "description": "RS3TK - RuneScape 3 Toolkit",
   "main": "./out/main/index.js",
-  "author": "CalebWhiting",
+  "author": {
+    "name": "CalebWhiting",
+    "email": "caleb@example.com"
+  },
   "license": "MIT",
+  "homepage": "https://github.com/CalebWhiting/rs3tk",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:linux": "npm run build && electron-builder --linux"
+    "build:linux": "npm run build && electron-builder --linux AppImage"
+  },
+  "build": {
+    "appId": "com.rs3tk",
+    "productName": "RS3TK",
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Game",
+      "icon": "src/renderer/public/logo-256.png",
+      "maintainer": "CalebWhiting"
+    }
   },
   "dependencies": {
     "electron-store": "^8.2.0"
@@ -30,7 +48,6 @@
     "postcss": "^8.4.39",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.12.7",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.3",
     "vite": "^5.3.4"

@@ -38,12 +38,15 @@ DEFAULT_CLIENTS: dict[str, Any] = {
 
 
 class GameClient:
-    key: str = ""
-    name: str = "Unknown"
-    args: list[str] | None = None
-    bin_names: list[str] | None = None
-    _paths: list[Path] | None = None
-    env: dict[str, str] | None = None
+    __slots__ = ("key", "name", "args", "bin_names", "_paths", "env")
+
+    def __init__(self) -> None:
+        self.key = ""
+        self.name = "Unknown"
+        self.args: list[str] | None = None
+        self.bin_names: list[str] | None = None
+        self._paths: list[Path] | None = None
+        self.env: dict[str, str] | None = None
 
     def executable(self) -> Path | None:
         if self.key:

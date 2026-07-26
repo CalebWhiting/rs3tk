@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import { useCanvasParticles, type Particle, type ParticleConfig } from '../particles'
+import BackgroundLayout from '../BackgroundLayout'
 
 const WISP_COUNT = 18
 
@@ -46,19 +47,13 @@ export default function KharidEtBackground({ children }: { children: ReactNode }
   const canvasRef = useCanvasParticles(config)
 
   return (
-    <div className="fixed inset-0 z-[-1]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/kharid-et-wallpaper.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 30%',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 20%, rgba(20, 10, 30, 0.65) 100%)' }} />
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ willChange: 'transform' }} />
-      <div className="relative z-10">{children}</div>
-    </div>
+    <BackgroundLayout
+      wallpaper="kharid-et-wallpaper.jpg"
+      wallpaperPosition="center 30%"
+      vignette="radial-gradient(ellipse at center, transparent 20%, rgba(20, 10, 30, 0.65) 100%)"
+      canvasRef={canvasRef}
+    >
+      {children}
+    </BackgroundLayout>
   )
 }
