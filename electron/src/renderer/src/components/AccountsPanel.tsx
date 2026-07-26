@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { Character, Account } from '../types'
 import { RefreshIcon } from './icons'
 import { PANEL_SIDEBAR, CARD_HEADER, CARD_TITLE } from '../lib/styles'
@@ -16,7 +17,7 @@ function avatarCdnUrl(name: string): string {
   return `https://secure.runescape.com/m=avatar-rs/${encodeURIComponent(name)}/chat.png`
 }
 
-export default function AccountsPanel({ accounts, characters, selectedCharacter, onSelectCharacter, onAddAccount, onLogout, onRefresh }: Props) {
+export default memo(function AccountsPanel({ accounts, characters, selectedCharacter, onSelectCharacter, onAddAccount, onLogout, onRefresh }: Props) {
   return (
     <div className={PANEL_SIDEBAR}>
       <div className={CARD_HEADER}>
@@ -95,4 +96,4 @@ export default function AccountsPanel({ accounts, characters, selectedCharacter,
       </div>
     </div>
   )
-}
+})
