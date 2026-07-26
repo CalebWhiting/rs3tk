@@ -84,8 +84,10 @@ export default function CityOfUmBackground({ children }: { children: ReactNode }
       })
     }
     update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
+    let timer: ReturnType<typeof setTimeout>
+    const debouncedUpdate = () => { clearTimeout(timer); timer = setTimeout(update, 100) }
+    window.addEventListener('resize', debouncedUpdate)
+    return () => { window.removeEventListener('resize', debouncedUpdate); clearTimeout(timer) }
   }, [])
 
   return (
