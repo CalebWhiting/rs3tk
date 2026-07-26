@@ -519,12 +519,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       window.api.setPersistentSettings({ theme: themeId })
     } catch {}
     const root = document.documentElement
-    for (const [key, value] of Object.entries(defaultVars)) {
-      root.style.setProperty(key, value)
-    }
-    for (const [key, value] of Object.entries(theme.vars)) {
-      root.style.setProperty(key, value)
-    }
+    const vars = [
+      ...Object.entries(defaultVars),
+      ...Object.entries(theme.vars),
+    ].map(([k, v]) => `${k}: ${v}`).join('; ')
+    root.style.cssText = vars
 
     removeElementById(styleTagId)
     if (theme.css) {
