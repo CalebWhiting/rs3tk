@@ -107,6 +107,8 @@ def _get_characters_result() -> CharactersResult:
     if not settings.accounts:
         return CharactersResult(characters=[], auth_errors=[])
 
+    display_names = {a.username: a.display_name or a.username for a in settings.accounts}
+
     async def _fetch_all() -> CharactersResult:
         from rs3tk.auth.session import get_session
 
@@ -125,13 +127,15 @@ def _get_characters_result() -> CharactersResult:
                     for char in profile.characters
                 ]
             except RuntimeError as e:
-                msg = str(e)
+                name = display_names.get(username, username)
+                msg = str(e).replace(username, name)
                 logger.warning("Auth error for %s: %s", username, msg)
                 auth_errors.append(msg)
                 return []
             except Exception:
+                name = display_names.get(username, username)
                 logger.debug("Failed to fetch profile for %s", username, exc_info=True)
-                auth_errors.append(f"Failed to load profile for {username}")
+                auth_errors.append(f"Failed to load profile for {name}")
                 return []
 
         results = await asyncio.gather(*[_fetch_one(a.username) for a in settings.accounts])
