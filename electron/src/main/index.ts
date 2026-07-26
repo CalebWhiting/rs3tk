@@ -214,6 +214,7 @@ function createTray(): void {
       click: () => {
         isQuitting = true
         closeToTray = false
+        stopBackend()
         app.quit()
       }
     }
@@ -404,6 +405,7 @@ app.whenReady().then(async () => {
 
 app.on('before-quit', () => {
   isQuitting = true
+  stopBackend()
   destroyTray()
 })
 

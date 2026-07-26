@@ -17,7 +17,7 @@ export default function AuthBanner({ errors, onLogin, onDismiss }: Props) {
     : `${errors.length} accounts need re-login`
 
   return (
-    <div className="mx-3 mb-3 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3">
+    <div className="mx-3 my-1.5 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-yellow-400 text-lg flex-shrink-0">⚠</span>
