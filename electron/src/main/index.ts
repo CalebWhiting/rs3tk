@@ -8,6 +8,14 @@ import { homedir } from 'os'
 import { createConnection } from 'net'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
+// Disable SUID sandbox helper on Linux. The sandbox binary needs
+// root:root 4755 permissions which most dev VMs don't have. Without
+// this, Electron aborts with "SUID sandbox helper binary was found,
+// but is not configured correctly".
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('no-sandbox')
+}
+
 const gotTheLock = app.requestSingleInstanceLock()
 
 if (!gotTheLock) {
