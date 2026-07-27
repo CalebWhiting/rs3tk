@@ -8,7 +8,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import TypedDict
 
 from rs3tk.config import config_dir
 
@@ -17,7 +17,16 @@ logger = logging.getLogger(__name__)
 CLIENTS_FILE = config_dir() / "clients.json"
 CLIENTS_DIR = config_dir() / "clients"
 
-DEFAULT_CLIENTS: dict[str, Any] = {
+
+class ClientSpec(TypedDict, total=False):
+    name: str
+    args: list[str]
+    bin_names: list[str]
+    paths: list[str]
+    env: dict[str, str]
+
+
+DEFAULT_CLIENTS: dict[str, ClientSpec] = {
     "rs3": {
         "name": "RS3",
         "bin_names": ["runescape-launcher", "RuneScape"],
@@ -113,17 +122,20 @@ class GameClient:
 
 
 class ConfigClient(GameClient):
-    def __init__(self, key: str, cfg: dict[str, Any]) -> None:
+    def __init__(self, key: str, cfg: ClientSpec) -> None:
         self.key = key
         self.name = cfg.get("name", "Unknown")
         self.args = cfg.get("args", [])
         self.bin_names = cfg.get("bin_names", [])
         self._paths = [Path(p).expanduser() for p in cfg.get("paths", [])]
-        raw_env = cfg.get("env") or {}
-        self.env = {k: str(Path(v).expanduser()) if v.startswith("~") else v for k, v in raw_env.items()} or None
+        raw_env = cfg.get("env")
+        if raw_env:
+            self.env = {k: str(Path(v).expanduser()) if v.startswith("~") else v for k, v in raw_env.items()}
+        else:
+            self.env = None
 
 
-def _load_clients_config() -> dict[str, Any]:
+def _load_clients_config() -> dict[str, ClientSpec]:
     global _clients_config  # noqa: PLW0603
     if _clients_config is not None:
         return _clients_config
@@ -133,7 +145,7 @@ def _load_clients_config() -> dict[str, Any]:
     return _clients_config
 
 
-_clients_config: dict[str, Any] | None = None
+_clients_config: dict[str, ClientSpec] | None = None
 
 
 def get_all_clients() -> dict[str, GameClient]:
@@ -158,8 +170,8 @@ def update_client_config(client_key: str, **kwargs: object) -> None:
     global _clients_config  # noqa: PLW0603
     cfg = _load_clients_config()
     if client_key not in cfg:
-        cfg[client_key] = {"name": client_key.title()}
-    cfg[client_key].update(kwargs)
+        cfg[client_key] = ClientSpec(name=client_key.title())
+    cfg[client_key].update(kwargs)  # type: ignore[typeddict-item]
     CLIENTS_FILE.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
     CLIENTS_FILE.chmod(0o600)
     _clients_config = None

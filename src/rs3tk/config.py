@@ -41,6 +41,10 @@ class ClientType(StrEnum):
     HDOS = "hdos"
 
 
+GAME_KEYS: tuple[str, ...] = tuple(g.value for g in Game)
+CLIENT_KEYS: tuple[str, ...] = tuple(c.value for c in ClientType)
+
+
 class AccountInfo(BaseModel):
     username: str
     display_name: str | None = None

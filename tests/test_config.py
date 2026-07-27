@@ -3,19 +3,14 @@
 from __future__ import annotations
 
 import json
-import tempfile
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
-import pytest
-
-from rs3tk.config import Settings, AccountInfo, Game, ClientType
+from rs3tk.config import AccountInfo, ClientType, Game, Settings
 
 
 class TestSettingsModel:
     """Test Settings Pydantic model."""
 
-    def test_settings_defaults(self):
+    def test_settings_defaults(self) -> None:
         """Test Settings model has correct defaults."""
         settings = Settings()
         assert settings.default_game == "rs3" or settings.default_game == Game.OSRS
@@ -25,7 +20,7 @@ class TestSettingsModel:
         assert settings.default_character is None
         assert settings.accounts == []
 
-    def test_settings_with_values(self):
+    def test_settings_with_values(self) -> None:
         """Test Settings model can be created with custom values."""
         settings = Settings(
             default_game="osrs",
@@ -33,7 +28,7 @@ class TestSettingsModel:
             locale=1,
             last_character="TestChar",
             default_character="DefaultChar",
-            accounts=[AccountInfo(username="testuser")]
+            accounts=[AccountInfo(username="testuser")],
         )
         assert settings.default_game == "osrs"
         assert settings.default_client == "runelite"
@@ -43,12 +38,9 @@ class TestSettingsModel:
         assert len(settings.accounts) == 1
         assert settings.accounts[0].username == "testuser"
 
-    def test_settings_model_dump_json(self):
+    def test_settings_model_dump_json(self) -> None:
         """Test Settings.model_dump_json works."""
-        settings = Settings(
-            default_game="osrs",
-            last_character="TestChar"
-        )
+        settings = Settings(default_game="osrs", last_character="TestChar")
         json_str = settings.model_dump_json()
         data = json.loads(json_str)
         assert data["default_game"] == "osrs"
@@ -58,12 +50,12 @@ class TestSettingsModel:
 class TestEnumTypes:
     """Test enum types."""
 
-    def test_game_enum(self):
+    def test_game_enum(self) -> None:
         """Test Game enum values."""
         assert Game.RS3 == "rs3"
         assert Game.OSRS == "osrs"
 
-    def test_client_type_enum(self):
+    def test_client_type_enum(self) -> None:
         """Test ClientType enum values."""
         assert ClientType.RS3 == "rs3"
         assert ClientType.OFFICIAL == "official"
@@ -74,20 +66,16 @@ class TestEnumTypes:
 class TestAccountInfoModel:
     """Test AccountInfo Pydantic model."""
 
-    def test_account_info_minimum(self):
+    def test_account_info_minimum(self) -> None:
         """Test AccountInfo with minimum fields."""
         account = AccountInfo(username="testuser")
         assert account.username == "testuser"
         assert account.display_name is None
         assert account.email is None
 
-    def test_account_info_with_all_fields(self):
+    def test_account_info_with_all_fields(self) -> None:
         """Test AccountInfo with all fields."""
-        account = AccountInfo(
-            username="testuser",
-            display_name="Display Name",
-            email="test@example.com"
-        )
+        account = AccountInfo(username="testuser", display_name="Display Name", email="test@example.com")
         assert account.username == "testuser"
         assert account.display_name == "Display Name"
         assert account.email == "test@example.com"

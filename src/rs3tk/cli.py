@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 import click
+from rich.prompt import Prompt
 from rich.table import Table
 
 from rs3tk import __version__
@@ -26,7 +27,7 @@ from rs3tk.app import (
     update_config,
 )
 from rs3tk.clients import detect_client, get_client_keys
-from rs3tk.config import Settings
+from rs3tk.config import CLIENT_KEYS, GAME_KEYS, Settings, load_settings, save_settings
 from rs3tk.output import cli_error, console
 from rs3tk.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
 
@@ -35,7 +36,7 @@ def _censor_value(value: str) -> str:
     return "*" * len(value)
 
 
-def find_default_char_index(characters: list[CharacterInfo], last_character: str | None) -> int | None:
+def _find_default_char_index(characters: list[CharacterInfo], last_character: str | None) -> int | None:
     if last_character:
         for i, char in enumerate(characters, 1):
             if char.display_name.lower() == last_character.lower():
@@ -44,8 +45,6 @@ def find_default_char_index(characters: list[CharacterInfo], last_character: str
 
 
 def pick_client(settings: Settings) -> str:
-    from rich.prompt import Prompt
-
     keys = get_client_keys()
     console.print("[bold]Available clients:[/]")
     for i, key in enumerate(keys, 1):
@@ -62,18 +61,16 @@ def pick_client(settings: Settings) -> str:
     return keys[int(choice) - 1]
 
 
-def pick_character(characters: list[CharacterInfo], settings: Settings) -> str | None:
-    from rich.prompt import Prompt
-
+def pick_character(characters: list[CharacterInfo], settings: Settings) -> str:
     if not characters:
-        return None
+        raise ValueError("pick_character requires at least one character")
 
     console.print("\n[bold]Characters:[/]")
     for i, char in enumerate(characters, 1):
         console.print(f"  {i}. {char.display_name}")
 
     preferred = settings.default_character or settings.last_character
-    default_idx = find_default_char_index(characters, preferred)
+    default_idx = _find_default_char_index(characters, preferred)
     ch = Prompt.ask(
         "\n[bold]Select character[/]",
         choices=[str(i) for i in range(1, len(characters) + 1)],
@@ -165,8 +162,6 @@ def accounts_list(ctx: click.Context) -> None:
         console.print("[yellow]No characters found.[/]")
         return
 
-    from rs3tk.config import load_settings
-
     settings = load_settings()
     table = build_characters_table(all_characters, settings, censor=ctx.obj["censor"])
     console.print(table)
@@ -187,8 +182,6 @@ def accounts_set_default(name: str) -> None:
 @accounts.command("unset-default")
 def accounts_unset_default() -> None:
     """Clear the default character."""
-    from rs3tk.config import load_settings
-
     settings = load_settings()
     if not settings.default_character:
         console.print("[dim]No default character set.[/]")
@@ -217,7 +210,7 @@ def clients_list() -> None:
 
 
 @clients.command("install")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 @cli_error
 def clients_install(ctx: click.Context, client: str) -> None:
     """Install a game client."""
@@ -227,7 +220,7 @@ def clients_install(ctx: click.Context, client: str) -> None:
 
 
 @clients.command("remove")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 @cli_error
 def clients_remove(ctx: click.Context, client: str) -> None:
     """Remove a game client."""
@@ -237,11 +230,9 @@ def clients_remove(ctx: click.Context, client: str) -> None:
 
 
 @clients.command("set-default")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 def clients_set_default(client: str) -> None:
     """Set the default game client."""
-    from rs3tk.config import load_settings, save_settings
-
     settings = load_settings()
     save_settings(settings.model_copy(update={"default_client": client}))
     console.print(f"[bold green]Default client set to {client}.[/]")
@@ -267,8 +258,6 @@ def play(
     no_character: bool,
 ) -> None:
     """Launch a game client. CLIENT is one of: rs3, official, runelite, hdos."""
-    from rs3tk.config import load_settings
-
     settings = load_settings()
 
     if interactive or client is None:
@@ -310,12 +299,10 @@ def status(ctx: click.Context) -> None:
 
 @main.command()
 @click.option("--count", "-n", default=5, help="Number of news items.")
-@click.option("--game", type=click.Choice(["rs3", "osrs"], case_sensitive=False), default=None)
+@click.option("--game", type=click.Choice(list(GAME_KEYS), case_sensitive=False), default=None)
 @cli_error
 def news(ctx: click.Context, count: int, game: str | None) -> None:
     """Fetch latest game news."""
-    from rs3tk.config import load_settings
-
     resolved_game = game or load_settings().default_game
 
     articles = get_news(game=resolved_game, count=count)
@@ -342,8 +329,8 @@ def config(ctx: click.Context) -> None:
 
 
 @config.command("set")
-@click.option("--game", type=click.Choice(["rs3", "osrs"], case_sensitive=False))
-@click.option("--client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.option("--game", type=click.Choice(list(GAME_KEYS), case_sensitive=False))
+@click.option("--client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 @click.option("--locale", type=int, help="Language locale (0=en, 1=de, 2=fr, 3=pt-br).")
 def config_set(game: str | None, client: str | None, locale: int | None) -> None:
     """Update a setting."""

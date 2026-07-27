@@ -29,19 +29,3 @@ def mock_settings() -> Settings:
         locale=0,
         accounts=[],
     )
-
-
-@pytest.fixture
-def app_error_base_class():
-    """Import AppError for testing."""
-    from rs3tk.app import AppError
-    yield AppError
-
-
-def assert_app_error(func, *args, **kwargs):
-    """Assert that a function raises AppError."""
-    import pytest
-    with pytest.raises(Exception) as exc_info:
-        func(*args, **kwargs)
-    assert "AppError" in str(type(exc_info.value).__name__)
-    return exc_info.value

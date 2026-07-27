@@ -10,7 +10,17 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from rs3tk.app import _get_characters_result, _run_sync, do_autoinstall, get_client_info, launch_game, list_accounts
+from rs3tk.app import (
+    _get_characters_result,
+    do_autoinstall,
+    do_login,
+    do_logout,
+    get_client_info,
+    launch_game,
+    list_accounts,
+    run_sync,
+)
+from rs3tk.config import config_dir
 from rs3tk.rs_api import get_rune_metrics
 
 
@@ -124,12 +134,13 @@ class RS3TKHandler(BaseHTTPRequestHandler):
         ]
 
     def _get_metrics(self, name: str) -> dict[str, Any]:
-        profile = _run_sync(get_rune_metrics(name, 10))
-        return profile.model_dump()  # type: ignore[no-any-return]
+        profile = run_sync(get_rune_metrics(name, 10))
+        return profile.model_dump()
 
     def _serve_avatar(self, name: str) -> None:
-        from rs3tk.config import config_dir
-
+        # TODO: the avatar cache is never populated — this endpoint always 404s
+        # until a download path is added (e.g., re-introduce get_player_avatar
+        # in rs_api.py and write the fetched PNG into config_dir()/cache/).
         safe = name.replace("/", "_").replace("\\", "_")
         avatar_path = config_dir() / "cache" / f"avatar_{safe}.png"
         if avatar_path.exists():
@@ -155,8 +166,6 @@ class RS3TKHandler(BaseHTTPRequestHandler):
         return {"status": "launched"}
 
     def _login(self, body: dict[str, Any]) -> dict[str, Any]:
-        from rs3tk.app import do_login
-
         system_browser = body.get("system_browser", False)
         username, count = do_login(system_browser=system_browser)
         return {"username": username, "account_count": count}
@@ -165,8 +174,6 @@ class RS3TKHandler(BaseHTTPRequestHandler):
         username = body.get("username")
         all_accounts = body.get("all", False)
         try:
-            from rs3tk.app import do_logout
-
             do_logout(username=username, all_accounts=all_accounts)
             return {"status": "logged_out"}
         except Exception as e:

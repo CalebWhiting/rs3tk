@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from rs3tk.app import AppError, CharacterInfo, _get_characters_result, get_all_characters, get_config
-from rs3tk.cli import find_default_char_index
+from rs3tk.app import CharacterInfo, _get_characters_result, get_all_characters, get_config
+from rs3tk.cli import _find_default_char_index
 
 
 def test_find_default_char_index_with_match() -> None:
@@ -11,21 +11,21 @@ def test_find_default_char_index_with_match() -> None:
         CharacterInfo(account_id="a", display_name="Alice", username="u1", is_member=True),
         CharacterInfo(account_id="b", display_name="Bob", username="u2", is_member=False),
     ]
-    assert find_default_char_index(chars, "Bob") == 2
+    assert _find_default_char_index(chars, "Bob") == 2
 
 
 def test_find_default_char_index_no_match() -> None:
     chars = [
         CharacterInfo(account_id="a", display_name="Alice", username="u1", is_member=True),
     ]
-    assert find_default_char_index(chars, "Unknown") is None
+    assert _find_default_char_index(chars, "Unknown") is None
 
 
 def test_find_default_char_index_none_last() -> None:
     chars = [
         CharacterInfo(account_id="a", display_name="Alice", username="u1", is_member=True),
     ]
-    assert find_default_char_index(chars, None) is None
+    assert _find_default_char_index(chars, None) is None
 
 
 def test_get_config_returns_settings() -> None:

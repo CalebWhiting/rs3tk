@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 
 from rich.panel import Panel
+from rich.prompt import Confirm, Prompt
 
 from rs3tk.app import (
     AppError,
@@ -20,6 +21,7 @@ from rs3tk.app import (
     update_config,
 )
 from rs3tk.cli import pick_character, pick_client
+from rs3tk.config import load_settings
 from rs3tk.output import console
 from rs3tk.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
 
@@ -50,20 +52,14 @@ def _show_menu() -> str:
     for key, label in _MENU:
         console.print(f"  [bold]{key}[/]. {label}")
     console.print()
-    from rich.prompt import Prompt
-
     choices = [k for k, _ in _MENU]
     return Prompt.ask("Select", choices=choices, default="0")
 
 
 def _do_play() -> None:
-    from rs3tk.config import load_settings
-
     settings = load_settings()
 
     client_key = pick_client(settings)
-
-    from rich.prompt import Confirm
 
     no_character = Confirm.ask("Launch without character?", default=False)
 
@@ -87,8 +83,6 @@ def _do_play() -> None:
         return
 
     character = pick_character(characters, settings)
-    if not character:
-        return
 
     try:
         launch_game(client_key, character)
@@ -98,8 +92,6 @@ def _do_play() -> None:
 
 def _do_login() -> None:
     console.print("\n[bold]Login[/]")
-    from rich.prompt import Confirm
-
     system = Confirm.ask("Use system browser?", default=False)
     try:
         username, count = do_login(system_browser=system)
@@ -122,8 +114,6 @@ def _do_accounts() -> None:
     if not characters:
         console.print("[yellow]No characters found.[/]")
         return
-
-    from rs3tk.config import load_settings
 
     settings = load_settings()
     table = build_characters_table(characters, settings)
@@ -171,12 +161,8 @@ def _do_config() -> None:
     table = build_config_display(settings)
     console.print(table)
 
-    from rich.prompt import Confirm
-
     if not Confirm.ask("\nEdit settings?", default=False):
         return
-
-    from rich.prompt import Prompt
 
     game = Prompt.ask("Default game", default=settings.default_game)
     client = Prompt.ask("Default client", default=settings.default_client)
