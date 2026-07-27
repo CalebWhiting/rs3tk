@@ -1,8 +1,10 @@
 import { app, shell, BrowserWindow, ipcMain, session, Tray, Menu, nativeImage, screen, dialog } from 'electron'
 import { join } from 'path'
-import { spawn, execSync, ChildProcess } from 'child_process'
+import { spawn, execSync, ChildProcess, exec as execCb } from 'child_process'
+import { promisify } from 'util'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
+import { homedir } from 'os'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -122,6 +124,43 @@ function saveWindowBounds(): void {
   }, 500)
 }
 
+function pythonCanImportRs3tk(
+  py: string,
+  execSync: typeof import('child_process').execSync
+): boolean {
+  try {
+    execSync(`${py} -c 'import rs3tk' 2>/dev/null`, { stdio: 'pipe' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+function showBackendError(title: string, message: string): void {
+  console.error(`[${ts()}] [main] ${title}`)
+  dialog.showErrorBox(title, message)
+}
+
+const USER_VENV_DIR = join(homedir(), '.config', 'rs3tk', 'venv')
+const USER_VENV_PYTHON = join(USER_VENV_DIR, 'bin', 'python3')
+
+function pythonCanImportRs3tk(
+  py: string,
+  execSync: typeof import('child_process').execSync
+): boolean {
+  try {
+    execSync(`${py} -c 'import rs3tk' 2>/dev/null`, { stdio: 'pipe' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+function showBackendError(title: string, message: string): void {
+  console.error(`[${ts()}] [main] ${title}`)
+  dialog.showErrorBox(title, message)
+}
+
 function startBackend(): void {
   console.log(`[${ts()}] [main] Starting backend`)
 
@@ -133,6 +172,7 @@ function startBackend(): void {
     return
   } catch {}
 
+  // 1. Project-local .venv (dev workflow: `python -m venv .venv && .venv/bin/pip install -e .`)
   const venvLocations = is.dev
     ? [join(__dirname, '..', '..', '..', '.venv', 'bin', 'python3')]
     : [
@@ -142,13 +182,14 @@ function startBackend(): void {
       ]
 
   for (const venvPython of venvLocations) {
-    if (existsSync(venvPython)) {
+    if (existsSync(venvPython) && pythonCanImportRs3tk(venvPython, execSync)) {
       const projectRoot = join(venvPython, '..', '..', '..')
       spawnBackend(venvPython, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], projectRoot, { ...process.env, PYTHONPATH: join(projectRoot, 'src') })
       return
     }
   }
 
+  // 2. rs3tk-backend installed on PATH
   try {
     const backendBin = execSync('which rs3tk-backend 2>/dev/null', { encoding: 'utf-8' }).trim()
     if (backendBin) {
@@ -157,21 +198,71 @@ function startBackend(): void {
     }
   } catch {}
 
+  // 3. System python3 with rs3tk importable
   try {
     const py = execSync('which python3 2>/dev/null', { encoding: 'utf-8' }).trim()
-    if (py) {
+    if (py && pythonCanImportRs3tk(py, execSync)) {
       spawnBackend(py, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
       return
     }
   } catch {}
 
-  console.error(`[${ts()}] [main] Could not find Python or rs3tk-backend`)
-  dialog.showErrorBox(
-    'Backend Not Found',
-    'Could not find rs3tk-backend or Python with rs3tk installed.\n\n'
-    + 'Install rs3tk with: pip install rs3tk\n\n'
-    + 'The application will open but cannot function without the backend.'
-  )
+  // 4. None of the above: create a user-level venv at ~/.config/rs3tk/venv
+  //    and install rs3tk into it. Works on PEP 668 systems (Kali, Fedora, etc.)
+  //    where `pip install` is blocked for the system Python.
+  console.log(`[${ts()}] [main] No existing rs3tk install found; setting up user venv`)
+  ensureUserVenv()
+    .then((python) => {
+      console.log(`[${ts()}] [main] User venv ready at ${python}`)
+      spawnBackend(python, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
+    })
+    .catch((err: Error) => {
+      showBackendError(
+        'Backend Setup Failed',
+        `Could not set up the rs3tk backend automatically:\n\n${err.message}\n\n`
+          + 'The application will open but cannot function without the backend.'
+      )
+    })
+}
+
+async function ensureUserVenv(): Promise<string> {
+  const execSyncLocal = execSync
+  const execAsync = promisify(execCb)
+
+  // Find a system Python (we need it to create the venv)
+  let sysPython = ''
+  try {
+    sysPython = execSyncLocal('which python3 2>/dev/null', { encoding: 'utf-8' }).trim()
+  } catch {}
+  if (!sysPython) {
+    throw new Error('Could not find python3 on $PATH. Install Python 3 first.')
+  }
+
+  // Create the venv if missing
+  if (!existsSync(USER_VENV_PYTHON)) {
+    console.log(`[${ts()}] [main] Creating venv at ${USER_VENV_DIR}`)
+    mkdir(USER_VENV_DIR, { recursive: true }).catch(() => undefined)
+    await execAsync(`${sysPython} -m venv "${USER_VENV_DIR}"`)
+    if (!existsSync(USER_VENV_PYTHON)) {
+      throw new Error(`venv creation failed at ${USER_VENV_DIR}`)
+    }
+  }
+
+  // Install rs3tk if not already importable
+  if (!pythonCanImportRs3tk(USER_VENV_PYTHON, execSyncLocal)) {
+    const projectRoot = is.dev ? join(__dirname, '..', '..', '..') : null
+    const useLocal = projectRoot && existsSync(join(projectRoot, 'pyproject.toml'))
+    const installCmd = useLocal
+      ? `"${USER_VENV_PYTHON}" -m pip install -e "${projectRoot}"`
+      : `"${USER_VENV_PYTHON}" -m pip install rs3tk`
+    console.log(`[${ts()}] [main] Installing rs3tk into venv (this may take a minute)`)
+    await execAsync(installCmd, { timeout: 600_000 })
+    if (!pythonCanImportRs3tk(USER_VENV_PYTHON, execSyncLocal)) {
+      throw new Error('rs3tk installed but still not importable from the venv')
+    }
+  }
+
+  return USER_VENV_PYTHON
 }
 
 function spawnBackend(command: string, args: string[], cwd: string, env: Record<string, string>): void {
@@ -185,7 +276,19 @@ function spawnBackend(command: string, args: string[], cwd: string, env: Record<
   backendProcess.stderr?.on('data', (data) => console.error(`[${ts()}] [backend] ${data.toString().trim()}`))
   backendProcess.on('exit', (code) => {
     console.log(`[${ts()}] [backend] exited with code ${code}`)
+    const wasRunning = backendProcess !== null
     backendProcess = null
+    if (code !== 0 && code !== null && wasRunning) {
+      showBackendError(
+        'Backend Crashed',
+        `rs3tk-backend exited with code ${code} shortly after starting.\n\n`
+          + 'Common causes:\n'
+          + '  - The rs3tk package is not installed (run: pip install -e .)\n'
+          + '  - Port 8765 is already in use by another process\n'
+          + '  - A Python dependency is missing\n\n'
+          + 'See the terminal output for the underlying error.'
+      )
+    }
   })
 }
 

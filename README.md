@@ -162,10 +162,10 @@ A separate Electron + React + TypeScript + Tailwind desktop app lives in
 `http://127.0.0.1:8765` at startup, so no separate backend process is
 required for normal use.
 
-**Prerequisites:** Node.js 18+ and npm. The Python `rs3tk` package must
-be installed in a discoverable location (a `.venv` next to
-`electron/`, or a globally-installed `rs3tk-backend` on `$PATH`, or
-a `python3` with `rs3tk` importable).
+**Prerequisites:** Node.js 18+ and a system `python3` (the GUI will
+auto-create a venv and install `rs3tk` into it on first run if no
+existing install is found). Works on PEP 658 systems (Kali, Fedora,
+etc.) where `pip install` is blocked for the system Python.
 
 ### Quick start
 
@@ -173,15 +173,26 @@ a `python3` with `rs3tk` importable).
 cd electron && npm install && npm run dev
 ```
 
-That's it — the first `npm install` downloads the Electron + React
-toolchain; subsequent `npm run dev` invocations skip it. The Electron
-app will spawn the Python backend on port 8765 automatically.
+That's it. On first run the GUI will create a venv at
+`~/.config/rs3tk/venv` and `pip install rs3tk` into it (takes a minute
+on first run; instant thereafter). The window opens once setup
+completes.
 
-If you see `electron-vite: not found` after `npm install`, your
-`npm` is configured to omit devDependencies (common in VMs with
-`NODE_ENV=production` set). The `electron/.npmrc` in this repo
-clears the `omit` setting, so this should already work — if it
-doesn't, run `npm install --include=dev` explicitly.
+If the system has no `python3` (rare), install it first. If the venv
+setup fails for any reason, the GUI shows an error dialog with the
+underlying error.
+
+### How the backend is located
+
+The GUI checks, in order:
+1. Is port 8765 already in use? (yes → done)
+2. Project-local `.venv` with `rs3tk` importable
+3. `rs3tk-backend` on `$PATH`
+4. System `python3` with `rs3tk` importable
+5. None of the above → auto-create `~/.config/rs3tk/venv` + install
+
+In dev (running from a checkout) the project `.venv` is preferred.
+In production the user venv is the canonical location.
 
 ### Run in dev mode (with hot reload)
 
