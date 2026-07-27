@@ -158,27 +158,37 @@ See `AGENTS.md` for the full structure, conventions, settings reference, and CLI
 ## Electron GUI (optional)
 
 A separate Electron + React + TypeScript + Tailwind desktop app lives in
-`electron/`. It talks to the Python `rs3tk-backend` HTTP server on
-`http://127.0.0.1:8765`, so that must be running for it to work.
+`electron/`. It spawns the Python `rs3tk-backend` HTTP server itself on
+`http://127.0.0.1:8765` at startup, so no separate backend process is
+required for normal use.
 
 **Prerequisites:** Node.js 18+ and npm. The `electron/` directory
 already has `node_modules/` checked into git, so no `npm install`
-is required for a first run.
+is required for a first run. The Python `rs3tk` package must be
+installed in a discoverable location (a `.venv` next to `electron/`,
+or a globally-installed `rs3tk-backend` on `$PATH`, or a `python3`
+with `rs3tk` importable).
 
 ### Run in dev mode (with hot reload)
 
 ```bash
-# Terminal 1 — start the Python backend on the default port
-rs3tk-backend
-
-# Terminal 2 — start the Electron app
 cd electron
 npm run dev
 ```
 
-The renderer talks to the backend at `http://127.0.0.1:8765` by
-default. If you change the port, update the corresponding setting in
-the Electron app.
+The Electron main process will locate the backend (vending-venv first,
+then `rs3tk-backend` on `$PATH`, then `python3 -m rs3tk.backend`) and
+spawn it on port 8765. The renderer connects to the same URL.
+
+To run the backend separately for debugging, start it in another
+terminal first:
+
+```bash
+rs3tk-backend   # listens on 127.0.0.1:8765
+```
+
+The Electron app detects that the port is already in use and skips
+spawning its own copy.
 
 ### Build a Linux AppImage
 
