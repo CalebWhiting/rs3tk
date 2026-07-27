@@ -380,7 +380,7 @@ class TestPlay:
         assert result.exit_code != 0
         assert "Not logged in" in result.output
 
-    @patch("rs3tk.cli.get_game_client")
+    @patch("rs3tk.app.get_game_client")
     @patch("rs3tk.cli.load_settings")
     def test_no_character_flag(self, mock_load: MagicMock, mock_ggc: MagicMock, runner: CliRunner) -> None:
         mock_load.return_value = Settings()

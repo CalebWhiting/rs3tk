@@ -15,7 +15,6 @@ from rs3tk.app import (
     get_all_characters,
     get_client_info,
     get_config,
-    get_game_client,
     get_news,
     launch_game,
     update_config,
@@ -57,6 +56,8 @@ def _show_menu() -> str:
 
 
 def _do_play() -> None:
+    from rs3tk.app import launch_without_character
+
     settings = load_settings()
 
     client_key = pick_client(settings)
@@ -65,15 +66,8 @@ def _do_play() -> None:
 
     if no_character:
         try:
-            game_client = get_game_client(client_key)
+            launch_without_character(client_key)
         except AppError as e:
-            console.print(f"[bold red]Error:[/] {e}")
-            return
-        console.print(f"[bold green]Launching {game_client.name}...[/]")
-        try:
-            process = game_client.launch("", None, None)
-            console.print(f"  [dim]PID {process.pid}[/]")
-        except (FileNotFoundError, RuntimeError) as e:
             console.print(f"[bold red]Error:[/] {e}")
         return
 

@@ -18,9 +18,9 @@ from rs3tk.app import (
     get_all_characters,
     get_client_info,
     get_config,
-    get_game_client,
     get_news,
     launch_game,
+    launch_without_character,
     list_accounts,
     set_default_character,
     unset_default_character,
@@ -268,10 +268,7 @@ def play(
         client = pick_client(settings)
 
     if no_character:
-        game_client = get_game_client(client)
-        console.print(f"[bold green]Launching {game_client.name}...[/]")
-        process = game_client.launch("", None, None, foreground=foreground)
-        console.print(f"  [dim]PID {process.pid}[/]")
+        launch_without_character(client, foreground=foreground)
         return
 
     characters = get_all_characters()

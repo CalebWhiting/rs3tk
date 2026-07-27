@@ -270,3 +270,18 @@ def launch_game(
         console.print(f"  [dim]PID {process.pid}[/]")
     except (FileNotFoundError, RuntimeError) as e:
         raise AppError(str(e)) from e
+
+
+def launch_without_character(client_key: str, *, foreground: bool = False) -> None:
+    """Launch a game client without setting JX_* env variables.
+
+    Used by the `-n` / `Launch without character?` flow shared between the
+    CLI and the terminal UI. Raises AppError on failure.
+    """
+    game_client = get_game_client(client_key)
+    console.print(f"[bold green]Launching {game_client.name}...[/]")
+    try:
+        process = game_client.launch("", None, None, foreground=foreground)
+        console.print(f"  [dim]PID {process.pid}[/]")
+    except (FileNotFoundError, RuntimeError) as e:
+        raise AppError(str(e)) from e
