@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Client } from '../types'
-import { launchGame } from '../hooks/useData'
+import { launchGame, installClient } from '../hooks/useData'
 import { ChevronDownIcon } from './icons'
 import { PANEL_SIDEBAR, CARD_HEADER, CARD_TITLE } from '../lib/styles'
 
@@ -9,10 +9,13 @@ interface Props {
   selectedClient: string
   onSelectClient: (key: string) => void
   selectedCharacter: string | null
+  onInstalled: () => void
 }
 
-export default function ClientPanel({ clients, selectedClient, onSelectClient, selectedCharacter }: Props) {
+export default function ClientPanel({ clients, selectedClient, onSelectClient, selectedCharacter, onInstalled }: Props) {
   const [launchError, setLaunchError] = useState<string | null>(null)
+  const [installing, setInstalling] = useState<string | null>(null)
+  const [installError, setInstallError] = useState<string | null>(null)
 
   const handleLaunch = async () => {
     if (!selectedCharacter) return
@@ -22,6 +25,19 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
       window.api.launchGame()
     } catch (e) {
       setLaunchError(e instanceof Error ? e.message : 'Failed to launch')
+    }
+  }
+
+  const handleInstall = async (clientKey: string) => {
+    setInstalling(clientKey)
+    setInstallError(null)
+    try {
+      await installClient(clientKey)
+      onInstalled()
+    } catch (e) {
+      setInstallError(e instanceof Error ? e.message : 'Failed to install')
+    } finally {
+      setInstalling(null)
     }
   }
 
@@ -35,7 +51,7 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
           <button
             key={client.key}
             onClick={() => onSelectClient(client.key)}
-            className={`w-full h-16 flex items-center gap-4 px-3 py-2 rs-card border transition-colors ${
+            className={`w-full flex items-center gap-4 px-3 py-2 rs-card border transition-colors ${
               selectedClient === client.key
                 ? 'border-rs-gold bg-rs-gold/5'
                 : 'border-rs-border bg-transparent hover:border-rs-muted'
@@ -47,13 +63,27 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
             <div className="flex-1 text-left">
               <div className="text-sm font-bold text-rs-text">{client.name}</div>
               <div className={`text-xs ${client.installed ? 'text-rs-green' : 'text-rs-muted'}`}>
-                {client.installed ? 'Installed' : 'Not installed'}
+                {installing === client.key
+                  ? 'Installing...'
+                  : client.installed
+                    ? 'Installed'
+                    : 'Not installed'}
               </div>
             </div>
-            {selectedClient === client.key && (
-              <div className="w-6 h-6 rounded-full bg-rs-gold flex items-center justify-center shadow-[0_0_8px_var(--rs-gold)]">
-                <span className="text-rs-btn-text text-xs font-bold">✓</span>
-              </div>
+            {client.installed ? (
+              selectedClient === client.key && (
+                <div className="w-6 h-6 rounded-full bg-rs-gold flex items-center justify-center shadow-[0_0_8px_var(--rs-gold)]">
+                  <span className="text-rs-btn-text text-xs font-bold">✓</span>
+                </div>
+              )
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleInstall(client.key) }}
+                disabled={installing !== null}
+                className="px-2 py-1 text-xs font-bold rounded bg-rs-gold/20 text-rs-gold hover:bg-rs-gold/30 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {installing === client.key ? '...' : 'Install'}
+              </button>
             )}
           </button>
         ))}
@@ -74,8 +104,10 @@ export default function ClientPanel({ clients, selectedClient, onSelectClient, s
             <ChevronDownIcon />
           </button>
         </div>
-        {launchError && (
-          <div className="mt-2 text-xs text-rs-red text-center truncate">{launchError}</div>
+        {(launchError || installError) && (
+          <div className="mt-2 text-xs text-rs-red text-center truncate">
+            {launchError || installError}
+          </div>
         )}
       </div>
     </div>

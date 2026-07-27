@@ -14,7 +14,7 @@ import { initSettings } from './lib/settings'
 function App() {
   const { data: characters, authErrors, loading: loadingChars, refetch: refetchChars } = useCharacters()
   const { data: accounts, loading: loadingAccounts, refetch: refetchAccounts } = useAccounts()
-  const { data: clients, loading: loadingClients } = useClients()
+  const { data: clients, loading: loadingClients, refetch: refetchClients } = useClients()
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
   const [selectedClient, setSelectedClient] = useState(() => {
     try { return localStorage.getItem('rs3tk-selected-client') || 'official' } catch { return 'official' }
@@ -129,6 +129,7 @@ function App() {
             selectedClient={selectedClient}
             onSelectClient={setSelectedClient}
             selectedCharacter={selectedCharacter}
+            onInstalled={refetchClients}
           />
         </div>
         <BottomBar selectedClient={selectedClient} />

@@ -147,3 +147,9 @@ export async function launchGame(clientKey: string, character: string): Promise<
   const result = await window.api.callBackendPost('/api/launch', { client_key: clientKey, character })
   if (result.error) throw new Error(result.error)
 }
+
+export async function installClient(clientKey: string): Promise<string> {
+  const result = await window.api.callBackendPost('/api/install', { client_key: clientKey })
+  if (result.error) throw new Error(result.error)
+  return result.message ?? 'Installed'
+}

@@ -51,7 +51,7 @@ async function savePersistentSettings(): Promise<void> {
 
 const ALLOWED_GET_ENDPOINTS = new Set(['/api/characters', '/api/accounts', '/api/clients', '/api/status'])
 const ALLOWED_GET_PREFIXES = ['/api/metrics/', '/api/avatar/']
-const ALLOWED_POST_ENDPOINTS = new Set(['/api/launch', '/api/login', '/api/logout'])
+const ALLOWED_POST_ENDPOINTS = new Set(['/api/launch', '/api/login', '/api/logout', '/api/install'])
 const ALLOWED_COOKIE_DOMAINS = ['runescape.com', 'jagex.com']
 
 function isAllowedEndpoint(endpoint: string, allowed: Set<string>, prefixes: string[] = []): boolean {

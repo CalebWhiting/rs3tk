@@ -10,7 +10,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from rs3tk.app import _get_characters_result, _run_sync, get_client_info, launch_game, list_accounts
+from rs3tk.app import _get_characters_result, _run_sync, do_autoinstall, get_client_info, launch_game, list_accounts
 from rs3tk.rs_api import get_rune_metrics
 
 
@@ -61,6 +61,8 @@ class RS3TKHandler(BaseHTTPRequestHandler):
                 data = self._login(body)
             elif path == "/api/logout":
                 data = self._logout(body)
+            elif path == "/api/install":
+                data = self._install_client(body)
             else:
                 self._json_response(404, {"error": "Not found"})
                 return
@@ -167,6 +169,16 @@ class RS3TKHandler(BaseHTTPRequestHandler):
 
             do_logout(username=username, all_accounts=all_accounts)
             return {"status": "logged_out"}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _install_client(self, body: dict[str, Any]) -> dict[str, str]:
+        client_key = body.get("client_key")
+        if not client_key:
+            return {"error": "No client_key provided"}
+        try:
+            result = do_autoinstall(client_key)
+            return {"status": "installed", "message": result}
         except Exception as e:
             return {"error": str(e)}
 
