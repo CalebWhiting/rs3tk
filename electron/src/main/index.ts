@@ -144,23 +144,6 @@ function showBackendError(title: string, message: string): void {
 const USER_VENV_DIR = join(homedir(), '.config', 'rs3tk', 'venv')
 const USER_VENV_PYTHON = join(USER_VENV_DIR, 'bin', 'python3')
 
-function pythonCanImportRs3tk(
-  py: string,
-  execSync: typeof import('child_process').execSync
-): boolean {
-  try {
-    execSync(`${py} -c 'import rs3tk' 2>/dev/null`, { stdio: 'pipe' })
-    return true
-  } catch {
-    return false
-  }
-}
-
-function showBackendError(title: string, message: string): void {
-  console.error(`[${ts()}] [main] ${title}`)
-  dialog.showErrorBox(title, message)
-}
-
 function startBackend(): void {
   console.log(`[${ts()}] [main] Starting backend`)
 
