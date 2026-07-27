@@ -177,6 +177,12 @@ That's it — the first `npm install` downloads the Electron + React
 toolchain; subsequent `npm run dev` invocations skip it. The Electron
 app will spawn the Python backend on port 8765 automatically.
 
+If you see `electron-vite: not found` after `npm install`, your
+`npm` is configured to omit devDependencies (common in VMs with
+`NODE_ENV=production` set). The `electron/.npmrc` in this repo
+clears the `omit` setting, so this should already work — if it
+doesn't, run `npm install --include=dev` explicitly.
+
 ### Run in dev mode (with hot reload)
 
 ```bash
