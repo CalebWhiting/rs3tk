@@ -33,7 +33,7 @@ def run_sync(coro: Coroutine[object, object, T]) -> T:
     except RuntimeError:
         loop = None
     if loop and loop.is_running():
-        raise RuntimeError("Cannot call asyncio.run() from within an event loop")
+        raise AppError("Cannot call asyncio.run() from within an event loop")
     return asyncio.run(coro)
 
 
@@ -46,10 +46,7 @@ class CharacterInfo:
 
 
 def do_login(system_browser: bool = False) -> tuple[str, int]:
-    try:
-        _tokens, username = run_sync(login(system_browser=system_browser))
-    except RuntimeError as e:
-        raise AppError(str(e)) from e
+    _tokens, username = run_sync(login(system_browser=system_browser))
 
     settings = load_settings()
     existing = [a for a in settings.accounts if a.username == username]
@@ -88,10 +85,7 @@ def get_session_and_profile(username: str | None = None) -> tuple[str, UserProfi
             raise AppError("Not logged in. Run `rs3tk login` first.")
         username = settings.accounts[0].username
 
-    try:
-        return run_sync(get_session(username))
-    except RuntimeError as e:
-        raise AppError(str(e)) from e
+    return run_sync(get_session(username))
 
 
 @dataclass(slots=True)

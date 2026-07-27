@@ -44,6 +44,10 @@ def _user_profile(characters: list[Character] | None = None) -> UserProfile:
     return UserProfile(uuid="u", username="u", display_name="u", characters=characters or [])
 
 
+async def _never_awaited() -> None:
+    raise RuntimeError("should not be awaited")
+
+
 # ── AppError ─────────────────────────────────────────────────────────────────
 
 
@@ -72,6 +76,29 @@ class TestRunSync:
 
         with pytest.raises(ValueError, match="nope"):
             run_sync(coro())
+
+    def test_raises_app_error_when_in_event_loop(self) -> None:
+        import asyncio
+
+        async def inner() -> None:
+            with pytest.raises(AppError, match="Cannot call asyncio.run"):
+                run_sync(_never_awaited())
+
+        asyncio.run(inner())
+
+    def test_raises_app_error_when_in_running_loop(self) -> None:
+        import asyncio
+
+        ran = False
+
+        async def inner() -> None:
+            nonlocal ran
+            with pytest.raises(AppError, match="Cannot call asyncio.run"):
+                run_sync(_never_awaited())
+            ran = True
+
+        asyncio.run(inner())
+        assert ran
 
 
 # ── CharacterInfo / CharactersResult ─────────────────────────────────────────
@@ -128,8 +155,9 @@ class TestDoLogin:
         mock_save.assert_not_called()
 
     @patch("rs3tk.app.run_sync")
-    def test_raises_app_error_on_runtime_error(self, mock_run: MagicMock) -> None:
-        mock_run.side_effect = RuntimeError("login failed")
+    def test_propagates_app_error(self, mock_run: MagicMock) -> None:
+        # run_sync now raises AppError directly; do_login just lets it propagate.
+        mock_run.side_effect = AppError("login failed")
 
         with pytest.raises(AppError, match="login failed"):
             do_login()
@@ -226,8 +254,10 @@ class TestGetSessionAndProfile:
         assert mock_run.call_args[0][0].__class__.__name__ == "coroutine"
 
     @patch("rs3tk.app.run_sync")
-    def test_wraps_runtime_error_in_app_error(self, mock_run: MagicMock) -> None:
-        mock_run.side_effect = RuntimeError("expired")
+    def test_propagates_app_error(self, mock_run: MagicMock) -> None:
+        # run_sync now raises AppError directly; get_session_and_profile just
+        # lets it propagate.
+        mock_run.side_effect = AppError("expired")
 
         with pytest.raises(AppError, match="expired"):
             get_session_and_profile("user1")
