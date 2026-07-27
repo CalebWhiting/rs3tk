@@ -317,9 +317,7 @@ class TestLogin:
         mock_pkce.return_value = ("verifier", "challenge")
         mock_state.side_effect = ["state-login", "state-consent", "state-nonce"]
         mock_login_browser.return_value = ("auth-code", "state-login")
-        tokens = Tokens(
-            access_token="a", refresh_token="r", id_token=_make_jwt(sub="alice")
-        )
+        tokens = Tokens(access_token="a", refresh_token="r", id_token=_make_jwt(sub="alice"))
         mock_exchange.return_value = tokens
         mock_consent_browser.return_value = (
             _make_jwt(nonce="state-nonce"),
@@ -334,9 +332,7 @@ class TestLogin:
         assert username == "alice"
         assert tokens_returned is tokens
         mock_create.assert_called_once()
-        mock_set.assert_any_call(
-            "alice", "consent_id_token", _make_jwt(nonce="state-nonce")
-        )
+        mock_set.assert_any_call("alice", "consent_id_token", _make_jwt(nonce="state-nonce"))
         mock_set.assert_any_call("alice", "session_id", "new-session")
 
     @patch("rs3tk.auth.browser.open_login_browser")
@@ -356,14 +352,10 @@ class TestLogin:
     @patch("rs3tk.auth.session.exchange_code", new_callable=AsyncMock)
     @patch("rs3tk.auth.session.generate_state")
     @patch("rs3tk.auth.browser.open_login_browser")
-    def test_no_id_token_raises(
-        self, mock_login: MagicMock, mock_state: MagicMock, mock_exchange: AsyncMock
-    ) -> None:
+    def test_no_id_token_raises(self, mock_login: MagicMock, mock_state: MagicMock, mock_exchange: AsyncMock) -> None:
         mock_state.return_value = "state-login"
         mock_login.return_value = ("auth-code", "state-login")
-        mock_exchange.return_value = Tokens(
-            access_token="a", refresh_token="r", id_token=""
-        )
+        mock_exchange.return_value = Tokens(access_token="a", refresh_token="r", id_token="")
 
         with pytest.raises(RuntimeError, match="no ID token"):
             _run(session_module.login())
