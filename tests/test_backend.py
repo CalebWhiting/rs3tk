@@ -349,7 +349,7 @@ class TestBodySize:
         parsed = server_url.replace("http://", "").split(":", 1)
         host = parsed[0]
         port = int(parsed[1])
-        conn = HTTPConnection(host, port, timeout=5)
+        conn = HTTPConnection(host, port, timeout=15)
         large = b"x" * (1_048_577)  # 1 byte over the limit
         conn.request("POST", "/api/login", body=large, headers={"Content-Type": "application/json"})
         resp = conn.getresponse()

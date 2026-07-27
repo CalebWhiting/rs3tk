@@ -91,6 +91,14 @@ tests/                 — pytest suite (mirrors src/rs3tk layout)
 - `default_character` — set via `accounts set-default NAME`, preferred default in `play` prompt
 - `locale` — 0=en, 1=de, 2=fr, 3=pt-br (RS3 news only, OSRS always uses en)
 
+## Membership check
+
+`Character.is_member` (in `jagex_api.py`) checks two fields on each `Membership` entry:
+1. `active_subscription: bool` — the Jagex API flag
+2. `expires_at` (either `expiration_date` or `membership_expire`) — compared to `datetime.now()`
+
+The Jagex API sometimes returns `active_subscription=False` even when the subscription is still valid. Falling back to the expiration date avoids false negatives. Always compare naive datetimes (strip tzinfo from the API string before comparing to `datetime.now()`).
+
 ## CLI command tree
 
 - `auth {login, logout, list}` — OAuth login, logout, list stored accounts

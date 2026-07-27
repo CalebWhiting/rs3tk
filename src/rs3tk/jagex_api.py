@@ -62,6 +62,11 @@ class Membership(_BaseApiModel):
     game_group: str
     active_subscription: bool
     expiration_date: str = ""
+    membership_expire: str = ""
+
+    @property
+    def expires_at(self) -> str:
+        return self.expiration_date or self.membership_expire
 
 
 class Character(_BaseApiModel):
@@ -72,7 +77,21 @@ class Character(_BaseApiModel):
 
     @property
     def is_member(self) -> bool:
-        return any(m.active_subscription for m in self.membership)
+        now = datetime.now()
+        for m in self.membership:
+            if m.active_subscription:
+                return True
+            expire = m.expires_at
+            if expire:
+                try:
+                    exp = datetime.fromisoformat(expire)
+                    if exp.tzinfo is not None:
+                        exp = exp.replace(tzinfo=None)
+                    if now < exp:
+                        return True
+                except (ValueError, TypeError):
+                    pass
+        return False
 
 
 GameSession: TypeAlias = str

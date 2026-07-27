@@ -525,12 +525,18 @@ app.whenReady().then(async () => {
     }
     try {
       const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 5000)
+      const timeout = setTimeout(() => controller.abort(), 60_000)
       console.log(`[${ts()}] [main] api-call: ${endpoint}`)
       const response = await fetch(`http://127.0.0.1:${BACKEND_PORT}${endpoint}`, { signal: controller.signal })
       clearTimeout(timeout)
       const result = await response.json()
-      console.log(`[${ts()}] [main] api-call result: ${endpoint} ok`)
+      const charCount = (result as any)?.characters?.length
+      if (charCount !== undefined) {
+        const sample = (result as any).characters?.[0]
+        console.log(`[${ts()}] [main] api-call result: ${endpoint} ok (chars=${charCount}, is_member=${sample?.is_member})`)
+      } else {
+        console.log(`[${ts()}] [main] api-call result: ${endpoint} ok`)
+      }
       return result
     } catch (e) {
       console.log(`[${ts()}] [main] api-call error: ${endpoint} → ${e}`)
@@ -543,23 +549,23 @@ app.whenReady().then(async () => {
       return { error: 'Forbidden endpoint' }
     }
     try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 10000)
-      console.log(`[${ts()}] [main] api-post: ${endpoint}`)
-      const response = await fetch(`http://127.0.0.1:${BACKEND_PORT}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        signal: controller.signal
-      })
-      clearTimeout(timeout)
-      const result = await response.json()
-      console.log(`[${ts()}] [main] api-post result: ${endpoint} ok`)
-      return result
-    } catch (e) {
-      console.log(`[${ts()}] [main] api-post error: ${endpoint} → ${e}`)
-      return { error: 'Backend not available' }
-    }
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 60_000)
+    console.log(`[${ts()}] [main] api-post: ${endpoint}`)
+    const response = await fetch(`http://127.0.0.1:${BACKEND_PORT}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal
+    })
+    clearTimeout(timeout)
+    const result = await response.json()
+    console.log(`[${ts()}] [main] api-post result: ${endpoint} ok`)
+    return result
+  } catch (e) {
+    console.log(`[${ts()}] [main] api-post error: ${endpoint} → ${e}`)
+    return { error: 'Backend not available' }
+  }
   })
 
   splashWindow = createSplashWindow()
