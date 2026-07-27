@@ -162,12 +162,20 @@ A separate Electron + React + TypeScript + Tailwind desktop app lives in
 `http://127.0.0.1:8765` at startup, so no separate backend process is
 required for normal use.
 
-**Prerequisites:** Node.js 18+ and npm. The `electron/` directory
-already has `node_modules/` checked into git, so no `npm install`
-is required for a first run. The Python `rs3tk` package must be
-installed in a discoverable location (a `.venv` next to `electron/`,
-or a globally-installed `rs3tk-backend` on `$PATH`, or a `python3`
-with `rs3tk` importable).
+**Prerequisites:** Node.js 18+ and npm. The Python `rs3tk` package must
+be installed in a discoverable location (a `.venv` next to
+`electron/`, or a globally-installed `rs3tk-backend` on `$PATH`, or
+a `python3` with `rs3tk` importable).
+
+### Quick start
+
+```bash
+cd electron && npm install && npm run dev
+```
+
+That's it — the first `npm install` downloads the Electron + React
+toolchain; subsequent `npm run dev` invocations skip it. The Electron
+app will spawn the Python backend on port 8765 automatically.
 
 ### Run in dev mode (with hot reload)
 
