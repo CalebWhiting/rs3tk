@@ -133,17 +133,32 @@ class GameClient:
             raise RuntimeError(f"Failed to launch {self.name}: {e}") from e
 
 
+class _ClientsStore:
+    """In-memory cache for the parsed clients.json config.
+
+    `load()` returns the parsed dict (populating on first call);
+    `invalidate()` forces the next call to re-read from disk.
+    """
+
+    def __init__(self) -> None:
+        self._config: dict[str, ClientSpec] | None = None
+
+    def load(self) -> dict[str, ClientSpec]:
+        if self._config is None:
+            if not CLIENTS_FILE.exists():
+                CLIENTS_FILE.write_text(json.dumps(DEFAULT_CLIENTS, indent=2), encoding="utf-8")
+            self._config = json.loads(CLIENTS_FILE.read_text(encoding="utf-8"))
+        return self._config
+
+    def invalidate(self) -> None:
+        self._config = None
+
+
+_clients_store = _ClientsStore()
+
+
 def _load_clients_config() -> dict[str, ClientSpec]:
-    global _clients_config  # noqa: PLW0603
-    if _clients_config is not None:
-        return _clients_config
-    if not CLIENTS_FILE.exists():
-        CLIENTS_FILE.write_text(json.dumps(DEFAULT_CLIENTS, indent=2), encoding="utf-8")
-    _clients_config = json.loads(CLIENTS_FILE.read_text(encoding="utf-8"))
-    return _clients_config
-
-
-_clients_config: dict[str, ClientSpec] | None = None
+    return _clients_store.load()
 
 
 def get_all_clients() -> dict[str, GameClient]:
@@ -165,11 +180,10 @@ def detect_client(name: str) -> GameClient:
 
 def update_client_config(client_key: str, **kwargs: object) -> None:
     """Update a client's config in clients.json."""
-    global _clients_config  # noqa: PLW0603
     cfg = _load_clients_config()
     if client_key not in cfg:
         cfg[client_key] = ClientSpec(name=client_key.title())
     cfg[client_key].update(kwargs)  # type: ignore[typeddict-item]
     CLIENTS_FILE.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
     CLIENTS_FILE.chmod(0o600)
-    _clients_config = None
+    _clients_store.invalidate()
