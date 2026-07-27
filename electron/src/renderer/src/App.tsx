@@ -91,9 +91,8 @@ function App() {
   const handleAuthLogin = useCallback(async () => {
     try {
       await login()
+      await Promise.all([refetchChars(), refetchAccounts()])
       setAuthBannerDismissed(false)
-      refetchChars()
-      refetchAccounts()
     } catch (e) {
       console.error('Login failed:', e)
     }
