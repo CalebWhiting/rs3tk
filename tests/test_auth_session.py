@@ -105,26 +105,20 @@ class TestEnsureValidToken:
             _run(ensure_valid_token("alice"))
 
     @patch("rs3tk.auth.session.load_tokens")
-    def test_returns_unexpired_tokens(self, mock_load: MagicMock) -> None:
-        # issued just now, expires in 2h — well within validity
-        issued = datetime.now(UTC)
-        tokens = Tokens(
-            access_token="a",
-            refresh_token="r",
-            id_token="i",
-            expires_in=7200,
-            issued_at_str=issued.isoformat(),
-        )
+    def test_returns_cached_tokens_as_is(self, mock_load: MagicMock) -> None:
+        # Fresh tokens — returned directly
+        tokens = _make_tokens()
         mock_load.return_value = tokens
 
         result = _run(ensure_valid_token("alice"))
+
         assert result is tokens
 
-    @patch("rs3tk.auth.session._store_tokens")
-    @patch("rs3tk.auth.session.refresh_tokens", new_callable=AsyncMock)
     @patch("rs3tk.auth.session.load_tokens")
-    def test_refreshes_when_expired(self, mock_load: MagicMock, mock_refresh: AsyncMock, mock_store: MagicMock) -> None:
-        # issued long ago, expires 1s from now — expired
+    def test_returns_cached_tokens_even_if_access_token_expired(self, mock_load: MagicMock) -> None:
+        # access_token is 'expired' (24h ago, 1s expiry) but we never refresh
+        # — the access_token is only used to bootstrap login; session_id is
+        # what authenticates API calls.
         issued = datetime.now(UTC) - timedelta(hours=24)
         tokens = Tokens(
             access_token="old_a",
@@ -133,32 +127,30 @@ class TestEnsureValidToken:
             expires_in=1,
             issued_at_str=issued.isoformat(),
         )
-        new_tokens = _make_tokens()
         mock_load.return_value = tokens
-        mock_refresh.return_value = new_tokens
 
         result = _run(ensure_valid_token("alice"))
 
-        assert result is new_tokens
-        mock_refresh.assert_called_once_with("old_r")
-        mock_store.assert_called_once_with("alice", new_tokens)
+        assert result is tokens
 
-    @patch("rs3tk.auth.session.refresh_tokens", new_callable=AsyncMock)
+    @patch("rs3tk.auth.session._store_tokens")
     @patch("rs3tk.auth.session.load_tokens")
-    def test_raises_on_refresh_failure(self, mock_load: MagicMock, mock_refresh: AsyncMock) -> None:
+    def test_never_refreshes_or_stores(self, mock_load: MagicMock, mock_store: MagicMock) -> None:
+        # Even with an expired access_token, ensure_valid_token must not
+        # trigger any side effects — no _store_tokens call.
         issued = datetime.now(UTC) - timedelta(hours=24)
         tokens = Tokens(
-            access_token="a",
-            refresh_token="r",
-            id_token="i",
+            access_token="old_a",
+            refresh_token="old_r",
+            id_token="old_i",
             expires_in=1,
             issued_at_str=issued.isoformat(),
         )
         mock_load.return_value = tokens
-        mock_refresh.side_effect = Exception("network down")
 
-        with pytest.raises(RuntimeError, match="Session expired"):
-            _run(ensure_valid_token("alice"))
+        _run(ensure_valid_token("alice"))
+
+        mock_store.assert_not_called()
 
 
 # ── _ensure_session ─────────────────────────────────────────────────────────

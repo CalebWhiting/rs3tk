@@ -20,7 +20,6 @@ from rs3tk.jagex_api import (
     decode_jwt_payload,
     exchange_code,
     get_profile,
-    refresh_tokens,
 )
 
 logger = logging.getLogger(__name__)
@@ -102,16 +101,19 @@ async def login(system_browser: bool = False) -> tuple[Tokens, str]:
 
 
 async def ensure_valid_token(username: str) -> Tokens:
+    """Return the cached tokens for the given user.
+
+    Tokens are never auto-refreshed and never considered "expired" by this
+    layer. The access_token is only used to bootstrap the login flow; once
+    a session_id and consent_id_token have been stored, the actual API
+    calls authenticate with the session_id (a long-lived Bearer token
+    re-created on demand from the consent_id_token if it stops working).
+
+    If you need to force a re-login, run `rs3tk auth login` again.
+    """
     tokens = load_tokens(username)
     if tokens is None:
         raise RuntimeError(f"Not logged in as {username}. Run `rs3tk login` first.")
-    if datetime.now(UTC) >= tokens.expiry:
-        try:
-            tokens = await refresh_tokens(tokens.refresh_token)
-            _store_tokens(username, tokens)
-        except Exception:
-            logger.error("Token refresh failed for %s", username, exc_info=True)
-            raise RuntimeError(f"Session expired for {username}. Please run `rs3tk login` again.") from None
     return tokens
 
 
