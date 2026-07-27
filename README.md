@@ -155,6 +155,43 @@ ruff check src/ && ruff format --check src/ && mypy src/ && pytest
 
 See `AGENTS.md` for the full structure, conventions, settings reference, and CLI command tree.
 
+## Electron GUI (optional)
+
+A separate Electron + React + TypeScript + Tailwind desktop app lives in
+`electron/`. It talks to the Python `rs3tk-backend` HTTP server on
+`http://127.0.0.1:8765`, so that must be running for it to work.
+
+**Prerequisites:** Node.js 18+ and npm. The `electron/` directory
+already has `node_modules/` checked into git, so no `npm install`
+is required for a first run.
+
+### Run in dev mode (with hot reload)
+
+```bash
+# Terminal 1 — start the Python backend on the default port
+rs3tk-backend
+
+# Terminal 2 — start the Electron app
+cd electron
+npm run dev
+```
+
+The renderer talks to the backend at `http://127.0.0.1:8765` by
+default. If you change the port, update the corresponding setting in
+the Electron app.
+
+### Build a Linux AppImage
+
+```bash
+cd electron
+npm run build:linux
+# Output: electron/dist/RS3TK-{version}.AppImage
+```
+
+`build:unpack` produces a directory build (faster, no installer).
+The Electron app reads from the same `~/.config/rs3tk/` directory as
+the CLI, so login state is shared.
+
 ## License
 
 MIT
