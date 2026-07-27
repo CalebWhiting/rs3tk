@@ -5,6 +5,19 @@ import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+
 interface PersistentSettings {
   theme?: string
   selectedClient?: string
@@ -426,3 +439,5 @@ function handleShutdown(): void {
 
 process.on('SIGTERM', handleShutdown)
 process.on('SIGINT', handleShutdown)
+
+} // end else gotTheLock
