@@ -31,9 +31,14 @@ pre-commit install
 ```bash
 # Log in
 rs3tk auth login
+rs3tk auth list               # list stored accounts
+rs3tk auth logout             # log out current account
+rs3tk auth logout --all       # log out all accounts
 
-# List your characters
+# Manage characters
 rs3tk accounts list
+rs3tk accounts set-default "Cow31337Killer"
+rs3tk accounts unset-default
 
 # Launch a game
 rs3tk play rs3               # RS3
@@ -47,6 +52,9 @@ rs3tk play -i
 # Launch with a specific character
 rs3tk play runelite -c "Cow31337Killer"
 
+# Launch without JX_* env variables (no character)
+rs3tk play runelite -n
+
 # Check game status
 rs3tk status
 
@@ -54,14 +62,20 @@ rs3tk status
 rs3tk news
 rs3tk news -n 10 --game rs3
 
-# Show/update settings
+# Settings
+rs3tk config                  # show all settings
 rs3tk config set --game osrs --client runelite
+rs3tk config set --locale 2
 
-# Show detected clients
+# Game clients
 rs3tk clients list
+rs3tk clients install runelite
+rs3tk clients remove runelite
+rs3tk clients set-default runelite
 
-# Log out
-rs3tk auth logout
+# Alternate UIs
+rs3tk ui                      # interactive terminal UI (Rich)
+rs3tk gui                     # graphical launcher (PySide6)
 ```
 
 ## Options
@@ -106,13 +120,22 @@ self-updating launchers that check for new versions on each run.
 
 ## Configuration
 
-Settings are stored at `~/.config/rs3tk/`.
+Settings are stored at `~/.config/rs3tk/` and managed via the `config` command:
+
+- `default_game` — `rs3` / `osrs` (used by `news` when `--game` is omitted)
+- `default_client` — `rs3` / `official` / `runelite` / `hdos` (used by `play` interactive prompt and `clients set-default`)
+- `default_character` — set via `accounts set-default NAME`
+- `last_character` — auto-saved after `play` (used as fallback default)
+- `locale` — `0`=en, `1`=de, `2`=fr, `3`=pt-br (RS3 news only)
+
+OAuth tokens are stored in your OS keyring under the `rs3tk` service.
 
 ## Development
 
 ```bash
 # Install dev dependencies
 pip install -e ".[dev]"
+pre-commit install
 
 # Run linter
 ruff check src/
@@ -122,7 +145,15 @@ ruff format src/
 
 # Type check
 mypy src/
+
+# Run tests
+pytest
+
+# All of the above at once
+ruff check src/ && ruff format --check src/ && mypy src/ && pytest
 ```
+
+See `AGENTS.md` for the full structure, conventions, settings reference, and CLI command tree.
 
 ## License
 

@@ -1,9 +1,11 @@
 # TODO
 
-## GitHub Actions CI/CD Pipeline
+## CI/CD Pipeline
 
 **Priority:** Medium  
 **Status:** Not started
+
+The repo is on Codeberg (Forgejo-based). Use Forgejo Actions via `.forgejo/workflows/`.
 
 ### Distribution Strategy
 
@@ -12,21 +14,26 @@ Two artifacts, one install flow:
 | Artifact | Distribution | Size | User action |
 |----------|-------------|------|-------------|
 | Python package | PyPI (`pip install rs3tk`) | ~50KB | `pip install rs3tk` |
-| Electron GUI | GitHub Releases (AppImage) | ~110MB | Download & run |
+| Electron GUI | Codeberg Releases (AppImage) | ~110MB | Download & run |
 
 ### Workflows to Create
 
-1. **Python Package Publish**
-   - Build sdist + wheel on tag push (`v*`)
-   - Publish to PyPI via `pypa/gh-action-pypi-publish`
+1. **Lint + Test** (on every push / PR)
+   - `ruff check src/ tests/`
+   - `ruff format --check src/ tests/`
+   - `mypy src/`
+   - `pytest --cov=rs3tk`
+
+2. **Python Package Publish** (on tag push `v*`)
+   - Build sdist + wheel
+   - Publish to PyPI
    - Entry points: `rs3tk` (CLI), `rs3tk-backend` (backend server)
 
-2. **Electron AppImage Build**
-   - Build on tag push (`v*`) or manual dispatch
+3. **Electron AppImage Build** (on tag push `v*`)
    - `npm run build:linux` → AppImage
-   - Upload to GitHub Releases as `RS3TK-{version}.AppImage`
+   - Upload to Codeberg Releases as `RS3TK-{version}.AppImage`
 
-3. **Release Automation**
+4. **Release Automation**
    - Single tag push triggers both builds
    - Auto-generate release notes from commits
    - Attach AppImage + checksums to release
