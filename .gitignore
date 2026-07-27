@@ -41,3 +41,7 @@ src/rs3tk/data/prefix/
 imgui.ini
 src/rs3tk/data/imgui.ini
 src/rs3tk/data/osclient.exe
+src/rs3tk/data/.version
+src/rs3tk/data/.hdos.version
+src/rs3tk/data/.runelite.sha256
+*.version

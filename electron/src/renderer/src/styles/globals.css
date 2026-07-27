@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Museo Sans';
+  src: url('/MuseoSans500.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --rs-bg: #0e171d;
+  --rs-bg-light: #1a2332;
+  --rs-card: rgba(255, 255, 255, 0.03);
+  --rs-card-hover: rgba(255, 255, 255, 0.06);
+  --rs-divider: rgba(255, 255, 255, 0.06);
+  --rs-text: #ffffff;
+  --rs-muted: #8E98A8;
+  --rs-header: #8E98A8;
+  --rs-border: rgba(255, 255, 255, 0.1);
+  --rs-gold: #D6A445;
+  --rs-gold-light: #E8C066;
+  --rs-gold-dark: #B8892E;
+  --rs-green: #22C55E;
+  --rs-blue: #3b82f6;
+  --rs-yellow: #eab308;
+  --rs-red: #ef4444;
+  --rs-btn-text: #0e171d;
+  --rs-gold-btn-start: #ffe259;
+  --rs-gold-btn-mid: #ffa751;
+  --rs-gold-btn-end: #e08a1e;
+  --rs-gold-btn-border: #7a4600;
+  --rs-gold-btn-text: #1a0800;
+  --rs-gold-btn-text-shadow: rgba(255, 230, 150, 0.6);
+  --rs-font-display: 'Museo Sans', sans-serif;
+  --rs-radius: 8px;
+  --rs-radius-sm: 4px;
+  --rs-selected-glow: 0 0 0 1px var(--rs-gold);
+  --rs-titlebar-gradient: linear-gradient(to bottom, transparent, rgba(0,0,0,0.15));
+  --rs-member-symbol: '\2605';
+  --rs-pie-complete: #22C55E;
+  --rs-pie-started: #3b82f6;
+  --rs-pie-not-started: #eab308;
+  --rs-scroll-fade: var(--rs-bg);
+  --rs-spinner: var(--rs-gold);
+  --rs-noise-r: 14;
+  --rs-noise-g: 23;
+  --rs-noise-b: 29;
+}
+
+body {
+  font-family: var(--rs-font-display);
+  background-color: var(--rs-bg);
+  color: var(--rs-text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 0 #000;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.member-symbol::after {
+  content: var(--rs-member-symbol);
+}
+
+.rs-card {
+  border-radius: var(--rs-radius);
+}
+
+.rs-card-sm {
+  border-radius: var(--rs-radius-sm);
+}
+
+.gold-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 40px;
+  border-radius: var(--rs-radius);
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--rs-gold-btn-text);
+  text-shadow: 0px 1px 0px var(--rs-gold-btn-text-shadow);
+  cursor: pointer;
+  background: linear-gradient(to bottom, var(--rs-gold-btn-start) 0%, var(--rs-gold-btn-mid) 70%, var(--rs-gold-btn-end) 100%);
+  border: 1px solid var(--rs-gold-btn-border);
+  box-shadow: inset 0px 2px 1px rgba(255, 255, 255, 0.8), inset 0px -4px 6px rgba(120, 50, 0, 0.6), 0px 6px 12px rgba(0, 0, 0, 0.7);
+  transition: filter 0.2s, transform 0.1s;
+}
+
+.gold-button:hover {
+  filter: brightness(1.1);
+}
+
+.gold-button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.6), inset 0px -2px 4px rgba(120, 50, 0, 0.6), 0px 3px 6px rgba(0, 0, 0, 0.7);
+}
+
+.gold-button-split-left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+  box-shadow: inset 0px 2px 1px rgba(255, 255, 255, 0.8), inset 0px -4px 6px rgba(120, 50, 0, 0.6), -4px 6px 12px -2px rgba(0, 0, 0, 0.7);
+}
+
+.gold-button-split-right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 12px 14px;
+  box-shadow: inset 0px 2px 1px rgba(255, 255, 255, 0.8), inset 0px -4px 6px rgba(120, 50, 0, 0.6), 4px 6px 12px -2px rgba(0, 0, 0, 0.7);
+}

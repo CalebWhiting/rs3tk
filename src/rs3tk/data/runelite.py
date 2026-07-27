@@ -4,7 +4,6 @@
 import argparse
 import json
 import os
-import stat
 import urllib.request
 from pathlib import Path
 
@@ -48,7 +47,7 @@ def main() -> None:
         tmp = appimage.with_suffix(".tmp")
         urllib.request.urlretrieve(DL_URL, tmp, reporthook=_progress)
         print()
-        tmp.chmod(tmp.stat().st_mode | stat.S_IEXEC)
+        tmp.chmod(0o755)
         tmp.rename(appimage)
         hash_file.write_text(latest)
         print(f"RuneLite {latest} installed")

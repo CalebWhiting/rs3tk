@@ -33,6 +33,7 @@ dev = [
 
 [project.scripts]
 rs3tk = "rs3tk.cli:main"
+rs3tk-backend = "rs3tk.backend:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

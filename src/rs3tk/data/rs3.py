@@ -23,13 +23,13 @@ def fetch(url: str, progress: bool = False) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=30) as r:
         total = int(r.headers.get("Content-Length", 0))
-        data = b""
+        data = bytearray()
         block_num = 0
         while True:
             chunk = r.read(65536)
             if not chunk:
                 break
-            data += chunk
+            data.extend(chunk)
             block_num += 1
             if progress and total > 0:
                 downloaded = len(data)
@@ -37,7 +37,7 @@ def fetch(url: str, progress: bool = False) -> bytes:
                 print(f"\r  {downloaded // 1024}/{total // 1024} KB ({pct}%)", end="", flush=True)
         if progress:
             print()
-        return data
+        return bytes(data)
 
 
 def get_latest_version() -> str:
@@ -98,6 +98,7 @@ def download_client(target: Path, version_file: Path) -> None:
     deb_data = fetch(DEB_URL, progress=True)
 
     binary = extract_binary_from_deb(deb_data)
+    del deb_data
     if not binary:
         print("Failed to extract client from .deb package", file=sys.stderr)
         sys.exit(1)

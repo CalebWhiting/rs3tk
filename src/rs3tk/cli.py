@@ -5,12 +5,12 @@ from __future__ import annotations
 import logging
 
 import click
-from rich.console import Console
+from rich.prompt import Prompt
 from rich.table import Table
 
 from rs3tk import __version__
 from rs3tk.app import (
-    AppError,
+    CharacterInfo,
     check_game_status,
     do_autoinstall,
     do_login,
@@ -18,20 +18,65 @@ from rs3tk.app import (
     get_all_characters,
     get_client_info,
     get_config,
-    get_game_client,
     get_news,
     launch_game,
+    launch_without_character,
     list_accounts,
-    pick_character,
-    pick_client,
+    set_default_character,
+    unset_default_character,
     update_config,
 )
-
-console = Console()
+from rs3tk.clients import detect_client, get_client_keys
+from rs3tk.config import CLIENT_KEYS, GAME_KEYS, Settings, load_settings, save_settings
+from rs3tk.output import cli_error, console
+from rs3tk.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
 
 
 def _censor_value(value: str) -> str:
     return "*" * len(value)
+
+
+def _find_default_char_index(characters: list[CharacterInfo], last_character: str | None) -> int | None:
+    if last_character:
+        for i, char in enumerate(characters, 1):
+            if char.display_name.lower() == last_character.lower():
+                return i
+    return None
+
+
+def pick_client(settings: Settings) -> str:
+    keys = get_client_keys()
+    console.print("[bold]Available clients:[/]")
+    for i, key in enumerate(keys, 1):
+        c = detect_client(key)
+        tag = "[green]installed[/]" if c.is_installed() else "[red]not installed[/]"
+        console.print(f"  {i}. {c.name} ({tag})")
+
+    default_idx = keys.index(settings.default_client) + 1 if settings.default_client in keys else 1
+    choice = Prompt.ask(
+        "\n[bold]Select client[/]",
+        choices=[str(i) for i in range(1, len(keys) + 1)],
+        default=str(default_idx),
+    )
+    return keys[int(choice) - 1]
+
+
+def pick_character(characters: list[CharacterInfo], settings: Settings) -> str:
+    if not characters:
+        raise ValueError("pick_character requires at least one character")
+
+    console.print("\n[bold]Characters:[/]")
+    for i, char in enumerate(characters, 1):
+        console.print(f"  {i}. {char.display_name}")
+
+    preferred = settings.default_character or settings.last_character
+    default_idx = _find_default_char_index(characters, preferred)
+    ch = Prompt.ask(
+        "\n[bold]Select character[/]",
+        choices=[str(i) for i in range(1, len(characters) + 1)],
+        default=str(default_idx) if default_idx is not None else "1",
+    )
+    return characters[int(ch) - 1].display_name
 
 
 @click.group()
@@ -63,24 +108,22 @@ def auth() -> None:
 
 @auth.command("login")
 @click.option("-b", "--system-browser", is_flag=True, help="Use system browser with manual URL paste.")
-def auth_login(system_browser: bool) -> None:
+@click.pass_context
+@cli_error
+def auth_login(ctx: click.Context, system_browser: bool) -> None:
     """Log in to your Jagex Account."""
-    try:
-        username, count = do_login(system_browser=system_browser)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    username, count = do_login(system_browser=system_browser)
     console.print(f"[bold green]Logged in as {username}. Stored accounts: {count}[/]")
 
 
 @auth.command("logout")
 @click.option("-a", "--all", "all_accounts", is_flag=True, help="Log out of all accounts.")
 @click.option("-u", "--username", default=None, help="Account username to log out.")
-def auth_logout(all_accounts: bool, username: str | None) -> None:
+@click.pass_context
+@cli_error
+def auth_logout(ctx: click.Context, all_accounts: bool, username: str | None) -> None:
     """Log out and clear stored tokens."""
-    try:
-        do_logout(username, all_accounts=all_accounts)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    do_logout(username, all_accounts=all_accounts)
     console.print("[bold yellow]Logged out.[/]")
 
 
@@ -121,23 +164,8 @@ def accounts_list(ctx: click.Context) -> None:
         console.print("[yellow]No characters found.[/]")
         return
 
-    from rs3tk.config import load_settings
-
     settings = load_settings()
-    table = Table()
-    table.add_column("Name", style="bold")
-    table.add_column("ID", style="dim")
-    table.add_column("Account", style="dim")
-    table.add_column("Membership", justify="center")
-    table.add_column("Default", justify="center")
-    table.add_column("Last Played", justify="center")
-    for char in all_characters:
-        tag = "[green]Yes[/]" if char.is_member else "[dim]No[/]"
-        account = _censor_value(char.username) if ctx.obj["censor"] else char.username
-        char_id = _censor_value(char.account_id) if ctx.obj["censor"] else char.account_id
-        default = "[green]*[/]" if settings.default_character == char.display_name else ""
-        last = "[green]*[/]" if settings.last_character == char.display_name else ""
-        table.add_row(char.display_name, char_id, account, tag, default, last)
+    table = build_characters_table(all_characters, settings, censor=ctx.obj["censor"])
     console.print(table)
 
 
@@ -145,28 +173,23 @@ def accounts_list(ctx: click.Context) -> None:
 @click.argument("name")
 def accounts_set_default(name: str) -> None:
     """Set a default character for quick launching."""
-    from rs3tk.config import load_settings, save_settings
-
     all_characters = get_all_characters()
     if not any(c.display_name.lower() == name.lower() for c in all_characters):
         raise click.ClickException(f"Character '{name}' not found in any stored account.")
 
-    settings = load_settings()
-    save_settings(settings.model_copy(update={"default_character": name}))
+    set_default_character(name)
     console.print(f"[bold green]Default character set to {name}.[/]")
 
 
 @accounts.command("unset-default")
 def accounts_unset_default() -> None:
     """Clear the default character."""
-    from rs3tk.config import load_settings, save_settings
-
     settings = load_settings()
     if not settings.default_character:
         console.print("[dim]No default character set.[/]")
         return
 
-    save_settings(settings.model_copy(update={"default_character": None}))
+    unset_default_character()
     console.print("[bold yellow]Default character cleared.[/]")
 
 
@@ -184,46 +207,36 @@ def clients(ctx: click.Context) -> None:
 @clients.command("list")
 def clients_list() -> None:
     """Show detected game clients and their install paths."""
-    table = Table()
-    table.add_column("Client", style="bold")
-    table.add_column("Installed", justify="center")
-    table.add_column("Path")
-    for client, installed, path in get_client_info():
-        tag = "[green]Yes[/]" if installed else "[red]No[/]"
-        table.add_row(client.name, tag, path or "-")
+    table = build_clients_table(get_client_info())
     console.print(table)
 
 
 @clients.command("install")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
-def clients_install(client: str) -> None:
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
+@click.pass_context
+@cli_error
+def clients_install(ctx: click.Context, client: str) -> None:
     """Install a game client."""
     with console.status(f"[bold green]Installing {client}..."):
-        try:
-            result = do_autoinstall(client)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
+        result = do_autoinstall(client)
     console.print(f"[bold green]{result}[/]")
 
 
 @clients.command("remove")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
-def clients_remove(client: str) -> None:
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
+@click.pass_context
+@cli_error
+def clients_remove(ctx: click.Context, client: str) -> None:
     """Remove a game client."""
     with console.status(f"[bold yellow]Removing {client}..."):
-        try:
-            result = do_autoinstall(client, remove=True)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
+        result = do_autoinstall(client, remove=True)
     console.print(f"[bold green]{result}[/]")
 
 
 @clients.command("set-default")
-@click.argument("client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 def clients_set_default(client: str) -> None:
     """Set the default game client."""
-    from rs3tk.config import load_settings, save_settings
-
     settings = load_settings()
     save_settings(settings.model_copy(update={"default_client": client}))
     console.print(f"[bold green]Default client set to {client}.[/]")
@@ -239,6 +252,7 @@ def clients_set_default(client: str) -> None:
 @click.option("-f", "--foreground", is_flag=True, help="Run client in foreground (show logs).")
 @click.option("-n", "--no-character", is_flag=True, help="Launch without JX_* env variables.")
 @click.pass_context
+@cli_error
 def play(
     ctx: click.Context,
     client: str | None,
@@ -248,24 +262,13 @@ def play(
     no_character: bool,
 ) -> None:
     """Launch a game client. CLIENT is one of: rs3, official, runelite, hdos."""
-    from rs3tk.config import load_settings
-
     settings = load_settings()
 
     if interactive or client is None:
         client = pick_client(settings)
 
     if no_character:
-        try:
-            game_client = get_game_client(client)
-        except AppError as e:
-            raise click.ClickException(str(e)) from None
-        console.print(f"[bold green]Launching {game_client.name}...[/]")
-        try:
-            process = game_client.launch("", None, None, foreground=foreground)
-            console.print(f"  [dim]PID {process.pid}[/]")
-        except (FileNotFoundError, RuntimeError) as e:
-            raise click.ClickException(str(e)) from None
+        launch_without_character(client, foreground=foreground)
         return
 
     characters = get_all_characters()
@@ -275,22 +278,18 @@ def play(
     if not character:
         character = pick_character(characters, settings)
 
-    try:
-        launch_game(client, character, foreground=foreground)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    launch_game(client, character, foreground=foreground)
 
 
 # ── info ─────────────────────────────────────────────────────────────────────
 
 
 @main.command()
-def status() -> None:
+@click.pass_context
+@cli_error
+def status(ctx: click.Context) -> None:
     """Check game server status."""
-    try:
-        data = check_game_status()
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    data = check_game_status()
 
     if data.get("playDisabled"):
         console.print("[bold red]Game is currently offline for maintenance.[/]")
@@ -302,27 +301,20 @@ def status() -> None:
 
 @main.command()
 @click.option("--count", "-n", default=5, help="Number of news items.")
-@click.option("--game", type=click.Choice(["rs3", "osrs"], case_sensitive=False), default=None)
-def news(count: int, game: str | None) -> None:
+@click.option("--game", type=click.Choice(list(GAME_KEYS), case_sensitive=False), default=None)
+@click.pass_context
+@cli_error
+def news(ctx: click.Context, count: int, game: str | None) -> None:
     """Fetch latest game news."""
-    from rs3tk.config import load_settings
-
     resolved_game = game or load_settings().default_game
 
-    try:
-        articles = get_news(game=game, count=count)
-    except AppError as e:
-        raise click.ClickException(str(e)) from None
+    articles = get_news(game=resolved_game, count=count)
 
     if not articles:
         console.print("[yellow]No news found.[/]")
         return
 
-    table = Table(title=f"Latest {resolved_game.upper()} News")
-    table.add_column("Title", style="bold")
-    table.add_column("Date", style="dim")
-    for article in articles:
-        table.add_row(article.get("title", "Untitled"), article.get("formattedDate", ""))
+    table = build_news_table(articles, f"Latest {resolved_game.upper()} News")
     console.print(table)
 
 
@@ -335,19 +327,13 @@ def config(ctx: click.Context) -> None:
     """View or modify rs3tk settings."""
     if ctx.invoked_subcommand is None:
         s = get_config()
-        for label, val in [
-            ("Default game", s.default_game),
-            ("Default client", s.default_client),
-            ("Default character", s.default_character or "(none)"),
-            ("Last character", s.last_character or "(none)"),
-            ("Locale", f"{s.locale} (0=en, 1=de, 2=fr, 3=pt-br)"),
-        ]:
-            console.print(f"{label}: [bold]{val}[/]")
+        table = build_config_display(s)
+        console.print(table)
 
 
 @config.command("set")
-@click.option("--game", type=click.Choice(["rs3", "osrs"], case_sensitive=False))
-@click.option("--client", type=click.Choice(["rs3", "official", "runelite", "hdos"], case_sensitive=False))
+@click.option("--game", type=click.Choice(list(GAME_KEYS), case_sensitive=False))
+@click.option("--client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
 @click.option("--locale", type=int, help="Language locale (0=en, 1=de, 2=fr, 3=pt-br).")
 def config_set(game: str | None, client: str | None, locale: int | None) -> None:
     """Update a setting."""

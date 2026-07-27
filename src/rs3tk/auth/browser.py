@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
 
-_ELECTRON_DIR = Path(__file__).parent / "electron"
+_ELECTRON_DIR = Path(__file__).parent / "electron_login"
 _MAIN_JS = _ELECTRON_DIR / "main.js"
-_USER_DATA_DIR = Path(tempfile.gettempdir()) / "rs3tk-electron"
+_USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
 
 
 def _find_electron() -> list[str]:
@@ -41,16 +42,20 @@ def _run_electron(url: str, redirect_host: str) -> dict[str, str | None]:
     )
 
     result: dict[str, str | None] = {}
-    if proc.stdout is not None:
-        for line in proc.stdout:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                result = json.loads(line)
-                break
-            except json.JSONDecodeError:
-                continue
+    try:
+        if proc.stdout is not None:
+            for line in proc.stdout:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    result = json.loads(line)
+                    break
+                except json.JSONDecodeError:
+                    continue
+    finally:
+        if proc.stdout is not None:
+            proc.stdout.close()
 
     try:
         proc.wait(timeout=300)

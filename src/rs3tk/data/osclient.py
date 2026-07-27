@@ -92,7 +92,7 @@ def download_client(target: Path, version_file: Path) -> None:
                 break
             exe_offset += int(file_entry.get("size", 0)) if isinstance(file_entry, dict) else 0
 
-    assembled = b""
+    assembled = bytearray()
     for digest_entry in digests:
         digest_str = digest_entry.get("digest", "") if isinstance(digest_entry, dict) else str(digest_entry)
         if not digest_str or len(digest_str) < 2:
@@ -105,12 +105,12 @@ def download_client(target: Path, version_file: Path) -> None:
         url = base_url + substituted.replace("{TargetDigest}", hex_digest)
         raw = fetch(url)
         try:
-            assembled += gzip.decompress(raw[GZIP_HEADER_SKIP:])
+            assembled.extend(gzip.decompress(raw[GZIP_HEADER_SKIP:]))
         except Exception:
-            assembled += raw
+            assembled.extend(raw)
 
     exe_size = int(exe_entry.get("size", 0))
-    exe_bytes = assembled[exe_offset : exe_offset + exe_size] if exe_size else assembled
+    exe_bytes = bytes(assembled[exe_offset : exe_offset + exe_size]) if exe_size else bytes(assembled)
 
     tmp = target.with_suffix(".exe.tmp")
     tmp.write_bytes(exe_bytes)

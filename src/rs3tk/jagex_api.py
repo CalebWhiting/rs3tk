@@ -78,7 +78,7 @@ class Character(_BaseApiModel):
 GameSession: TypeAlias = str
 
 
-class UserProfile(BaseModel):
+class UserProfile(_BaseApiModel):
     uuid: str
     username: str
     email: str | None = None
@@ -232,10 +232,4 @@ async def get_profile(session_id: str) -> UserProfile:
                 username="",
                 characters=[Character.model_validate(x) for x in data],
             )
-        return UserProfile(
-            uuid=data.get("uuid", ""),
-            username=data.get("username", ""),
-            email=data.get("email"),
-            display_name=data.get("displayName"),
-            characters=[Character.model_validate(x) for x in data.get("characters", [])],
-        )
+        return UserProfile.model_validate(data)

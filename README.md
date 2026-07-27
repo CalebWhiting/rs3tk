@@ -31,9 +31,14 @@ pre-commit install
 ```bash
 # Log in
 rs3tk auth login
+rs3tk auth list               # list stored accounts
+rs3tk auth logout             # log out current account
+rs3tk auth logout --all       # log out all accounts
 
-# List your characters
+# Manage characters
 rs3tk accounts list
+rs3tk accounts set-default "Cow31337Killer"
+rs3tk accounts unset-default
 
 # Launch a game
 rs3tk play rs3               # RS3
@@ -47,6 +52,9 @@ rs3tk play -i
 # Launch with a specific character
 rs3tk play runelite -c "Cow31337Killer"
 
+# Launch without JX_* env variables (no character)
+rs3tk play runelite -n
+
 # Check game status
 rs3tk status
 
@@ -54,14 +62,20 @@ rs3tk status
 rs3tk news
 rs3tk news -n 10 --game rs3
 
-# Show/update settings
+# Settings
+rs3tk config                  # show all settings
 rs3tk config set --game osrs --client runelite
+rs3tk config set --locale 2
 
-# Show detected clients
+# Game clients
 rs3tk clients list
+rs3tk clients install runelite
+rs3tk clients remove runelite
+rs3tk clients set-default runelite
 
-# Log out
-rs3tk auth logout
+# Alternate UIs
+rs3tk ui                      # interactive terminal UI (Rich)
+rs3tk gui                     # graphical launcher (PySide6)
 ```
 
 ## Options
@@ -106,13 +120,22 @@ self-updating launchers that check for new versions on each run.
 
 ## Configuration
 
-Settings are stored at `~/.config/rs3tk/`.
+Settings are stored at `~/.config/rs3tk/` and managed via the `config` command:
+
+- `default_game` — `rs3` / `osrs` (used by `news` when `--game` is omitted)
+- `default_client` — `rs3` / `official` / `runelite` / `hdos` (used by `play` interactive prompt and `clients set-default`)
+- `default_character` — set via `accounts set-default NAME`
+- `last_character` — auto-saved after `play` (used as fallback default)
+- `locale` — `0`=en, `1`=de, `2`=fr, `3`=pt-br (RS3 news only)
+
+OAuth tokens are stored in your OS keyring under the `rs3tk` service.
 
 ## Development
 
 ```bash
 # Install dev dependencies
 pip install -e ".[dev]"
+pre-commit install
 
 # Run linter
 ruff check src/
@@ -122,7 +145,87 @@ ruff format src/
 
 # Type check
 mypy src/
+
+# Run tests
+pytest
+
+# All of the above at once
+ruff check src/ && ruff format --check src/ && mypy src/ && pytest
 ```
+
+See `AGENTS.md` for the full structure, conventions, settings reference, and CLI command tree.
+
+## Electron GUI (optional)
+
+A separate Electron + React + TypeScript + Tailwind desktop app lives in
+`electron/`. It spawns the Python `rs3tk-backend` HTTP server itself on
+`http://127.0.0.1:8765` at startup, so no separate backend process is
+required for normal use.
+
+**Prerequisites:** Node.js 18+ and a system `python3` (the GUI will
+auto-create a venv and install `rs3tk` into it on first run if no
+existing install is found). Works on PEP 658 systems (Kali, Fedora,
+etc.) where `pip install` is blocked for the system Python.
+
+### Quick start
+
+```bash
+cd electron && npm install && npm run dev
+```
+
+That's it. On first run the GUI will create a venv at
+`~/.config/rs3tk/venv` and `pip install rs3tk` into it (takes a minute
+on first run; instant thereafter). The window opens once setup
+completes.
+
+If the system has no `python3` (rare), install it first. If the venv
+setup fails for any reason, the GUI shows an error dialog with the
+underlying error.
+
+### How the backend is located
+
+The GUI checks, in order:
+1. Is port 8765 already in use? (yes → done)
+2. Project-local `.venv` with `rs3tk` importable
+3. `rs3tk-backend` on `$PATH`
+4. System `python3` with `rs3tk` importable
+5. None of the above → auto-create `~/.config/rs3tk/venv` + install
+
+In dev (running from a checkout) the project `.venv` is preferred.
+In production the user venv is the canonical location.
+
+### Run in dev mode (with hot reload)
+
+```bash
+cd electron
+npm run dev
+```
+
+The Electron main process will locate the backend (vending-venv first,
+then `rs3tk-backend` on `$PATH`, then `python3 -m rs3tk.backend`) and
+spawn it on port 8765. The renderer connects to the same URL.
+
+To run the backend separately for debugging, start it in another
+terminal first:
+
+```bash
+rs3tk-backend   # listens on 127.0.0.1:8765
+```
+
+The Electron app detects that the port is already in use and skips
+spawning its own copy.
+
+### Build a Linux AppImage
+
+```bash
+cd electron
+npm run build:linux
+# Output: electron/dist/RS3TK-{version}.AppImage
+```
+
+`build:unpack` produces a directory build (faster, no installer).
+The Electron app reads from the same `~/.config/rs3tk/` directory as
+the CLI, so login state is shared.
 
 ## License
 

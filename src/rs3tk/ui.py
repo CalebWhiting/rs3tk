@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import contextlib
 
-from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
+from rich.prompt import Confirm, Prompt
 
 from rs3tk.app import (
     AppError,
@@ -18,12 +17,12 @@ from rs3tk.app import (
     get_config,
     get_news,
     launch_game,
-    pick_character,
-    pick_client,
     update_config,
 )
-
-console = Console()
+from rs3tk.cli import pick_character, pick_client
+from rs3tk.config import load_settings
+from rs3tk.output import console
+from rs3tk.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
 
 _MENU = [
     ("1", "Play"),
@@ -52,34 +51,23 @@ def _show_menu() -> str:
     for key, label in _MENU:
         console.print(f"  [bold]{key}[/]. {label}")
     console.print()
-    from rich.prompt import Prompt
-
     choices = [k for k, _ in _MENU]
     return Prompt.ask("Select", choices=choices, default="0")
 
 
 def _do_play() -> None:
-    from rs3tk.config import load_settings
+    from rs3tk.app import launch_without_character
 
     settings = load_settings()
 
     client_key = pick_client(settings)
 
-    from rich.prompt import Confirm
-
     no_character = Confirm.ask("Launch without character?", default=False)
 
     if no_character:
         try:
-            game_client = __import__("rs3tk.app", fromlist=["get_game_client"]).get_game_client(client_key)
+            launch_without_character(client_key)
         except AppError as e:
-            console.print(f"[bold red]Error:[/] {e}")
-            return
-        console.print(f"[bold green]Launching {game_client.name}...[/]")
-        try:
-            process = game_client.launch("", None, None)
-            console.print(f"  [dim]PID {process.pid}[/]")
-        except (FileNotFoundError, RuntimeError) as e:
             console.print(f"[bold red]Error:[/] {e}")
         return
 
@@ -89,8 +77,6 @@ def _do_play() -> None:
         return
 
     character = pick_character(characters, settings)
-    if not character:
-        return
 
     try:
         launch_game(client_key, character)
@@ -100,8 +86,6 @@ def _do_play() -> None:
 
 def _do_login() -> None:
     console.print("\n[bold]Login[/]")
-    from rich.prompt import Confirm
-
     system = Confirm.ask("Use system browser?", default=False)
     try:
         username, count = do_login(system_browser=system)
@@ -112,8 +96,11 @@ def _do_login() -> None:
 
 
 def _do_logout() -> None:
-    do_logout()
-    console.print("[bold yellow]Logged out.[/]")
+    try:
+        do_logout()
+        console.print("[bold yellow]Logged out.[/]")
+    except AppError as e:
+        console.print(f"[bold red]Error:[/] {e}")
 
 
 def _do_accounts() -> None:
@@ -122,32 +109,13 @@ def _do_accounts() -> None:
         console.print("[yellow]No characters found.[/]")
         return
 
-    from rs3tk.config import load_settings
-
     settings = load_settings()
-    table = Table(title="Characters")
-    table.add_column("Name", style="bold")
-    table.add_column("ID", style="dim")
-    table.add_column("Account", style="dim")
-    table.add_column("Membership", justify="center")
-    table.add_column("Default", justify="center")
-    table.add_column("Last Played", justify="center")
-    for char in characters:
-        tag = "[green]Yes[/]" if char.is_member else "[dim]No[/]"
-        default = "[green]*[/]" if settings.default_character == char.display_name else ""
-        last = "[green]*[/]" if settings.last_character == char.display_name else ""
-        table.add_row(char.display_name, char.account_id, char.username, tag, default, last)
+    table = build_characters_table(characters, settings)
     console.print(table)
 
 
 def _do_clients() -> None:
-    table = Table(title="Game Clients")
-    table.add_column("Client", style="bold")
-    table.add_column("Installed", justify="center")
-    table.add_column("Path")
-    for client, installed, path in get_client_info():
-        tag = "[green]Yes[/]" if installed else "[red]No[/]"
-        table.add_row(client.name, tag, path or "-")
+    table = build_clients_table(get_client_info())
     console.print(table)
 
 
@@ -177,33 +145,18 @@ def _do_news() -> None:
         console.print("[yellow]No news found.[/]")
         return
 
-    table = Table()
-    table.add_column("Title", style="bold")
-    table.add_column("Date", style="dim")
-    for article in articles:
-        table.add_row(article.get("title", "Untitled"), article.get("formattedDate", ""))
+    table = build_news_table(articles, "News")
     console.print(table)
 
 
 def _do_config() -> None:
     settings = get_config()
 
-    table = Table(title="Settings")
-    table.add_column("Setting", style="bold")
-    table.add_column("Value")
-    table.add_row("Default game", settings.default_game)
-    table.add_row("Default client", settings.default_client)
-    table.add_row("Default character", settings.default_character or "(none)")
-    table.add_row("Last character", settings.last_character or "(none)")
-    table.add_row("Locale", f"{settings.locale} (0=en, 1=de, 2=fr, 3=pt-br)")
+    table = build_config_display(settings)
     console.print(table)
-
-    from rich.prompt import Confirm
 
     if not Confirm.ask("\nEdit settings?", default=False):
         return
-
-    from rich.prompt import Prompt
 
     game = Prompt.ask("Default game", default=settings.default_game)
     client = Prompt.ask("Default client", default=settings.default_client)

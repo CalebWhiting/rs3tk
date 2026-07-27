@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 from typing import Any
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 _USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
@@ -41,7 +44,8 @@ def _fetch_with_retry(
     headers: dict[str, str] | None = None,
     latin1: bool = False,
 ) -> list[dict[str, str]]:
-    for _attempt in range(_MAX_RETRIES):
+    last_error: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
         try:
             r = httpx.get(url, params=params, headers=headers, timeout=_REQUEST_TIMEOUT)
             if r.status_code == 200:
@@ -49,10 +53,13 @@ def _fetch_with_retry(
                 articles = list(data.get("newsItems", []))
                 if articles:
                     return articles
+            logger.warning("Attempt %d/%d for %s returned status %d", attempt + 1, _MAX_RETRIES, url, r.status_code)
             time.sleep(_RETRY_DELAY)
-        except httpx.HTTPError:
+        except httpx.HTTPError as e:
+            last_error = e
+            logger.warning("Attempt %d/%d for %s failed: %s", attempt + 1, _MAX_RETRIES, url, e)
             time.sleep(_RETRY_DELAY)
-    return []
+    raise GameError(f"Failed to fetch {url} after {_MAX_RETRIES} attempts") from last_error
 
 
 def fetch_news(game: str, count: int = 5, locale: int = 0) -> list[dict[str, str]]:

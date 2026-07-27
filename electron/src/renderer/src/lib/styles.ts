@@ -1,0 +1,7 @@
+export const CARD_SHELL = 'bg-rs-card border border-rs-border rs-card h-full'
+export const CARD_SHELL_FLEX = 'bg-rs-card border border-rs-border rs-card h-full flex flex-col'
+export const CARD_HEADER = 'px-4 py-3 border-b border-rs-border'
+export const CARD_TITLE = 'text-xs font-bold text-rs-header tracking-wider'
+export const SECTION_TITLE = 'text-sm font-bold text-rs-header tracking-wider mb-4'
+export const PANEL_SIDEBAR = 'w-[260px] flex-shrink-0 bg-rs-card border border-rs-border rs-card flex flex-col'
+export const ROW_BETWEEN = 'flex items-center justify-between'
