@@ -6,20 +6,28 @@ import asyncio
 import logging
 import shutil
 import subprocess
+from collections.abc import Coroutine
 from dataclasses import dataclass
-from typing import Any
+from typing import TypeVar
 
+from rs3tk.auth.session import get_session, login, logout_account
 from rs3tk.clients import CLIENTS_DIR, GameClient, detect_client, get_client_keys, update_client_config
 from rs3tk.config import AccountInfo, Settings, load_settings, save_settings
+from rs3tk.game import GameError, check_status, fetch_news
+from rs3tk.install import InstallError, install_client
+from rs3tk.jagex_api import UserProfile
+from rs3tk.output import console
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 class AppError(Exception):
     pass
 
 
-def _run_sync(coro: Any) -> Any:  # noqa: ANN401
+def run_sync(coro: Coroutine[object, object, T]) -> T:
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
@@ -38,10 +46,8 @@ class CharacterInfo:
 
 
 def do_login(system_browser: bool = False) -> tuple[str, int]:
-    from rs3tk.auth.session import login as _login
-
     try:
-        tokens, username = _run_sync(_login(system_browser=system_browser))
+        _tokens, username = run_sync(login(system_browser=system_browser))
     except RuntimeError as e:
         raise AppError(str(e)) from e
 
@@ -55,8 +61,6 @@ def do_login(system_browser: bool = False) -> tuple[str, int]:
 
 
 def do_logout(username: str | None = None, *, all_accounts: bool = False) -> None:
-    from rs3tk.auth.session import logout_account
-
     settings = load_settings()
 
     if all_accounts:
@@ -77,9 +81,7 @@ def do_logout(username: str | None = None, *, all_accounts: bool = False) -> Non
     save_settings(settings)
 
 
-def get_session_and_profile(username: str | None = None) -> tuple[str, Any]:
-    from rs3tk.auth.session import get_session
-
+def get_session_and_profile(username: str | None = None) -> tuple[str, UserProfile]:
     if username is None:
         settings = load_settings()
         if not settings.accounts:
@@ -87,7 +89,7 @@ def get_session_and_profile(username: str | None = None) -> tuple[str, Any]:
         username = settings.accounts[0].username
 
     try:
-        return _run_sync(get_session(username))  # type: ignore[no-any-return]
+        return run_sync(get_session(username))
     except RuntimeError as e:
         raise AppError(str(e)) from e
 
@@ -110,8 +112,6 @@ def _get_characters_result() -> CharactersResult:
     display_names = {a.username: a.display_name or a.username for a in settings.accounts}
 
     async def _fetch_all() -> CharactersResult:
-        from rs3tk.auth.session import get_session
-
         auth_errors: list[str] = []
 
         async def _fetch_one(username: str) -> list[CharacterInfo]:
@@ -142,7 +142,7 @@ def _get_characters_result() -> CharactersResult:
         characters = [char for batch in results for char in batch]
         return CharactersResult(characters=characters, auth_errors=auth_errors)
 
-    return _run_sync(_fetch_all())  # type: ignore[no-any-return]
+    return run_sync(_fetch_all())
 
 
 def get_account_for_character(character_name: str) -> str | None:
@@ -152,7 +152,7 @@ def get_account_for_character(character_name: str) -> str | None:
     return None
 
 
-def resolve_character(character_name: str, profile: Any) -> tuple[str, str]:  # noqa: ANN401
+def resolve_character(character_name: str, profile: UserProfile) -> tuple[str, str]:
     for char in profile.characters:
         if char.display_name.lower() == character_name.lower():
             return char.account_id, char.display_name
@@ -170,20 +170,6 @@ def list_accounts() -> list[AccountInfo]:
     return load_settings().accounts
 
 
-def remove_account(username: str) -> None:
-    from rs3tk.auth.session import logout_account as _logout_account
-
-    _logout_account(username)
-    _remove_account_from_settings(username)
-
-
-def _remove_account_from_settings(username: str) -> Settings:
-    settings = load_settings()
-    settings = settings.model_copy(update={"accounts": [a for a in settings.accounts if a.username != username]})
-    save_settings(settings)
-    return settings
-
-
 def set_default_character(name: str) -> None:
     settings = load_settings()
     save_settings(settings.model_copy(update={"default_character": name}))
@@ -194,9 +180,7 @@ def unset_default_character() -> None:
     save_settings(settings.model_copy(update={"default_character": None}))
 
 
-def check_game_status() -> dict[str, Any]:
-    from rs3tk.game import GameError, check_status
-
+def check_game_status() -> dict[str, object]:
     try:
         return check_status()
     except GameError as e:
@@ -204,8 +188,6 @@ def check_game_status() -> dict[str, Any]:
 
 
 def get_news(game: str | None = None, count: int = 5, locale: int = 0) -> list[dict[str, str]]:
-    from rs3tk.game import GameError, fetch_news
-
     settings = load_settings()
     if game is None:
         game = settings.default_game
@@ -252,8 +234,6 @@ def do_autoinstall(client_key: str, remove: bool = False) -> str:
         update_client_config(client_key, paths=[], env={})
         return f"Removed {client_key}"
 
-    from rs3tk.install import InstallError, install_client
-
     try:
         exe_path = install_client(client_key)
     except InstallError as e:
@@ -289,8 +269,6 @@ def launch_game(
         character_id, display_name = resolve_character(character_name, profile)
         settings = load_settings()
         save_settings(settings.model_copy(update={"last_character": display_name}))
-
-    from rs3tk.output import console
 
     console.print(f"[bold green]Launching {game_client.name}...[/]")
     try:

@@ -1,23 +1,10 @@
 from __future__ import annotations
 
-from typing import Any
-
 from rich.table import Table
 
 from rs3tk.app import CharacterInfo
 from rs3tk.clients import GameClient
 from rs3tk.config import Settings
-
-
-def build_accounts_table(characters: list[CharacterInfo], censor: bool = False) -> Table:
-    table = Table(title="Accounts")
-    table.add_column("Account", style="cyan")
-    table.add_column("Character", style="green")
-    table.add_column("Member", justify="center")
-    for c in characters:
-        name = "*" * len(c.display_name) if censor else c.display_name
-        table.add_row(c.username, name, "Yes" if c.is_member else "No")
-    return table
 
 
 def build_characters_table(characters: list[CharacterInfo], settings: Settings, censor: bool = False) -> Table:
@@ -46,15 +33,6 @@ def build_clients_table(clients: list[tuple[GameClient, bool, str | None]]) -> T
     for client, installed, path in clients:
         tag = "[green]Yes[/]" if installed else "[red]No[/]"
         table.add_row(client.name, tag, path or "-")
-    return table
-
-
-def build_status_table(status: dict[str, Any]) -> Table:
-    table = Table(title="Game Status")
-    table.add_column("Key", style="cyan")
-    table.add_column("Value", style="green")
-    for key, value in status.items():
-        table.add_row(key, str(value))
     return table
 
 

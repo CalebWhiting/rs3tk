@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-_ELECTRON_DIR = Path(__file__).parent / "electron"
+_ELECTRON_DIR = Path(__file__).parent / "electron_login"
 _MAIN_JS = _ELECTRON_DIR / "main.js"
 _USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
 
