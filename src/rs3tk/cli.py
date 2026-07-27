@@ -108,6 +108,7 @@ def auth() -> None:
 
 @auth.command("login")
 @click.option("-b", "--system-browser", is_flag=True, help="Use system browser with manual URL paste.")
+@click.pass_context
 @cli_error
 def auth_login(ctx: click.Context, system_browser: bool) -> None:
     """Log in to your Jagex Account."""
@@ -118,6 +119,7 @@ def auth_login(ctx: click.Context, system_browser: bool) -> None:
 @auth.command("logout")
 @click.option("-a", "--all", "all_accounts", is_flag=True, help="Log out of all accounts.")
 @click.option("-u", "--username", default=None, help="Account username to log out.")
+@click.pass_context
 @cli_error
 def auth_logout(ctx: click.Context, all_accounts: bool, username: str | None) -> None:
     """Log out and clear stored tokens."""
@@ -211,6 +213,7 @@ def clients_list() -> None:
 
 @clients.command("install")
 @click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
+@click.pass_context
 @cli_error
 def clients_install(ctx: click.Context, client: str) -> None:
     """Install a game client."""
@@ -221,6 +224,7 @@ def clients_install(ctx: click.Context, client: str) -> None:
 
 @clients.command("remove")
 @click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
+@click.pass_context
 @cli_error
 def clients_remove(ctx: click.Context, client: str) -> None:
     """Remove a game client."""
@@ -284,6 +288,7 @@ def play(
 
 
 @main.command()
+@click.pass_context
 @cli_error
 def status(ctx: click.Context) -> None:
     """Check game server status."""
@@ -300,6 +305,7 @@ def status(ctx: click.Context) -> None:
 @main.command()
 @click.option("--count", "-n", default=5, help="Number of news items.")
 @click.option("--game", type=click.Choice(list(GAME_KEYS), case_sensitive=False), default=None)
+@click.pass_context
 @cli_error
 def news(ctx: click.Context, count: int, game: str | None) -> None:
     """Fetch latest game news."""

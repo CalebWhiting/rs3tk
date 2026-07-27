@@ -15,12 +15,11 @@ console = Console()
 
 def cli_error(func: Callable[..., object]) -> Callable[..., object]:
     @functools.wraps(func)
-    @click.pass_context
-    def wrapper(ctx: click.Context, /, *args: object, **kwargs: object) -> object:
+    def wrapper(*args: object, **kwargs: object) -> object:
         from rs3tk.app import AppError
 
         try:
-            return func(ctx, *args, **kwargs)
+            return func(*args, **kwargs)
         except AppError as e:
             raise click.ClickException(str(e)) from None
 

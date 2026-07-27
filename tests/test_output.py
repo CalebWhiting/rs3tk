@@ -16,6 +16,7 @@ def test_console_is_rich_console() -> None:
 
 def test_cli_error_catches_app_error() -> None:
     @click.command()
+    @click.pass_context
     @cli_error
     def cmd(ctx: click.Context) -> None:
         raise AppError("boom")
@@ -27,6 +28,7 @@ def test_cli_error_catches_app_error() -> None:
 
 def test_cli_error_passes_through_other_exceptions() -> None:
     @click.command()
+    @click.pass_context
     @cli_error
     def cmd(ctx: click.Context) -> None:
         raise ValueError("not app error")
@@ -41,7 +43,6 @@ def test_cli_error_preserves_metadata() -> None:
     @cli_error
     def my_func(ctx: object) -> None:
         """My docstring."""
-        pass
 
     assert my_func.__name__ == "my_func"
     assert my_func.__doc__ == "My docstring."
