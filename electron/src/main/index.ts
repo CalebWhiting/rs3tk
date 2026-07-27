@@ -5,6 +5,7 @@ import { promisify } from 'util'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { homedir } from 'os'
+import { createConnection } from 'net'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -84,6 +85,7 @@ const BACKEND_PORT = 8765
 let closeToTray = true
 let closeOnLaunch = false
 let mainWindow: BrowserWindow | null = null
+let splashWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let isQuitting = false
 let boundsTimer: ReturnType<typeof setTimeout> | null = null
@@ -144,8 +146,75 @@ function showBackendError(title: string, message: string): void {
 const USER_VENV_DIR = join(homedir(), '.config', 'rs3tk', 'venv')
 const USER_VENV_PYTHON = join(USER_VENV_DIR, 'bin', 'python3')
 
-function startBackend(): void {
+function createSplashWindow(): BrowserWindow {
+  const win = new BrowserWindow({
+    width: 360,
+    height: 160,
+    frame: false,
+    resizable: false,
+    movable: true,
+    center: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    transparent: false,
+    backgroundColor: '#1e1e2e',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  })
+  win.setMenuBarVisibility(false)
+  const html = `<!DOCTYPE html><html><head><style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #1e1e2e; color: #cdd6f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; box-sizing: border-box; }
+    h1 { font-size: 15px; font-weight: 500; margin: 0 0 6px 0; text-align: center; }
+    p { font-size: 11px; color: #a6adc8; margin: 0; text-align: center; }
+  </style></head><body><div class="wrap">
+    <h1 id="title">Starting rs3tk...</h1>
+    <p id="subtitle">first run may take a minute</p>
+  </div></body></html>`
+  win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html))
+  return win
+}
+
+function updateSplashMessage(title: string, subtitle?: string): void {
+  if (!splashWindow || splashWindow.isDestroyed()) return
+  void splashWindow.webContents
+    .executeJavaScript(
+      `(() => { const t=document.getElementById('title'); if(t) t.textContent=${JSON.stringify(title)}; const s=document.getElementById('subtitle'); if(s) s.textContent=${JSON.stringify(subtitle ?? '')}; })()`
+    )
+    .catch(() => undefined)
+}
+
+function waitForBackendReady(timeoutMs = 15000): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const deadline = Date.now() + timeoutMs
+    const tryOnce = (): void => {
+      const socket = createConnection(BACKEND_PORT, '127.0.0.1')
+      const onError = (): void => {
+        socket.destroy()
+        if (Date.now() >= deadline) {
+          reject(new Error(`Backend did not accept connections within ${timeoutMs} ms`))
+          return
+        }
+        setTimeout(tryOnce, 250)
+      }
+      socket.once('connect', () => {
+        socket.end()
+        resolve()
+      })
+      socket.once('error', onError)
+    }
+    tryOnce()
+  })
+}
+
+async function startBackend(onProgress?: (title: string, subtitle?: string) => void): Promise<void> {
   console.log(`[${ts()}] [main] Starting backend`)
+  const report = (title: string, subtitle?: string): void => {
+    onProgress?.(title, subtitle)
+  }
+  report('Checking for existing backend...')
 
   const { execSync } = require('child_process') as typeof import('child_process')
 
@@ -166,6 +235,7 @@ function startBackend(): void {
 
   for (const venvPython of venvLocations) {
     if (existsSync(venvPython) && pythonCanImportRs3tk(venvPython, execSync)) {
+      report('Starting backend...')
       const projectRoot = join(venvPython, '..', '..', '..')
       spawnBackend(venvPython, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], projectRoot, { ...process.env, PYTHONPATH: join(projectRoot, 'src') })
       return
@@ -176,6 +246,7 @@ function startBackend(): void {
   try {
     const backendBin = execSync('which rs3tk-backend 2>/dev/null', { encoding: 'utf-8' }).trim()
     if (backendBin) {
+      report('Starting backend...')
       spawnBackend(backendBin, [String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
       return
     }
@@ -185,6 +256,7 @@ function startBackend(): void {
   try {
     const py = execSync('which python3 2>/dev/null', { encoding: 'utf-8' }).trim()
     if (py && pythonCanImportRs3tk(py, execSync)) {
+      report('Starting backend...')
       spawnBackend(py, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
       return
     }
@@ -194,21 +266,17 @@ function startBackend(): void {
   //    and install rs3tk into it. Works on PEP 668 systems (Kali, Fedora, etc.)
   //    where `pip install` is blocked for the system Python.
   console.log(`[${ts()}] [main] No existing rs3tk install found; setting up user venv`)
-  ensureUserVenv()
-    .then((python) => {
-      console.log(`[${ts()}] [main] User venv ready at ${python}`)
-      spawnBackend(python, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
-    })
-    .catch((err: Error) => {
-      showBackendError(
-        'Backend Setup Failed',
-        `Could not set up the rs3tk backend automatically:\n\n${err.message}\n\n`
-          + 'The application will open but cannot function without the backend.'
-      )
-    })
+  const python = await ensureUserVenv(report)
+  report('Starting backend...')
+  spawnBackend(python, ['-m', 'rs3tk.backend', String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
 }
 
-async function ensureUserVenv(): Promise<string> {
+async function ensureUserVenv(
+  onProgress?: (title: string, subtitle?: string) => void
+): Promise<string> {
+  const report = (title: string, subtitle?: string): void => {
+    onProgress?.(title, subtitle)
+  }
   const execSyncLocal = execSync
   const execAsync = promisify(execCb)
 
@@ -223,6 +291,7 @@ async function ensureUserVenv(): Promise<string> {
 
   // Create the venv if missing
   if (!existsSync(USER_VENV_PYTHON)) {
+    report('Creating virtual environment...', '~/.config/rs3tk/venv')
     console.log(`[${ts()}] [main] Creating venv at ${USER_VENV_DIR}`)
     mkdir(USER_VENV_DIR, { recursive: true }).catch(() => undefined)
     await execAsync(`${sysPython} -m venv "${USER_VENV_DIR}"`)
@@ -238,6 +307,7 @@ async function ensureUserVenv(): Promise<string> {
     const installCmd = useLocal
       ? `"${USER_VENV_PYTHON}" -m pip install -e "${projectRoot}"`
       : `"${USER_VENV_PYTHON}" -m pip install rs3tk`
+    report('Installing rs3tk...', 'this may take a minute on first run')
     console.log(`[${ts()}] [main] Installing rs3tk into venv (this may take a minute)`)
     await execAsync(installCmd, { timeout: 600_000 })
     if (!pythonCanImportRs3tk(USER_VENV_PYTHON, execSyncLocal)) {
@@ -492,10 +562,29 @@ app.whenReady().then(async () => {
     }
   })
 
-  startBackend()
+  splashWindow = createSplashWindow()
+  try {
+    await startBackend((title, subtitle) => updateSplashMessage(title, subtitle))
+    updateSplashMessage('Backend ready, loading...')
+    await waitForBackendReady()
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    updateSplashMessage('Setup failed', message)
+    showBackendError(
+      'Backend Setup Failed',
+      `Could not start the rs3tk backend:\n\n${message}\n\nThe application will close in 5 seconds.`
+    )
+    setTimeout(() => app.quit(), 5000)
+    return
+  }
+  if (splashWindow && !splashWindow.isDestroyed()) {
+    splashWindow.close()
+  }
+  splashWindow = null
+
   createWindow()
   createTray()
-  console.log(`[${ts()}] [main] Backend started, window created, tray created`)
+  console.log(`[${ts()}] [main] Backend ready, window created, tray created`)
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
