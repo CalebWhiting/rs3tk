@@ -227,6 +227,51 @@ npm run build:linux
 The Electron app reads from the same `~/.config/rs3tk/` directory as
 the CLI, so login state is shared.
 
+### Troubleshooting
+
+**`ModuleNotFoundError: No module named 'rs3tk'`**
+
+The venv setup failed or was skipped. From the repo root:
+
+```bash
+# Create a venv and install rs3tk
+python3 -m venv ~/.config/rs3tk/venv
+~/.config/rs3tk/venv/bin/pip install -e .
+# Then restart the GUI
+cd electron && npm run dev
+```
+
+**`electron-vite: not found` after `npm install`**
+
+Your npm was configured to omit devDependencies (common in VMs with
+`NODE_ENV=production`). The `electron/.npmrc` in this repo sets
+`include=dev` to prevent this. Try:
+
+```bash
+rm -rf electron/node_modules && cd electron && npm install
+```
+
+**`The SUID sandbox helper binary was found, but is not configured correctly`**
+
+This only happens on very old Electron builds or custom Linux
+setups. The GUI disables the sandbox automatically. If you still
+see it, run:
+
+```bash
+sudo chown root electron/node_modules/electron/dist/chrome-sandbox
+sudo chmod 4755 electron/node_modules/electron/dist/chrome-sandbox
+```
+
+**Backend starts but GUI shows only loading spinners**
+
+The backend took longer than expected to respond. The GUI retries
+automatically (up to 15 attempts). If it persists, check that the
+port 8765 is not already in use by another process:
+
+```bash
+lsof -i :8765
+```
+
 ## License
 
 MIT
