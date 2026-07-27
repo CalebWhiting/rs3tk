@@ -6,8 +6,9 @@ import contextlib
 import json
 import socket
 import sys
+from collections.abc import Callable
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlparse
 
 from rs3tk.app import (
@@ -23,65 +24,84 @@ from rs3tk.app import (
 from rs3tk.config import config_dir
 from rs3tk.rs_api import get_rune_metrics
 
+if TYPE_CHECKING:
+    from rs3tk.backend import RS3TKHandler
+
+    _RouteHandler = Callable[["RS3TKHandler", str], object | None]
+    _PostRouteHandler = Callable[["RS3TKHandler", dict[str, Any]], Any]
+
+
+# A GET route maps a path prefix to a handler. The handler receives the
+# RS3TKHandler instance and the part of self.path after the prefix
+# (already url-decoded). It may:
+#   - return a dict/list to be wrapped in a 200 JSON response
+#   - return None if it has already written the response itself
+#   - raise an exception (caught by the dispatcher, returned as 500)
+_GET_ROUTES: list[tuple[str, _RouteHandler]] = [
+    ("/api/characters", lambda h, _: h._get_characters()),
+    ("/api/accounts", lambda h, _: h._get_accounts()),
+    ("/api/clients", lambda h, _: h._get_clients()),
+    ("/api/status", lambda h, _: {"status": "ok"}),
+    ("/api/metrics/", lambda h, suffix: h._get_metrics(suffix)),
+    ("/api/avatar/", lambda h, suffix: h._serve_avatar(suffix) or None),
+]
+
+# A POST route is keyed by exact path (no parameters).
+_POST_ROUTES: dict[str, _PostRouteHandler] = {
+    "/api/launch": lambda h, body: h._launch_game(body),
+    "/api/login": lambda h, body: h._login(body),
+    "/api/logout": lambda h, body: h._logout(body),
+    "/api/install": lambda h, body: h._install_client(body),
+}
+
 
 class RS3TKHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
-        parsed = urlparse(self.path)
-        path = parsed.path
-
-        try:
-            if path == "/api/characters":
-                data: dict[str, Any] | list[dict[str, Any]] = self._get_characters()
-            elif path == "/api/accounts":
-                data = self._get_accounts()
-            elif path == "/api/clients":
-                data = self._get_clients()
-            elif path.startswith("/api/metrics/"):
-                name = unquote(path.split("/api/metrics/", 1)[1])
-                data = self._get_metrics(name)
-            elif path == "/api/status":
-                data = {"status": "ok"}
-            elif path.startswith("/api/avatar/"):
-                name = unquote(path.split("/api/avatar/", 1)[1])
-                self._serve_avatar(name)
-                return
-            else:
-                self._json_response(404, {"error": "Not found"})
-                return
-
-            self._json_response(200, data)
-        except (BrokenPipeError, ConnectionResetError):
-            pass
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+        path = urlparse(self.path).path
+        self._dispatch_get(path)
 
     def do_POST(self) -> None:
-        parsed = urlparse(self.path)
-        path = parsed.path
+        path = urlparse(self.path).path
         content_length = int(self.headers.get("Content-Length", 0))
         if content_length > 1_048_576:
             self._json_response(413, {"error": "Request body too large"})
             return
-        body: dict[str, Any] = json.loads(self.rfile.read(content_length)) if content_length > 0 else {}
+        try:
+            body: dict[str, Any] = json.loads(self.rfile.read(content_length)) if content_length > 0 else {}
+        except json.JSONDecodeError:
+            self._json_response(400, {"error": "Invalid JSON"})
+            return
 
         try:
-            if path == "/api/launch":
-                data = self._launch_game(body)
-            elif path == "/api/login":
-                data = self._login(body)
-            elif path == "/api/logout":
-                data = self._logout(body)
-            elif path == "/api/install":
-                data = self._install_client(body)
-            else:
+            handler = _POST_ROUTES.get(path)
+            if handler is None:
                 self._json_response(404, {"error": "Not found"})
                 return
-
+            data = handler(self, body)
             self._json_response(200, data)
         except (BrokenPipeError, ConnectionResetError):
             pass
         except Exception as e:
             self._json_response(500, {"error": str(e)})
+
+    def _dispatch_get(self, path: str) -> None:
+        for prefix, handler in _GET_ROUTES:
+            if not path.startswith(prefix):
+                continue
+            suffix = unquote(path[len(prefix) :])
+            try:
+                data = handler(self, suffix)
+            except (BrokenPipeError, ConnectionResetError):
+                return
+            except Exception as e:
+                self._json_response(500, {"error": str(e)})
+                return
+            if data is None:
+                # Handler wrote its own response (e.g. avatar binary).
+                return
+            self._json_response(200, data)
+            return
+        self._json_response(404, {"error": "Not found"})
 
     def _json_response(self, code: int, data: dict[str, Any] | list[dict[str, Any]]) -> None:
         self.send_response(code)
