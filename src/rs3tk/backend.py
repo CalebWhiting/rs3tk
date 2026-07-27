@@ -8,7 +8,7 @@ import socket
 import sys
 from collections.abc import Callable
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from urllib.parse import unquote, urlparse
 
 from rs3tk.app import (
@@ -24,19 +24,16 @@ from rs3tk.app import (
 from rs3tk.config import config_dir
 from rs3tk.rs_api import get_rune_metrics
 
-if TYPE_CHECKING:
-    from rs3tk.backend import RS3TKHandler
-
-    _RouteHandler = Callable[["RS3TKHandler", str], object | None]
-    _PostRouteHandler = Callable[["RS3TKHandler", dict[str, Any]], Any]
-
+# Type aliases for the route table. _RouteHandler returns either:
+#   - a dict/list to be wrapped in a 200 JSON response
+#   - None if it has already written the response itself (avatar binary)
+_RouteHandler = Callable[..., "dict[str, Any] | list[Any] | None"]
+_PostRouteHandler = Callable[..., "dict[str, Any] | list[Any]"]
 
 # A GET route maps a path prefix to a handler. The handler receives the
 # RS3TKHandler instance and the part of self.path after the prefix
-# (already url-decoded). It may:
-#   - return a dict/list to be wrapped in a 200 JSON response
-#   - return None if it has already written the response itself
-#   - raise an exception (caught by the dispatcher, returned as 500)
+# (already url-decoded). It may raise an exception, which the dispatcher
+# will surface as a 500 response.
 _GET_ROUTES: list[tuple[str, _RouteHandler]] = [
     ("/api/characters", lambda h, _: h._get_characters()),
     ("/api/accounts", lambda h, _: h._get_accounts()),
@@ -77,7 +74,7 @@ class RS3TKHandler(BaseHTTPRequestHandler):
             if handler is None:
                 self._json_response(404, {"error": "Not found"})
                 return
-            data = handler(self, body)
+            data: dict[str, Any] | list[Any] = handler(self, body)
             self._json_response(200, data)
         except (BrokenPipeError, ConnectionResetError):
             pass
@@ -99,7 +96,8 @@ class RS3TKHandler(BaseHTTPRequestHandler):
             if data is None:
                 # Handler wrote its own response (e.g. avatar binary).
                 return
-            self._json_response(200, data)
+            data_json: dict[str, Any] | list[Any] = data
+            self._json_response(200, data_json)
             return
         self._json_response(404, {"error": "Not found"})
 

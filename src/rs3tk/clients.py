@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import subprocess
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
 
@@ -46,16 +47,27 @@ DEFAULT_CLIENTS: dict[str, ClientSpec] = {
 }
 
 
+@dataclass
 class GameClient:
-    __slots__ = ("key", "name", "args", "bin_names", "_paths", "env")
+    key: str = ""
+    name: str = "Unknown"
+    args: list[str] = field(default_factory=list)
+    bin_names: list[str] = field(default_factory=list)
+    paths: list[Path] = field(default_factory=list)
+    env: dict[str, str] = field(default_factory=dict)
 
-    def __init__(self) -> None:
-        self.key = ""
-        self.name = "Unknown"
-        self.args: list[str] | None = None
-        self.bin_names: list[str] | None = None
-        self._paths: list[Path] | None = None
-        self.env: dict[str, str] | None = None
+    @classmethod
+    def from_config(cls, key: str, cfg: ClientSpec) -> GameClient:
+        raw_env = cfg.get("env") or {}
+        env = {k: str(Path(v).expanduser()) if v.startswith("~") else v for k, v in raw_env.items()}
+        return cls(
+            key=key,
+            name=cfg.get("name", "Unknown"),
+            args=list(cfg.get("args", [])),
+            bin_names=list(cfg.get("bin_names", [])),
+            paths=[Path(p).expanduser() for p in cfg.get("paths", [])],
+            env=env,
+        )
 
     def executable(self) -> Path | None:
         if self.key:
@@ -64,11 +76,11 @@ class GameClient:
                 for f in sorted(install_dir.iterdir()):
                     if f.is_file() and os.access(f, os.X_OK):
                         return f
-        for name in self.bin_names or []:
+        for name in self.bin_names:
             found = shutil.which(name)
             if found:
                 return Path(found)
-        for p in self._paths or []:
+        for p in self.paths:
             if p.exists():
                 return p
         return None
@@ -89,18 +101,18 @@ class GameClient:
 
         cmd: list[str]
         if exe.suffix == ".exe":
-            cmd = ["wine", str(exe), *(self.args or [])]
+            cmd = ["wine", str(exe), *self.args]
         elif exe.suffix == ".jar":
             java = shutil.which("java")
             if not java:
                 raise FileNotFoundError("Java is required to run HDOS but was not found in PATH")
-            cmd = [java, "-jar", str(exe), *(self.args or [])]
+            cmd = [java, "-jar", str(exe), *self.args]
         else:
-            cmd = [str(exe), *(self.args or [])]
+            cmd = [str(exe), *self.args]
         logger.info("Launching %s: %s", self.name, " ".join(cmd))
 
         env = os.environ.copy()
-        env.update(self.env or {})
+        env.update(self.env)
         env["JX_SESSION_ID"] = session_id
         if character_id:
             env["JX_CHARACTER_ID"] = character_id
@@ -121,20 +133,6 @@ class GameClient:
             raise RuntimeError(f"Failed to launch {self.name}: {e}") from e
 
 
-class ConfigClient(GameClient):
-    def __init__(self, key: str, cfg: ClientSpec) -> None:
-        self.key = key
-        self.name = cfg.get("name", "Unknown")
-        self.args = cfg.get("args", [])
-        self.bin_names = cfg.get("bin_names", [])
-        self._paths = [Path(p).expanduser() for p in cfg.get("paths", [])]
-        raw_env = cfg.get("env")
-        if raw_env:
-            self.env = {k: str(Path(v).expanduser()) if v.startswith("~") else v for k, v in raw_env.items()}
-        else:
-            self.env = None
-
-
 def _load_clients_config() -> dict[str, ClientSpec]:
     global _clients_config  # noqa: PLW0603
     if _clients_config is not None:
@@ -150,7 +148,7 @@ _clients_config: dict[str, ClientSpec] | None = None
 
 def get_all_clients() -> dict[str, GameClient]:
     cfg = _load_clients_config()
-    return {key: ConfigClient(key, val) for key, val in cfg.items()}
+    return {key: GameClient.from_config(key, val) for key, val in cfg.items()}
 
 
 def get_client_keys() -> list[str]:

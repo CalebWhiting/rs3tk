@@ -35,9 +35,7 @@ def test_build_characters_table_empty() -> None:
 
 
 def test_build_clients_table() -> None:
-    client = GameClient()
-    client.key = "runelite"
-    client.name = "RuneLite"
+    client = GameClient(key="runelite", name="RuneLite")
     table = build_clients_table([(client, True, "/usr/bin/runelite")])
     assert isinstance(table, Table)
 
