@@ -1,14 +1,44 @@
-// electron-builder afterPack hook: remove chrome-sandbox from packaged output.
-// The SUID sandbox helper needs root:root 4755 permissions AND unrestricted
-// user namespaces.  VMs / containers typically restrict user namespaces, so
-// even a correctly-permissioned binary fails with "Operation not permitted".
-// Removing the binary makes Chromium fall back to non-sandboxed mode.
+// electron-builder afterPack hook: disable Chromium sandboxing in packaged builds.
+//
+// `app.commandLine.appendSwitch('no-sandbox')` runs too late — Chromium's
+// sandbox init happens in native code before the main-process JS loads.
+// We fix this by replacing the Electron binary with a tiny shell wrapper
+// that passes --no-sandbox to the real binary, so the flag is present in
+// process.argv from the very start.
 const fs = require('fs')
 const path = require('path')
 
 module.exports = async function (context) {
-  const sandbox = path.join(context.appOutDir, 'chrome-sandbox')
+  const outDir = context.appOutDir
+
+  // 1. Remove chrome-sandbox SUID helper
+  const sandbox = path.join(outDir, 'chrome-sandbox')
   if (fs.existsSync(sandbox)) {
     fs.unlinkSync(sandbox)
   }
+
+  // 2. Find the actual Electron binary — electron-builder lowercases the
+  //    productName for Linux, but appInfo.productFilename preserves the
+  //    original casing.  Try both.
+  const nameLC = context.packager.appInfo.productFilename.toLowerCase()
+  const candidates = [
+    path.join(outDir, nameLC),
+    path.join(outDir, context.packager.appInfo.productFilename),
+  ]
+
+  const binary = candidates.find((p) => fs.existsSync(p))
+  if (!binary) return
+
+  const realBinary = `${binary}-bin`
+  if (fs.existsSync(realBinary)) return
+
+  fs.renameSync(binary, realBinary)
+
+  // Use a relative path so the wrapper works inside the AppImage mount
+  const relBin = path.basename(realBinary)
+  fs.writeFileSync(
+    binary,
+    `#!/bin/sh\ncd "$(dirname "$0")"\nexec "./${relBin}" --no-sandbox "$@"\n`,
+    { mode: 0o755 }
+  )
 }
