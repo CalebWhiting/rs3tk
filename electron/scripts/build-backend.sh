@@ -41,7 +41,7 @@ echo "==> Installing rs3tk + PyInstaller"
 
 # Run PyInstaller
 echo "==> Running PyInstaller"
-"$VENV_DIR/bin/python" -m PyInstaller \
+PROJECT_ROOT="$PROJECT_ROOT" "$VENV_DIR/bin/python" -m PyInstaller \
     --clean \
     --distpath "$BUILD_DIR/dist" \
     --workpath "$BUILD_DIR/build" \
