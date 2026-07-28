@@ -49,3 +49,5 @@ src/rs3tk/data/.runelite.sha256
 # PyInstaller build output
 electron/resources/rs3tk-backend
 electron/build/
+*.kate-swp
+.swp
