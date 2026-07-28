@@ -14,6 +14,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 // but is not configured correctly".
 if (process.platform === 'linux') {
   app.commandLine.appendSwitch('no-sandbox')
+  app.commandLine.appendSwitch('disable-dev-shm-usage')
 }
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -250,7 +251,17 @@ async function startBackend(onProgress?: (title: string, subtitle?: string) => v
     }
   }
 
-  // 2. rs3tk-backend installed on PATH
+  // 2. Bundled rs3tk-backend binary (production: inside the AppImage)
+  if (!is.dev) {
+    const bundled = join(process.resourcesPath, 'rs3tk-backend')
+    if (existsSync(bundled)) {
+      report('Starting bundled backend...')
+      spawnBackend(bundled, [String(BACKEND_PORT)], process.cwd(), process.env as Record<string, string>)
+      return
+    }
+  }
+
+  // 3. rs3tk-backend installed on PATH
   try {
     const backendBin = execSync('which rs3tk-backend 2>/dev/null', { encoding: 'utf-8' }).trim()
     if (backendBin) {
@@ -260,7 +271,7 @@ async function startBackend(onProgress?: (title: string, subtitle?: string) => v
     }
   } catch {}
 
-  // 3. System python3 with rs3tk importable
+  // 4. System python3 with rs3tk importable
   try {
     const py = execSync('which python3 2>/dev/null', { encoding: 'utf-8' }).trim()
     if (py && pythonCanImportRs3tk(py, execSync)) {
@@ -270,7 +281,7 @@ async function startBackend(onProgress?: (title: string, subtitle?: string) => v
     }
   } catch {}
 
-  // 4. None of the above: create a user-level venv at ~/.config/rs3tk/venv
+  // 5. None of the above: create a user-level venv at ~/.config/rs3tk/venv
   //    and install rs3tk into it. Works on PEP 668 systems (Kali, Fedora, etc.)
   //    where `pip install` is blocked for the system Python.
   console.log(`[${ts()}] [main] No existing rs3tk install found; setting up user venv`)

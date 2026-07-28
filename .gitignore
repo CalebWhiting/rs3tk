@@ -45,3 +45,7 @@ src/rs3tk/data/.version
 src/rs3tk/data/.hdos.version
 src/rs3tk/data/.runelite.sha256
 *.version
+
+# PyInstaller build output
+electron/resources/rs3tk-backend
+electron/build/

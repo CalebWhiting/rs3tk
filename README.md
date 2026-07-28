@@ -223,9 +223,19 @@ npm run build:linux
 # Output: electron/dist/RS3TK-{version}.AppImage
 ```
 
+`npm run build:linux` does three things:
+1. Runs `scripts/build-backend.sh` which creates a standalone `rs3tk-backend`
+   binary via PyInstaller (bundled Python + all deps, no system Python needed)
+2. Builds the Electron app with `electron-vite`
+3. Packages everything into an AppImage
+
 `build:unpack` produces a directory build (faster, no installer).
 The Electron app reads from the same `~/.config/rs3tk/` directory as
 the CLI, so login state is shared.
+
+**Prerequisites for building:** Python 3.11+ (for PyInstaller) and
+Node.js 18+ (for Electron). Users who download the AppImage do NOT
+need Python installed.
 
 ### Troubleshooting
 
