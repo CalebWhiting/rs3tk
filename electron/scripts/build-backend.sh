@@ -45,7 +45,6 @@ echo "==> Running PyInstaller"
     --clean \
     --distpath "$BUILD_DIR/dist" \
     --workpath "$BUILD_DIR/build" \
-    --specpath "$BUILD_DIR" \
     "$ELECTRON_DIR/rs3tk-backend.spec"
 
 # Copy to resources/
