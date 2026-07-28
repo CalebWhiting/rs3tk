@@ -1,5 +1,12 @@
 # AGENTS.md
 
+## **IMPORTANT**: Rules
+- **Follow these rules, no exceptions.**
+- Only commit and push when the user says the exact words 'commit and push' (or 'commit', 'push' separately). Never commit as a side-effect of completing a task.
+- When you're told to fix an issue or implement a feature — you must verify that you've achieved the goal.
+- Where appropriate implement tests to verify correct behaviour.
+- Ask questions of the user if you're not sure what you're being asked to do, or how to do it.
+
 ## Project
 
 rs3tk — Python CLI tool replacing the Jagex Launcher. Authenticates via OAuth2, manages game sessions, launches RS3/OSRS clients (Official, RuneLite, HDOS). Linux-only, Python 3.11+.
@@ -11,12 +18,6 @@ Three optional UIs ship alongside the CLI:
 > **Note on `electron` directories:** two directories share similar names for different purposes.
 > - `src/rs3tk/auth/electron_login/` — a tiny headless Electron main-process script invoked by `auth/browser.py` to capture OAuth redirects.
 > - top-level `electron/` — a full Electron + React + electron-vite + electron-builder GUI project with its own `package.json` and build pipeline.
-
-## Rules
-- Never git commit/push unless explicitly told to do so.
-- When you're told to fix an issue or implement a feature — you must verify that you've achieved the goal.
-- Where appropriate implement tests to verify correct behaviour.
-- Ask questions of the user if you're not sure what you're being asked to do, or how to do it.
 
 ## Commands
 

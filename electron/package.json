@@ -17,7 +17,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build:backend": "bash scripts/build-backend.sh",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:linux": "npm run build:backend && npm run build && electron-builder --linux AppImage"
+    "build:linux": "npm run build:backend && npm run build && fakeroot electron-builder --linux AppImage"
   },
   "build": {
     "appId": "com.rs3tk",

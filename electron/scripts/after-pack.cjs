@@ -1,13 +1,20 @@
-// electron-builder afterPack hook: remove chrome-sandbox from packaged output.
-// The SUID sandbox helper requires root:root 4755 permissions which most
-// end-user systems won't have.  Without the binary Chromium simply falls back
-// to non-sandboxed mode, which is fine for a desktop game launcher.
+// electron-builder afterPack hook: fix chrome-sandbox ownership and permissions.
+// The build must run under `fakeroot` so that chown to root:root is faked and
+// recorded correctly in the squashfs image that electron-builder creates.
+const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
 module.exports = async function (context) {
   const sandbox = path.join(context.appOutDir, 'chrome-sandbox')
-  if (fs.existsSync(sandbox)) {
+  if (!fs.existsSync(sandbox)) return
+
+  try {
+    execSync(`chown root:root "${sandbox}"`, { stdio: 'inherit' })
+    execSync(`chmod 4755 "${sandbox}"`, { stdio: 'inherit' })
+  } catch {
+    // If the chown fails (e.g. not running under fakeroot), remove the binary
+    // so the AppImage at least launches without sandboxing.
     fs.unlinkSync(sandbox)
   }
 }
