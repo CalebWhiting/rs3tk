@@ -5,4 +5,4 @@ No UI, no HTTP, no Electron artefacts. The CLI, the Rich TUI, and the
 Electron bridge all call into this package.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
