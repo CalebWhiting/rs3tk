@@ -28,6 +28,7 @@ if (!gotTheLock) {
 interface PersistentSettings {
   theme?: string
   selectedClient?: string
+  lastCharacter?: string
   closeToTray?: boolean
   closeOnLaunch?: boolean
   disableEffects?: boolean

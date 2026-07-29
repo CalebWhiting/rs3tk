@@ -15,7 +15,9 @@ function App() {
   const { data: characters, authErrors, loading: loadingChars, refetch: refetchChars } = useCharacters()
   const { data: accounts, loading: loadingAccounts, refetch: refetchAccounts } = useAccounts()
   const { data: clients, loading: loadingClients, refetch: refetchClients } = useClients()
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(() => {
+    try { return localStorage.getItem('rs3tk-selected-character') || null } catch { return null }
+  })
   const [selectedClient, setSelectedClient] = useState(() => {
     try { return localStorage.getItem('rs3tk-selected-client') || 'official' } catch { return 'official' }
   })
@@ -37,9 +39,23 @@ function App() {
   }, [selectedClient])
 
   useEffect(() => {
+    try {
+      if (selectedCharacter) {
+        localStorage.setItem('rs3tk-selected-character', selectedCharacter)
+        window.api.setPersistentSettings({ lastCharacter: selectedCharacter })
+      } else {
+        localStorage.removeItem('rs3tk-selected-character')
+      }
+    } catch {}
+  }, [selectedCharacter])
+
+  useEffect(() => {
     window.api.getPersistentSettings().then((settings) => {
       if (settings.selectedClient && typeof settings.selectedClient === 'string') {
         setSelectedClient(settings.selectedClient)
+      }
+      if (settings.lastCharacter && typeof settings.lastCharacter === 'string') {
+        setSelectedCharacter(settings.lastCharacter)
       }
     }).catch(() => {})
   }, [])
@@ -47,6 +63,10 @@ function App() {
   useEffect(() => {
     if (characters.length > 0 && !selectedCharacter) {
       setSelectedCharacter(characters[0].display_name)
+    } else if (characters.length > 0 && selectedCharacter) {
+      if (!characters.some(c => c.display_name === selectedCharacter)) {
+        setSelectedCharacter(characters[0].display_name)
+      }
     } else if (characters.length === 0 && selectedCharacter) {
       setSelectedCharacter(null)
     }
