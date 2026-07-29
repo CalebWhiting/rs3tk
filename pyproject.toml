@@ -1,0 +1,8 @@
+[tool.uv.workspace]
+members = ["packages/core", "packages/cli"]
+
+[tool.uv.sources]
+rs3tk-core = { workspace = true }
+
+[dependency-groups]
+dev = ["ruff>=0.5", "mypy>=1.10", "pytest>=7", "coverage>=7.0"]

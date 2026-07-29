@@ -1,0 +1,67 @@
+{
+  "name": "rs3tk-electron",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "RS3TK - RuneScape 3 Toolkit (Electron GUI)",
+  "main": "./out/main/index.js",
+  "author": {
+    "name": "CalebWhiting",
+    "email": "caleb@example.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/CalebWhiting/rs3tk",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-builder install-app-deps",
+    "build:bridge": "bash scripts/build-bridge.sh",
+    "build:unpack": "pnpm run build && electron-builder --dir",
+    "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux AppImage"
+  },
+  "build": {
+    "appId": "com.rs3tk",
+    "productName": "RS3TK",
+    "afterPack": "./scripts/after-pack.cjs",
+    "files": [
+      "out/**/*",
+      "package.json",
+      "resources/rs3tk-bridge"
+    ],
+    "extraResources": [
+      {
+        "from": "src/bridge/electron_login",
+        "to": "electron_login"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Game",
+      "icon": "src/renderer/public/logo-256.png",
+      "maintainer": "CalebWhiting"
+    }
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  },
+  "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@electron/fuses": "^2.1.3",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "electron-vite": "^2.3.0",
+    "postcss": "^8.4.39",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4"
+  }
+}

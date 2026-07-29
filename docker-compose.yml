@@ -1,0 +1,9 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount source for live iteration (optional — override CMD to get a shell)
+      - .:/app
+    working_dir: /app

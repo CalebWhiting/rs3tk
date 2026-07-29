@@ -1,0 +1,133 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  core:
+    name: core (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
+
+      - name: Sync workspace
+        run: uv sync --all-packages
+
+      - name: Lint core
+        working-directory: packages/core
+        run: ruff check src tests
+
+      - name: Format check core
+        working-directory: packages/core
+        run: ruff format --check src
+
+      - name: Typecheck core
+        working-directory: packages/core
+        run: mypy src
+
+      - name: Test core
+        run: pytest packages/core/tests
+
+  cli:
+    name: cli (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
+
+      - name: Sync workspace
+        run: uv sync --all-packages
+
+      - name: Lint cli
+        working-directory: packages/cli
+        run: ruff check src tests
+
+      - name: Format check cli
+        working-directory: packages/cli
+        run: ruff format --check src
+
+      - name: Typecheck cli
+        working-directory: packages/cli
+        run: mypy src
+
+      - name: Test cli
+        run: pytest packages/cli/tests
+
+  bridge:
+    name: bridge (cross-module smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Sync workspace
+        run: uv sync --all-packages
+
+      - name: Test bridge roundtrip
+        run: pytest tests/test_bridge_roundtrip.py
+
+  electron:
+    name: electron (TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: packages/electron/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck
+        working-directory: packages/electron
+        run: pnpm exec tsc --noEmit
+
+      - name: Build
+        working-directory: packages/electron
+        run: pnpm run build

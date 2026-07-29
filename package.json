@@ -1,0 +1,20 @@
+{
+  "name": "rs3tk-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "rs3tk monorepo - core, cli, and electron modules",
+  "scripts": {
+    "lint": "ruff check packages/core/src packages/cli/src",
+    "format": "ruff format packages/core/src packages/cli/src",
+    "typecheck": "mypy packages/core/src packages/cli/src",
+    "test:core": "pytest packages/core/tests",
+    "test:cli": "pytest packages/cli/tests",
+    "test:bridge": "pytest tests/test_bridge_roundtrip.py",
+    "test": "pnpm run test:core && pnpm run test:cli && pnpm run test:bridge",
+    "build:bridge": "bash packages/electron/scripts/build-bridge.sh",
+    "build:linux": "pnpm --filter rs3tk-electron run build:linux",
+    "dev:electron": "pnpm --filter rs3tk-electron run dev",
+    "setup-dev": "uv sync && pnpm install"
+  },
+  "license": "MIT"
+}

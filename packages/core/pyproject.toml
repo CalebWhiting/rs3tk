@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rs3tk-core"
+version = "1.0.0"
+description = "rs3tk core library - OAuth, Jagex API, RuneMetrics, game client management"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "Caleb" },
+]
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "keyring>=25.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rs3tk_core = ["data/*.py", "py.typed"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+extend-exclude = ["src/rs3tk_core/data/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "ANN"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+exclude = ["src/rs3tk_core/data/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["rs3tk_core"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true

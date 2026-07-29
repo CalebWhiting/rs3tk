@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+src/*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+.rs3tk/
+*.log
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# uv
+uv.lock
+
+# Electron (also gitignored inside packages/electron)
+node_modules/
+
+# PyInstaller build output
+packages/electron/build/
+packages/electron/dist/
+packages/electron/resources/rs3tk-bridge
+packages/electron/resources/electron_login/

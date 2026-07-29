@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rs3tk"
+version = "1.0.0"
+description = "rs3tk command-line interface and Rich terminal UI"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "Caleb" },
+]
+dependencies = [
+    "rs3tk-core>=1.0,<2",
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.scripts]
+rs3tk = "rs3tk_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "ANN"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["rs3tk_cli"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true

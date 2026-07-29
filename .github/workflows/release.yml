@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Build rs3tk-core
+        run: uv build --package rs3tk-core --out-dir dist/core
+
+      - name: Build rs3tk
+        run: uv build --package rs3tk --out-dir dist/cli
+
+      - name: Publish rs3tk-core
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/core
+
+      - name: Publish rs3tk
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/cli
+
+  appimage:
+    name: Build AppImage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: packages/electron/pnpm-lock.yaml
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install electron dependencies
+        run: pnpm install
+
+      - name: Build AppImage
+        working-directory: packages/electron
+        run: pnpm run build:linux
+
+      - name: Upload AppImage
+        uses: softprops/action-gh-release@v2
+        with:
+          files: packages/electron/dist/*.AppImage
+          fail_on_unmatched_files: true
