@@ -263,10 +263,10 @@ def launch_game(
         settings = load_settings()
         save_settings(settings.model_copy(update={"last_character": display_name}))
 
-    print(f"[bold green]Launching {game_client.name}...[/]")
+    logger.info("Launching %s...", game_client.name)
     try:
         process = game_client.launch(session_id, character_id, display_name, foreground=foreground)
-        print(f"  [dim]PID {process.pid}[/]")
+        logger.info("PID %s", process.pid)
     except (FileNotFoundError, RuntimeError) as e:
         raise AppError(str(e)) from e
 
@@ -278,9 +278,9 @@ def launch_without_character(client_key: str, *, foreground: bool = False) -> No
     CLI and the terminal UI. Raises AppError on failure.
     """
     game_client = get_game_client(client_key)
-    print(f"[bold green]Launching {game_client.name}...[/]")
+    logger.info("Launching %s...", game_client.name)
     try:
         process = game_client.launch("", None, None, foreground=foreground)
-        print(f"  [dim]PID {process.pid}[/]")
+        logger.info("PID %s", process.pid)
     except (FileNotFoundError, RuntimeError) as e:
         raise AppError(str(e)) from e
