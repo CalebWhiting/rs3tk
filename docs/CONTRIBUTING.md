@@ -157,7 +157,7 @@ git push --tags
 
 The release workflow:
 - Builds `rs3tk-core` and `rs3tk` sdist + wheel; publishes to PyPI.
-- Builds the AppImage; attaches to the GitHub Release.
+- Builds the AppImage; attaches to the Codeberg Release.
 
 ## Adding a new dependency
 

@@ -9,7 +9,7 @@
     "email": "caleb@example.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/CalebWhiting/rs3tk",
+  "homepage": "https://codeberg.org/CalebWhiting/rs3tk",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",

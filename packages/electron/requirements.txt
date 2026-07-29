@@ -1,1 +1,1 @@
-rs3tk-core==1.0.0
+rs3tk-core==1.0.1
