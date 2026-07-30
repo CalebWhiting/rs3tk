@@ -1,7 +1,6 @@
 # rs3tk
 
-Open-source Jagex Launcher replacement for Linux. **Three modules, one
-repo, one release tag.**
+Open-source Jagex Launcher replacement for Linux.
 
 ## What is this?
 
