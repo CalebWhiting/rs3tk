@@ -168,6 +168,10 @@ pnpm build:linux
 See [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) for the full setup
 guide and module structure.
 
+## Screenshots
+<img width="1362" height="809" alt="image" src="https://github.com/user-attachments/assets/f1d68160-fd91-44c9-bce7-e6906405ece9" />
+<img width="1362" height="810" alt="image" src="https://github.com/user-attachments/assets/0846e2b2-8c8e-406b-a710-2cb9b89a1f55" />
+
 ## License
 
 MIT
