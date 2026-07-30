@@ -135,13 +135,19 @@ If you add a new RPC method:
 
 ## CI
 
+GitHub Actions runs on every push to `main` and on pull requests:
+
 - `core` job: ruff check + format check + mypy + pytest (core)
 - `cli` job: ruff check + format check + mypy + pytest (cli)
 - `bridge` job: spawns the bridge as a subprocess and calls each
   method
 - `electron` job: tsc + electron-vite build
 
-See `.github/workflows/ci.yml`.
+On tag push (`v*.*.*`), the release workflow:
+- Publishes `rs3tk-core` and `rs3tk` to PyPI
+- Builds the AppImage and attaches it to the GitHub Release
+
+See `.github/workflows/ci.yml` and `.github/workflows/release.yml`.
 
 ## Releasing
 
@@ -157,7 +163,7 @@ git push --tags
 
 The release workflow:
 - Builds `rs3tk-core` and `rs3tk` sdist + wheel; publishes to PyPI.
-- Builds the AppImage; attaches to the Codeberg Release.
+- Builds the AppImage; attaches to the GitHub Release.
 
 ## Adding a new dependency
 

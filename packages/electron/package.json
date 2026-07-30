@@ -6,10 +6,10 @@
   "main": "./out/main/index.js",
   "author": {
     "name": "CalebWhiting",
-    "email": "caleb@example.com"
+    "email": "caleb.andrew.whiting@gmail.com"
   },
   "license": "MIT",
-  "homepage": "https://codeberg.org/CalebWhiting/rs3tk",
+  "homepage": "https://github.com/CalebWhiting/rs3tk",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
@@ -25,10 +25,13 @@
     "afterPack": "./scripts/after-pack.cjs",
     "files": [
       "out/**/*",
-      "package.json",
-      "resources/rs3tk-bridge"
+      "package.json"
     ],
     "extraResources": [
+      {
+        "from": "resources/rs3tk-bridge",
+        "to": "rs3tk-bridge"
+      },
       {
         "from": "src/bridge/electron_login",
         "to": "electron_login"

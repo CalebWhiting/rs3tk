@@ -43,7 +43,7 @@ jobs:
         run: mypy src
 
       - name: Test core
-        run: pytest packages/core/tests
+        run: uv run pytest packages/core/tests
 
   cli:
     name: cli (Python)
@@ -81,7 +81,7 @@ jobs:
         run: mypy src
 
       - name: Test cli
-        run: pytest packages/cli/tests
+        run: uv run pytest packages/cli/tests
 
   bridge:
     name: bridge (cross-module smoke)
@@ -101,7 +101,7 @@ jobs:
         run: uv sync --all-packages
 
       - name: Test bridge roundtrip
-        run: pytest tests/test_bridge_roundtrip.py
+        run: uv run pytest tests/test_bridge_roundtrip.py
 
   electron:
     name: electron (TypeScript)
