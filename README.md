@@ -169,8 +169,8 @@ See [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) for the full setup
 guide and module structure.
 
 ## Screenshots
-<img width="1362" height="809" alt="GUI main screen" src="docs/screenshots/gui-main.png" />
-<img width="1362" height="810" alt="GUI login screen" src="docs/screenshots/gui-login.png" />
+<img width="1362" height="809" alt="GUI main screen" src="docs/screenshots/electron-gui-1.png" />
+<img width="1362" height="810" alt="GUI login screen" src="docs/screenshots/electron-gui-2.png" />
 
 ## License
 
