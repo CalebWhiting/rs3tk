@@ -11,7 +11,7 @@ repo, one release tag.**
 | [`packages/cli`](packages/cli)             | The `rs3tk` console script: Click CLI, Rich TUI.                              | `pip install rs3tk`           |
 | [`packages/electron`](packages/electron)   | The Electron + React + TypeScript GUI as a downloadable AppImage.            | Download `RS3TK-*.AppImage`   |
 
-The three modules share a single version (currently `1.0.0`) and a
+The three modules share a single version and a
 single git tag. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for
 how they fit together.
 
