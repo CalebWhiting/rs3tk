@@ -32,15 +32,15 @@ jobs:
 
       - name: Lint core
         working-directory: packages/core
-        run: ruff check src tests
+        run: uv run ruff check src tests
 
       - name: Format check core
         working-directory: packages/core
-        run: ruff format --check src
+        run: uv run ruff format --check src
 
       - name: Typecheck core
         working-directory: packages/core
-        run: mypy src
+        run: uv run mypy src
 
       - name: Test core
         run: uv run pytest packages/core/tests
@@ -70,15 +70,15 @@ jobs:
 
       - name: Lint cli
         working-directory: packages/cli
-        run: ruff check src tests
+        run: uv run ruff check src tests
 
       - name: Format check cli
         working-directory: packages/cli
-        run: ruff format --check src
+        run: uv run ruff format --check src
 
       - name: Typecheck cli
         working-directory: packages/cli
-        run: mypy src
+        run: uv run mypy src
 
       - name: Test cli
         run: uv run pytest packages/cli/tests
@@ -117,9 +117,9 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
-          cache-dependency-path: packages/electron/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
