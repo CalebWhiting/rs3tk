@@ -25,7 +25,7 @@ how they fit together.
 
 ## Installation
 
-### Python library + CLI (most users)
+### Python library + CLI
 
 ```bash
 # Library only (for scripts)
