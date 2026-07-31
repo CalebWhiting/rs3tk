@@ -17,6 +17,7 @@ declare global {
         getPersistentSettings: () => Promise<Record<string, unknown>>
         notifyGameLaunched: () => void
         getSessionCookies: (url: string) => Promise<Array<Record<string, unknown>>>
+        refreshTray: () => void
       }
     }
 }

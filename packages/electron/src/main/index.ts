@@ -32,6 +32,7 @@ interface PersistentSettings {
   closeToTray?: boolean
   closeOnLaunch?: boolean
   disableEffects?: boolean
+  trayLaunchMenu?: boolean
   windowBounds?: { x: number; y: number; width: number; height: number }
 }
 
@@ -81,6 +82,7 @@ const bridge = new Bridge()
 
 let closeToTray = true
 let closeOnLaunch = false
+let trayLaunchMenuEnabled = false
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let isQuitting = false
@@ -162,12 +164,8 @@ function getIconPath(): string {
   return join(__dirname, '..', 'renderer', 'logo.png')
 }
 
-function createTray(): void {
-  const iconPath = getIconPath()
-  const icon = nativeImage.createFromPath(iconPath)
-  tray = new Tray(icon)
-
-  const contextMenu = Menu.buildFromTemplate([
+function buildStaticMenu(): Menu {
+  return Menu.buildFromTemplate([
     {
       label: 'Show RS3TK',
       click: () => {
@@ -188,15 +186,95 @@ function createTray(): void {
       }
     }
   ])
+}
+
+async function refreshTrayMenu(): Promise<void> {
+  if (!tray) return
+
+  if (!trayLaunchMenuEnabled || !bridge.isRunning()) {
+    tray.setContextMenu(buildStaticMenu())
+    return
+  }
+
+  try {
+    const [clientsResult, charactersResult] = await Promise.all([
+      bridge.call<Array<{ key: string; name: string; installed: boolean }>>('get_clients'),
+      bridge.call<{ characters: Array<{ display_name: string; username: string; is_member: boolean }> }>('get_characters')
+    ])
+
+    const installedClients = clientsResult.filter((c) => c.installed)
+    const characters = charactersResult.characters ?? []
+
+    const template: Electron.MenuItemConstructorOptions[] = [
+      {
+        label: 'Show RS3TK',
+        click: () => {
+          if (mainWindow) {
+            mainWindow.show()
+            mainWindow.focus()
+          }
+        }
+      },
+      { type: 'separator' }
+    ]
+
+    if (installedClients.length === 0) {
+      template.push({ label: 'Launch', enabled: false })
+    } else if (characters.length === 0) {
+      template.push({ label: 'Launch', enabled: false, toolTip: 'No characters logged in' })
+    } else {
+      template.push({
+        label: 'Launch',
+        submenu: installedClients.map((client) => ({
+          label: client.name,
+          submenu: characters.map((char) => ({
+            label: char.display_name,
+            click: () => {
+              bridge
+                .call('launch_game', { client_key: client.key, character: char.display_name })
+                .then(() => {
+                  if (closeOnLaunch && mainWindow) mainWindow.hide()
+                })
+                .catch((e) => console.error(`[${ts()}] [main] tray launch failed: ${e}`))
+            }
+          }))
+        }))
+      })
+    }
+
+    template.push({ type: 'separator' })
+    template.push({
+      label: 'Quit',
+      click: () => {
+        isQuitting = true
+        closeToTray = false
+        stopBridge()
+        app.quit()
+      }
+    })
+
+    tray.setContextMenu(Menu.buildFromTemplate(template))
+  } catch (e) {
+    console.error(`[${ts()}] [main] refreshTrayMenu failed: ${e}`)
+    tray.setContextMenu(buildStaticMenu())
+  }
+}
+
+function createTray(): void {
+  const iconPath = getIconPath()
+  const icon = nativeImage.createFromPath(iconPath)
+  tray = new Tray(icon)
 
   tray.setToolTip('RS3TK')
-  tray.setContextMenu(contextMenu)
+  tray.setContextMenu(buildStaticMenu())
   tray.on('double-click', () => {
     if (mainWindow) {
       mainWindow.show()
       mainWindow.focus()
     }
   })
+
+  refreshTrayMenu()
 }
 
 function createWindow(): BrowserWindow {
@@ -278,6 +356,7 @@ app.whenReady().then(async () => {
   await loadPersistentSettings()
   closeToTray = persistentSettings.closeToTray ?? true
   closeOnLaunch = persistentSettings.closeOnLaunch ?? false
+  trayLaunchMenuEnabled = persistentSettings.trayLaunchMenu ?? false
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -312,6 +391,10 @@ app.whenReady().then(async () => {
     savePersistentSettings()
     if (settings.closeToTray !== undefined) closeToTray = settings.closeToTray
     if (settings.closeOnLaunch !== undefined) closeOnLaunch = settings.closeOnLaunch
+    if (settings.trayLaunchMenu !== undefined) {
+      trayLaunchMenuEnabled = settings.trayLaunchMenu
+      refreshTrayMenu()
+    }
   })
 
   ipcMain.handle('get-persistent-settings', () => {
@@ -323,6 +406,10 @@ app.whenReady().then(async () => {
       const win = BrowserWindow.fromWebContents(event.sender)
       win?.hide()
     }
+  })
+
+  ipcMain.on('refresh-tray', () => {
+    refreshTrayMenu()
   })
 
   ipcMain.handle('get-version', () => app.getVersion())

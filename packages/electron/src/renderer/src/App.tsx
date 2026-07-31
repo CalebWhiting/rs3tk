@@ -83,6 +83,7 @@ function App() {
       await login()
       refetchChars()
       refetchAccounts()
+      window.api.refreshTray()
     } catch (e) {
       console.error('Login failed:', e)
     }
@@ -93,6 +94,7 @@ function App() {
       await logout(username)
       refetchChars()
       refetchAccounts()
+      window.api.refreshTray()
       const remaining = charactersRef.current.filter(c => c.username !== username)
       setSelectedCharacter(remaining.length > 0 ? remaining[0].display_name : null)
     } catch (e) {
@@ -112,6 +114,7 @@ function App() {
     try {
       await login()
       await Promise.all([refetchChars(), refetchAccounts()])
+      window.api.refreshTray()
       setAuthBannerDismissed(false)
     } catch (e) {
       console.error('Login failed:', e)

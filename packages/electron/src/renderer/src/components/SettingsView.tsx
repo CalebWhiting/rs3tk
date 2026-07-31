@@ -111,6 +111,13 @@ export default function SettingsView({ accounts, onClose, onSettingsChanged }: P
                 </div>
                 <Toggle checked={settings.closeOnLaunch} onChange={() => update('closeOnLaunch', !settings.closeOnLaunch)} />
               </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-rs-text">Tray Launch Menu</div>
+                  <div className="text-xs text-rs-muted">Show installed clients and characters in the system tray context menu</div>
+                </div>
+                <Toggle checked={settings.trayLaunchMenu} onChange={() => update('trayLaunchMenu', !settings.trayLaunchMenu)} />
+              </div>
             </div>
           </section>
 

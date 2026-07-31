@@ -2,6 +2,7 @@ export interface Settings {
   closeToTray: boolean
   closeOnLaunch: boolean
   disableEffects: boolean
+  trayLaunchMenu: boolean
 }
 
 const STORAGE_KEY = 'rs3tk-settings'
@@ -10,6 +11,7 @@ const defaultSettings: Settings = {
   closeToTray: true,
   closeOnLaunch: false,
   disableEffects: false,
+  trayLaunchMenu: false,
 }
 
 export function loadSettingsLocal(): Settings {
@@ -65,6 +67,7 @@ export function saveSettings(settings: Settings): void {
         closeToTray: settings.closeToTray,
         closeOnLaunch: settings.closeOnLaunch,
         disableEffects: settings.disableEffects,
+        trayLaunchMenu: settings.trayLaunchMenu,
       })
       window.api.setSettings({ closeToTray: settings.closeToTray, closeOnLaunch: settings.closeOnLaunch })
     } catch {}

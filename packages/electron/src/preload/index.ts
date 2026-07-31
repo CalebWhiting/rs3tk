@@ -12,6 +12,7 @@ interface RendererAPI extends BridgeAPI {
   getPersistentSettings: () => Promise<Record<string, unknown>>
   notifyGameLaunched: () => void
   getSessionCookies: (url: string) => Promise<Array<Record<string, unknown>>>
+  refreshTray: () => void
 }
 
 const api: RendererAPI = {
@@ -46,6 +47,9 @@ const api: RendererAPI = {
 
   // ── cookies (for OAuth flows) ──
   getSessionCookies: (url) => ipcRenderer.invoke('get-session-cookies', url),
+
+  // ── tray ──
+  refreshTray: () => ipcRenderer.send('refresh-tray'),
 }
 
 if (process.contextIsolated) {
