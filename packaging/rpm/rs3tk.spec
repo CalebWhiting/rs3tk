@@ -2,7 +2,7 @@
 %global core_name rs3tk_core
 
 Name:           python3-%{pypi_name}
-Version:        1.0.1
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        Open-source Jagex Launcher replacement for Linux
 

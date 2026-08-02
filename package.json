@@ -1,7 +1,7 @@
 {
   "name": "rs3tk-monorepo",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "rs3tk monorepo - core, cli, and electron modules",
   "scripts": {
     "lint": "ruff check packages/core/src packages/cli/src",
