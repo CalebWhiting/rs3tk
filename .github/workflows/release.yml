@@ -157,11 +157,31 @@ jobs:
           sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}' 'SKIP')/" "$PKGBUILD"
 
       - name: Push to AUR
-        uses: KSXGitHub/github-actions-aur@v2.7.2
-        with:
-          pkgname: rs3tk-bin
-          pkgbuild: packaging/arch/PKGBUILD
-          commit_username: CalebWhiting
-          commit_email: caleb.andrew.whiting@gmail.com
-          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
-          commit_message: "v${{ github.ref_name }}: automated update"
+        env:
+          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          PKGBUILD="packaging/arch/PKGBUILD"
+
+          # Update version and checksum in PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" "$PKGBUILD"
+          sed -i "s/^pkgrel=.*/pkgrel=1/" "$PKGBUILD"
+          sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}' 'SKIP')/" "$PKGBUILD"
+
+          # Set up SSH
+          mkdir -p ~/.ssh
+          echo "$AUR_SSH_KEY" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Clone AUR repo, update, and push
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/aur" \
+            git clone "ssh://aur@aur.archlinux.org/rs3tk-bin.git" /tmp/aur
+          cp "$PKGBUILD" /tmp/aur/PKGBUILD
+          cd /tmp/aur
+          git add PKGBUILD
+          git diff --cached --quiet || \
+            git -c user.name="CalebWhiting" \
+                -c user.email="caleb.andrew.whiting@gmail.com" \
+                commit -m "v${{ github.ref_name }}: automated update"
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/aur" git push
