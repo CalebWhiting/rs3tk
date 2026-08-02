@@ -42,6 +42,8 @@ export default function BottomBar({ selectedClient }: Props) {
         </span>
       </div>
       <div className="flex items-center gap-4">
+        <a href="https://github.com/CalebWhiting/rs3tk" target="_blank" rel="noopener noreferrer" className="text-rs-muted hover:text-rs-gold text-sm">GitHub</a>
+        <span className="text-rs-muted">|</span>
         <a href="https://discord.gg/torm-828918474784768010" target="_blank" rel="noopener noreferrer" className="text-rs-muted hover:text-rs-gold text-sm">Join Discord</a>
         <span className="text-rs-muted">|</span>
         <a href={newsUrl} target="_blank" rel="noopener noreferrer" className="text-rs-muted hover:text-rs-gold text-sm">RuneScape News</a>

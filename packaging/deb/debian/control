@@ -1,0 +1,20 @@
+Source: rs3tk
+Section: python
+Priority: optional
+Maintainer: Caleb <caleb.andrew.whiting@gmail.com>
+Build-Depends: debhelper-compat (= 13), python3-all, python3-pip
+Standards-Version: 4.6.2
+Homepage: https://github.com/CalebWhiting/rs3tk
+Vcs-Browser: https://github.com/CalebWhiting/rs3tk
+Vcs-Git: https://github.com/CalebWhiting/rs3tk.git
+Rules-Requires-Root: no
+
+Package: rs3tk
+Architecture: all
+Depends: ${misc:Depends}, python3 (>= 3.11), python3-httpx (>= 0.27), python3-pydantic (>= 2.0), python3-keyring (>= 25.0), python3-click (>= 8.1), python3-rich (>= 13.0)
+Description: Open-source Jagex Launcher replacement for Linux
+ rs3tk is an open-source implementation of the Jagex Launcher.
+ It authenticates via OAuth2, manages game sessions, and launches
+ RS3/OSRS clients (Official, RuneLite, HDOS).
+ .
+ This package provides the command-line interface and Rich terminal UI.

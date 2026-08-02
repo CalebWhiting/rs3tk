@@ -1,0 +1,55 @@
+# Maintainer: Caleb <caleb.andrew.whiting@gmail.com>
+pkgname=python-rs3tk
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Open-source Jagex Launcher replacement for Linux"
+arch=('any')
+url="https://github.com/CalebWhiting/rs3tk"
+license=('MIT')
+depends=('python' 'python-httpx' 'python-pydantic' 'python-keyring' 'python-click' 'python-rich')
+makedepends=('python-build' 'python-installer' 'python-setuptools')
+source=("https://files.pythonhosted.org/packages/source/r/rs3tk/rs3tk-$pkgver.tar.gz"
+        "https://files.pythonhosted.org/packages/source/r/rs3tk-core/rs3tk_core-$pkgver.tar.gz")
+sha256sums=('SKIP' 'SKIP')
+provides=('rs3tk')
+conflicts=('rs3tk-bin')
+
+prepare() {
+    cd "$srcdir"
+    # Rename core directory to match expected name
+    mv "rs3tk_core-$pkgver" "rs3tk-core-$pkgver" 2>/dev/null || true
+}
+
+build() {
+    cd "$srcdir"
+    
+    # Build core package first
+    cd rs3tk-core-$pkgver
+    python -m build --wheel --no-isolation
+    cd ..
+    
+    # Build CLI package
+    cd rs3tk-$pkgver
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "$srcdir/rs3tk-$pkgver"
+    # Tests require network access, skip in clean chroot
+    # pytest
+}
+
+package() {
+    cd "$srcdir"
+    
+    # Install core package
+    cd rs3tk-core-$pkgver
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    cd ..
+    
+    # Install CLI package
+    cd rs3tk-$pkgver
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -45,3 +45,7 @@ packages/electron/build/
 packages/electron/dist/
 packages/electron/resources/rs3tk-bridge
 packages/electron/resources/electron_login/
+
+# Packaging build artifacts
+packaging/arch/src/
+packaging/arch/pkg/

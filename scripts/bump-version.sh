@@ -12,6 +12,13 @@
 #   - packages/electron/package.json
 #   - packages/electron/pyproject.toml
 #   - packages/electron/requirements.txt
+#   - packaging/rpm/rs3tk.spec
+#   - packaging/alpine/APKBUILD
+#   - packaging/arch/python-rs3tk/PKGBUILD
+#   - packaging/deb/debian/changelog
+#
+# Note: scripts/ derive VERSION dynamically from pyproject.toml.
+# Note: packaging/deb/debian/changelog preserves the Debian revision (-N).
 #
 # Then regenerates lockfiles.
 set -euo pipefail
@@ -62,6 +69,23 @@ echo "  packages/electron/pyproject.toml"
 # ── packages/electron/requirements.txt ──────────────────────────
 sed -i "s/rs3tk-core==$CURRENT/rs3tk-core==$VERSION/" "$ROOT/packages/electron/requirements.txt"
 echo "  packages/electron/requirements.txt"
+
+# ── packaging/rpm/rs3tk.spec ────────────────────────────────────
+sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk.spec"
+echo "  packaging/rpm/rs3tk.spec"
+
+# ── packaging/alpine/APKBUILD ───────────────────────────────────
+sed -i "s/^pkgver=$CURRENT/pkgver=$VERSION/" "$ROOT/packaging/alpine/APKBUILD"
+echo "  packaging/alpine/APKBUILD"
+
+# ── packaging/arch/python-rs3tk/PKGBUILD ────────────────────────
+sed -i "s/^pkgver=$CURRENT/pkgver=$VERSION/" "$ROOT/packaging/arch/python-rs3tk/PKGBUILD"
+echo "  packaging/arch/python-rs3tk/PKGBUILD"
+
+# ── packaging/deb/debian/changelog ──────────────────────────────
+# Update the version in the changelog (first line after package name)
+sed -i "0,/^rs3tk ($CURRENT/s/^rs3tk ($CURRENT/rs3tk ($VERSION/" "$ROOT/packaging/deb/debian/changelog"
+echo "  packaging/deb/debian/changelog"
 
 # ── regenerate lockfiles ────────────────────────────────────────
 echo "Regenerating lockfiles..."

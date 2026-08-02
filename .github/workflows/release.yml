@@ -40,7 +40,7 @@ jobs:
           packages-dir: dist/cli
 
   appimage:
-    name: Build AppImage
+    name: Build AppImage + DEB
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
           pnpm approve-builds || true
           pnpm install
 
-      - name: Build AppImage
+      - name: Build AppImage + DEB
         working-directory: packages/electron
         run: pnpm run build:linux
 
@@ -79,3 +79,87 @@ jobs:
         with:
           files: packages/electron/dist/*.AppImage
           fail_on_unmatched_files: true
+
+      - name: Upload DEB
+        uses: softprops/action-gh-release@v2
+        with:
+          files: packages/electron/dist/*.deb
+          fail_on_unmatched_files: true
+
+  copr:
+    name: Publish to Fedora Copr
+    runs-on: ubuntu-latest
+    needs: appimage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download AppImage from release
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ github.ref_name }}
+          fileName: RS3TK-*.AppImage
+
+      - name: Set up RPM build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm rpmbuild
+
+      - name: Prepare RPM sources
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
+          cp RS3TK-*.AppImage ~/rpmbuild/SOURCES/
+          sed "s/^Version:.*/Version:        $VERSION/" packaging/rpm/rs3tk-electron.spec > ~/rpmbuild/SPECS/rs3tk-electron.spec
+
+      - name: Build SRPM
+        run: |
+          rpmbuild -bs ~/rpmbuild/SPECS/rs3tk-electron.spec --define "_topdir $HOME/rpmbuild"
+
+      - name: Publish to Copr
+        uses: fedora-copr/copr-cli-action@v1
+        with:
+          token: ${{ secrets.COPR_TOKEN }}
+          owner: calebwhiting
+          project: rs3tk
+          srpm: $HOME/rpmbuild/SRPMS/*.srpm
+
+  aur:
+    name: Update AUR package
+    runs-on: ubuntu-latest
+    needs: appimage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download AppImage from release
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ github.ref_name }}
+          fileName: RS3TK-*.AppImage
+
+      - name: Calculate checksum
+        id: checksum
+        run: |
+          CHECKSUM=$(sha256sum RS3TK-*.AppImage | cut -d' ' -f1)
+          echo "sha256=$CHECKSUM" >> "$GITHUB_OUTPUT"
+
+      - name: Update PKGBUILD
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          PKGBUILD="packaging/arch/PKGBUILD"
+
+          # Update version
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" "$PKGBUILD"
+          sed -i "s/^pkgrel=.*/pkgrel=1/" "$PKGBUILD"
+
+          # Update checksum
+          sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}' 'SKIP')/" "$PKGBUILD"
+
+      - name: Push to AUR
+        uses: KSXGitHub/github-actions-aur@v2.7.2
+        with:
+          pkgname: rs3tk-bin
+          pkgbuild: packaging/arch/PKGBUILD
+          commit_username: CalebWhiting
+          commit_email: caleb.andrew.whiting@gmail.com
+          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
+          commit_message: "v${{ github.ref_name }}: automated update"

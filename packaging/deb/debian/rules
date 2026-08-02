@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# No build needed - wheels are pre-built
+
+override_dh_auto_install:
+	# Install wheels from the pre-built directory
+	pip3 install --no-deps --target=debian/rs3tk/usr/lib/python3/dist-packages /wheels/*.whl
+	mkdir -p debian/rs3tk/usr/bin
+	echo '#!/usr/bin/env python3' > debian/rs3tk/usr/bin/rs3tk
+	echo 'from rs3tk_cli.cli import main' >> debian/rs3tk/usr/bin/rs3tk
+	echo 'if __name__ == "__main__":' >> debian/rs3tk/usr/bin/rs3tk
+	echo '    main()' >> debian/rs3tk/usr/bin/rs3tk
+	chmod 755 debian/rs3tk/usr/bin/rs3tk
+
+override_dh_auto_test:
+	# Tests require network access, skip

@@ -17,7 +17,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build:bridge": "bash scripts/build-bridge.sh",
     "build:unpack": "pnpm run build && electron-builder --dir",
-    "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux AppImage"
+    "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux"
   },
   "build": {
     "appId": "com.rs3tk",
@@ -39,7 +39,8 @@
     ],
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "deb"
       ],
       "category": "Game",
       "icon": "src/renderer/public/logo-256.png",

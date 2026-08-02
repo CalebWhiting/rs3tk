@@ -1,0 +1,44 @@
+# Maintainer: CalebWhiting <caleb.andrew.whiting@gmail.com>
+pkgname=rs3tk-bin
+pkgver=1.0.1
+pkgrel=1
+pkgdesc='Open-source Jagex Launcher replacement for Linux'
+arch=('x86_64')
+url='https://github.com/CalebWhiting/rs3tk'
+license=('MIT')
+depends=('gtk3' 'libxss' 'nss')
+optdepends=('python: for the CLI (pip install rs3tk)')
+source=("${url}/releases/download/v${pkgver}/RS3TK-${pkgver}.AppImage"
+        'rs3tk.desktop')
+sha256sums=('SKIP'
+            'SKIP')
+
+build() {
+    chmod +x "${srcdir}/RS3TK-${pkgver}.AppImage"
+    cd "${srcdir}"
+    ./RS3TK-${pkgver}.AppImage --appimage-extract > /dev/null 2>&1
+}
+
+package() {
+    install -d "${pkgdir}/opt/rs3tk"
+    cp -r "${srcdir}/squashfs-root/"* "${pkgdir}/opt/rs3tk/"
+    chmod -R a+rX "${pkgdir}/opt/rs3tk"
+
+    local binary="${pkgdir}/opt/rs3tk/rs3tk-electron"
+    if [ -f "$binary" ]; then
+        mv "$binary" "${binary}-bin"
+        cat > "$binary" << 'WRAPPER'
+#!/bin/sh
+APPDIR="$(dirname "$(readlink -f "$0")")"
+export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
+export XDG_DATA_DIRS="${APPDIR}/usr/share:${XDG_DATA_DIRS}:/usr/share/gnome:/usr/local/share:/usr/share"
+export GSETTINGS_SCHEMA_DIR="${APPDIR}/usr/share/glib-2.0/schemas:${GSETTINGS_SCHEMA_DIR}"
+exec "${APPDIR}/rs3tk-electron-bin" --no-sandbox "$@"
+WRAPPER
+        chmod 755 "$binary"
+    fi
+
+    install -Dm644 "${srcdir}/rs3tk.desktop" "${pkgdir}/usr/share/applications/rs3tk.desktop"
+    install -Dm644 "${srcdir}/squashfs-root/rs3tk-electron.png" \
+        "${pkgdir}/usr/share/icons/hicolor/256x256/apps/rs3tk.png"
+}
