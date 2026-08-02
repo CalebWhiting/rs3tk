@@ -33,11 +33,13 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/core
+          skip-existing: true
 
       - name: Publish rs3tk
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/cli
+          skip-existing: true
 
   appimage:
     name: Build AppImage + DEB
