@@ -55,7 +55,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: packages/electron/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
