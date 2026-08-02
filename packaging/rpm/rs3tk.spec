@@ -49,5 +49,8 @@ pip3 install --no-deps --root=%{buildroot} %{_sourcedir}/*.whl
 %{_bindir}/%{pypi_name}
 
 %changelog
+* Sat Aug 02 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.0.2-1
+- Bump to 1.0.2
+
 * Sat Aug 01 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.0.1-1
 - Initial package

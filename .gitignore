@@ -34,9 +34,6 @@ htmlcov/
 .ruff_cache/
 .pytest_cache/
 
-# uv
-uv.lock
-
 # Electron (also gitignored inside packages/electron)
 node_modules/
 

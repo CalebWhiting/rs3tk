@@ -1,7 +1,7 @@
 %define appname rs3tk-electron
 
 Name:           %{appname}
-Version:        1.0.1
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        RS3TK - RuneScape 3 Toolkit (Electron GUI)
 License:        MIT
@@ -76,5 +76,8 @@ fi
 /usr/share/icons/hicolor/256x256/apps/rs3tk.png
 
 %changelog
+* Sat Aug 02 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.0.2-1
+- Bump to 1.0.2
+
 * Sat Aug 01 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.0.1-1
 - Initial RPM package

@@ -13,7 +13,9 @@
 #   - packages/electron/pyproject.toml
 #   - packages/electron/requirements.txt
 #   - packaging/rpm/rs3tk.spec
+#   - packaging/rpm/rs3tk-electron.spec
 #   - packaging/alpine/APKBUILD
+#   - packaging/arch/PKGBUILD
 #   - packaging/arch/python-rs3tk/PKGBUILD
 #   - packaging/deb/debian/changelog
 #
@@ -74,9 +76,17 @@ echo "  packages/electron/requirements.txt"
 sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk.spec"
 echo "  packaging/rpm/rs3tk.spec"
 
+# ── packaging/rpm/rs3tk-electron.spec ───────────────────────────
+sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk-electron.spec"
+echo "  packaging/rpm/rs3tk-electron.spec"
+
 # ── packaging/alpine/APKBUILD ───────────────────────────────────
 sed -i "s/^pkgver=$CURRENT/pkgver=$VERSION/" "$ROOT/packaging/alpine/APKBUILD"
 echo "  packaging/alpine/APKBUILD"
+
+# ── packaging/arch/PKGBUILD ────────────────────────────────────
+sed -i "s/^pkgver=$CURRENT/pkgver=$VERSION/" "$ROOT/packaging/arch/PKGBUILD"
+echo "  packaging/arch/PKGBUILD"
 
 # ── packaging/arch/python-rs3tk/PKGBUILD ────────────────────────
 sed -i "s/^pkgver=$CURRENT/pkgver=$VERSION/" "$ROOT/packaging/arch/python-rs3tk/PKGBUILD"
