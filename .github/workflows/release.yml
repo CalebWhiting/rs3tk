@@ -118,7 +118,7 @@ jobs:
           rpmbuild -bs ~/rpmbuild/SPECS/rs3tk-electron.spec --define "_topdir $HOME/rpmbuild"
 
       - name: Publish to Copr
-        uses: fedora-copr/copr-cli-action@v1
+        uses: fedora-infra/copr-cli-action@v1
         with:
           token: ${{ secrets.COPR_TOKEN }}
           owner: calebwhiting
