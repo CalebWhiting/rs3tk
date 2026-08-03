@@ -36,6 +36,8 @@ htmlcov/
 
 # Electron (also gitignored inside packages/electron)
 node_modules/
+secure.runescape.com/
+packages/electron/secure.runescape.com/
 
 # PyInstaller build output
 packages/electron/build/

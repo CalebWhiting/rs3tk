@@ -290,16 +290,16 @@ class TestLogin:
     @patch("rs3tk_core.auth.session.set_account_token")
     @patch("rs3tk_core.auth.session.decode_jwt_payload")
     @patch("rs3tk_core.auth.session.exchange_code", new_callable=AsyncMock)
-    @patch("rs3tk_core.auth.browser.open_login_browser")
-    @patch("rs3tk_core.auth.browser.open_consent_browser")
+    @patch("rs3tk_core.auth.system_browser.open_login_system")
+    @patch("rs3tk_core.auth.system_browser.open_consent_system")
     @patch("rs3tk_core.auth.session.generate_state")
     @patch("rs3tk_core.auth.session.generate_pkce_pair")
     def test_happy_path(
         self,
         mock_pkce: MagicMock,
         mock_state: MagicMock,
-        mock_consent_browser: MagicMock,
-        mock_login_browser: MagicMock,
+        mock_consent_system: MagicMock,
+        mock_login_system: MagicMock,
         mock_exchange: AsyncMock,
         mock_decode: MagicMock,
         mock_set: MagicMock,
@@ -308,10 +308,10 @@ class TestLogin:
         # Three values needed: state1 (login), state2 (consent), nonce (consent)
         mock_pkce.return_value = ("verifier", "challenge")
         mock_state.side_effect = ["state-login", "state-consent", "state-nonce"]
-        mock_login_browser.return_value = ("auth-code", "state-login")
+        mock_login_system.return_value = ("auth-code", "state-login")
         tokens = Tokens(access_token="a", refresh_token="r", id_token=_make_jwt(sub="alice"))
         mock_exchange.return_value = tokens
-        mock_consent_browser.return_value = (
+        mock_consent_system.return_value = (
             _make_jwt(nonce="state-nonce"),
             "state-consent",
         )
@@ -327,14 +327,14 @@ class TestLogin:
         mock_set.assert_any_call("alice", "consent_id_token", _make_jwt(nonce="state-nonce"))
         mock_set.assert_any_call("alice", "session_id", "new-session")
 
-    @patch("rs3tk_core.auth.browser.open_login_browser")
+    @patch("rs3tk_core.auth.system_browser.open_login_system")
     def test_no_code_raises(self, mock_login: MagicMock) -> None:
         mock_login.return_value = (None, None)
 
         with pytest.raises(RuntimeError, match="no authorization code"):
             _run(session_module.login())
 
-    @patch("rs3tk_core.auth.browser.open_login_browser")
+    @patch("rs3tk_core.auth.system_browser.open_login_system")
     def test_state_mismatch_raises(self, mock_login: MagicMock) -> None:
         mock_login.return_value = ("auth-code", "wrong-state")
 
@@ -343,7 +343,7 @@ class TestLogin:
 
     @patch("rs3tk_core.auth.session.exchange_code", new_callable=AsyncMock)
     @patch("rs3tk_core.auth.session.generate_state")
-    @patch("rs3tk_core.auth.browser.open_login_browser")
+    @patch("rs3tk_core.auth.system_browser.open_login_system")
     def test_no_id_token_raises(self, mock_login: MagicMock, mock_state: MagicMock, mock_exchange: AsyncMock) -> None:
         mock_state.return_value = "state-login"
         mock_login.return_value = ("auth-code", "state-login")

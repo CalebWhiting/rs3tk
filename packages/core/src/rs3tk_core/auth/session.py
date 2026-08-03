@@ -49,7 +49,7 @@ def logout_account(username: str) -> None:
     clear_account(username)
 
 
-async def login(system_browser: bool = False) -> tuple[Tokens, str]:
+async def login(*, system_browser: bool = True) -> tuple[Tokens, str]:
     from rs3tk_core.auth.browser import (
         find_electron_login_script,
         find_electron_runtime,
