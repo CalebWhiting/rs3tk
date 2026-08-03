@@ -1,8 +1,10 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
-// Disable GPU acceleration — avoids hangs on VMs with virtio-gpu.
+// Disable GPU acceleration and sandbox — avoids hangs on VMs with virtio-gpu
+// and SUID sandbox misconfigurations.
 app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('no-sandbox');
 
 const AUTH_URL = process.argv[2];
 const REDIRECT_HOST = process.argv[3];
