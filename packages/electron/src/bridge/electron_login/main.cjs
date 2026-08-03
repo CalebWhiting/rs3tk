@@ -1,14 +1,19 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
-// Disable GPU acceleration and sandbox — avoids hangs on VMs with virtio-gpu
-// and SUID sandbox misconfigurations.
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('no-sandbox');
+// Electron keeps --no-sandbox (and any other flags) in process.argv,
+// shifting positional indices.  Find the three app args by type:
+//   argv[0] = electron binary
+//   argv[1] = --no-sandbox (optional flag)
+//   argv[2] = script path (always present)
+//   argv[3..] = user arguments (URL, redirect host, user data dir)
+const scriptIdx = process.argv.findIndex(a => a.endsWith('.cjs') || a.endsWith('.js'));
+const AUTH_URL = process.argv[scriptIdx + 1];
+const REDIRECT_HOST = process.argv[scriptIdx + 2];
+const USER_DATA_DIR = process.argv[scriptIdx + 3] ? path.resolve(process.argv[scriptIdx + 3]) : undefined;
 
-const AUTH_URL = process.argv[2];
-const REDIRECT_HOST = process.argv[3];
-const USER_DATA_DIR = process.argv[4] ? path.resolve(process.argv[4]) : undefined;
+// Disable GPU acceleration — avoids hangs on VMs with virtio-gpu.
+app.commandLine.appendSwitch('disable-gpu');
 
 if (!AUTH_URL || !REDIRECT_HOST || !USER_DATA_DIR) {
     console.error(JSON.stringify({ error: 'Missing arguments', argv: process.argv }));
