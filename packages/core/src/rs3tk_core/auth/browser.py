@@ -103,7 +103,7 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
     _USER_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     proc = subprocess.Popen(
-        [*runtime, "--no-sandbox", str(script), url, redirect_host, str(_USER_DATA_DIR)],
+        [*runtime, "--no-sandbox", "--no-zygote", str(script), url, redirect_host, str(_USER_DATA_DIR)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
