@@ -24,6 +24,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import threading
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -80,6 +81,18 @@ def find_electron_runtime() -> list[str] | None:
 _USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
 
 
+def _drain_stderr(proc: subprocess.Popen[bytes], output: list[str]) -> None:  # type: ignore[type-arg]
+    """Read stderr in a background thread to prevent pipe deadlock."""
+    assert proc.stderr is not None
+    chunks: list[str] = []
+    while True:
+        chunk = proc.stderr.read(4096)
+        if not chunk:
+            break
+        chunks.append(chunk)
+    output.append("".join(chunks))
+
+
 def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str) -> dict[str, str | None]:
     _USER_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -90,8 +103,14 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
         text=True,
     )
 
+    # Drain stderr in a background thread to prevent pipe buffer deadlock.
+    # Electron emits many GPU/fontconfig warnings that fill the 64KB pipe
+    # buffer, blocking the child from writing anything to stdout.
+    stderr_chunks: list[str] = []
+    stderr_thread = threading.Thread(target=_drain_stderr, args=(proc, stderr_chunks), daemon=True)
+    stderr_thread.start()
+
     result: dict[str, str | None] = {}
-    stderr_output = ""
     try:
         if proc.stdout is not None:
             for line in proc.stdout:
@@ -114,9 +133,8 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
         proc.kill()
         proc.wait()
 
-    if proc.stderr is not None:
-        stderr_output = proc.stderr.read()
-        proc.stderr.close()
+    stderr_thread.join(timeout=5)
+    stderr_output = stderr_chunks[0] if stderr_chunks else ""
 
     if not result and proc.returncode != 0:
         raise RuntimeError(f"Electron login failed (exit code {proc.returncode}).\nstderr: {stderr_output.strip()}")
