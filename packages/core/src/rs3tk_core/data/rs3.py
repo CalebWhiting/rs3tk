@@ -206,6 +206,11 @@ SUPPLEMENTAL_DEPS: list[dict[str, str]] = [
         "name": "libcap2",
         "url": "http://archive.ubuntu.com/ubuntu/pool/main/libc/libcap2/libcap2_2.66-5ubuntu2_amd64.deb",
     },
+    # ── SELinux (transitive dep of libgio → libmount) ─────────────
+    {
+        "name": "libselinux1",
+        "url": "http://archive.ubuntu.com/ubuntu/pool/main/libs/libselinux/libselinux1_3.9-4build1_amd64.deb",
+    },
 ]
 
 
