@@ -16,11 +16,5 @@
     "dev:electron": "pnpm --filter rs3tk-electron run dev",
     "setup-dev": "uv sync && pnpm install"
   },
-  "license": "MIT",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "electron",
-      "esbuild"
-    ]
-  }
+  "license": "MIT"
 }
