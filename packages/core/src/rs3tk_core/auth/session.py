@@ -68,6 +68,7 @@ async def login(system_browser: bool = False) -> tuple[Tokens, str]:
         runtime = find_electron_runtime()
         script = find_electron_login_script() if runtime else None
         if runtime is not None and script is not None:
+            print("A browser window has opened. Log in to your Jagex Account.")
             code, returned_state = open_login_browser(runtime, script, auth_url)
         else:
             code, returned_state = open_login_system(auth_url)
@@ -96,6 +97,7 @@ async def login(system_browser: bool = False) -> tuple[Tokens, str]:
         runtime = find_electron_runtime()
         script = find_electron_login_script() if runtime else None
         if runtime is not None and script is not None:
+            print("A browser window has opened for consent.")
             id_token, consent_state = open_consent_browser(runtime, script, consent_url)
         else:
             id_token, consent_state = open_consent_system(consent_url)

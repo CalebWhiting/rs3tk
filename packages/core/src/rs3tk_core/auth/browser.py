@@ -46,9 +46,11 @@ def find_electron_login_script() -> Path | None:
     for c in _LOGIN_SCRIPT_CANDIDATES:
         try:
             if c.is_file():
+                logger.debug("Found login script: %s", c)
                 return c
         except OSError:
             continue
+    logger.warning("No Electron login script found in any of: %s", [str(p) for p in _LOGIN_SCRIPT_CANDIDATES])
     return None
 
 
@@ -57,6 +59,7 @@ def find_electron_runtime() -> list[str] | None:
     dev = _MONOREPO_ROOT / "node_modules/.bin/electron"
     try:
         if dev.is_file():
+            logger.debug("Found Electron dev binary: %s", dev)
             return [str(dev.resolve())]
     except OSError:
         pass
@@ -64,6 +67,7 @@ def find_electron_runtime() -> list[str] | None:
     try:
         r = subprocess.run(["which", "electron"], capture_output=True, text=True, timeout=5)
         if r.returncode == 0 and r.stdout.strip():
+            logger.debug("Found Electron on PATH: %s", r.stdout.strip())
             return [r.stdout.strip()]
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
@@ -71,10 +75,12 @@ def find_electron_runtime() -> list[str] | None:
     try:
         r = subprocess.run(["which", "npx"], capture_output=True, text=True, timeout=5)
         if r.returncode == 0 and r.stdout.strip():
+            logger.debug("Found npx, will use: %s electron", r.stdout.strip())
             return [r.stdout.strip(), "electron"]
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
 
+    logger.warning("No Electron runtime found")
     return None
 
 
