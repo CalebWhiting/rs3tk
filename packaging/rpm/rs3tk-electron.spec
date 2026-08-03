@@ -1,7 +1,7 @@
 %define appname rs3tk-electron
 
 Name:           %{appname}
-Version:        1.0.2
+Version:        1.0.3
 Release:        1%{?dist}
 Summary:        RS3TK - RuneScape 3 Toolkit (Electron GUI)
 License:        MIT

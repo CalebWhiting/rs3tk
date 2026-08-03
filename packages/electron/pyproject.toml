@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rs3tk-electron-bridge"
-version = "1.0.2"
+version = "1.0.3"
 description = "rs3tk-electron dev-only package: exposes rs3tk_bridge module and pins rs3tk-core. The prod binary is built by PyInstaller and does not use this."
 requires-python = ">=3.11"
 dependencies = [
