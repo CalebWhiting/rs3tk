@@ -1,2 +1,6 @@
 packages:
   - 'packages/electron'
+
+allowBuilds:
+  - electron
+  - esbuild
