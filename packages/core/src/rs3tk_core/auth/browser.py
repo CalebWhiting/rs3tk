@@ -7,10 +7,10 @@ user's system, then spawning the script for the OAuth flow.
 
 Discovery order:
     script:
-        1. dev checkout: <monorepo>/packages/electron/src/bridge/electron_login/main.js
-        2. user install: ~/.local/share/rs3tk-electron/electron_login/main.js
-        3. /usr/lib/rs3tk-electron/electron_login/main.js
-        4. /opt/rs3tk-electron/resources/electron_login/main.js
+        1. dev checkout: <monorepo>/packages/electron/src/bridge/electron_login/main.cjs
+        2. user install: ~/.local/share/rs3tk-electron/electron_login/main.cjs
+        3. /usr/lib/rs3tk-electron/electron_login/main.cjs
+        4. /opt/rs3tk-electron/resources/electron_login/main.cjs
     runtime:
         1. dev checkout: <monorepo>/node_modules/.bin/electron
         2. system PATH: `which electron`
@@ -26,10 +26,10 @@ import tempfile
 from pathlib import Path
 
 _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
-    Path("packages/electron/src/bridge/electron_login/main.js"),
-    Path.home() / ".local/share/rs3tk-electron/electron_login/main.js",
-    Path("/usr/lib/rs3tk-electron/electron_login/main.js"),
-    Path("/opt/rs3tk-electron/resources/electron_login/main.js"),
+    Path("packages/electron/src/bridge/electron_login/main.cjs"),
+    Path.home() / ".local/share/rs3tk-electron/electron_login/main.cjs",
+    Path("/usr/lib/rs3tk-electron/electron_login/main.cjs"),
+    Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),
 )
 
 

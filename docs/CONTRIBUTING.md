@@ -107,7 +107,7 @@ binary (in the AppImage). Owns:
 - `src/preload/` — IPC bridge (TypeScript)
 - `src/renderer/` — React UI (TypeScript + Tailwind)
 - `src/bridge/rs3tk_bridge.py` — the Python bridge
-- `src/bridge/electron_login/main.js` — the headless login script
+- `src/bridge/electron_login/main.cjs` — the headless login script
 
 If you add a new RPC method:
 1. Add `@method("name")` to `rs3tk_bridge.py`.
