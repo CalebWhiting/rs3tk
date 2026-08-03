@@ -81,13 +81,17 @@ def _find_runtime() -> list[str]:
     Raises:
         RuntimeError: If Electron is not found on the system.
     """
-    dev = _MONOREPO_ROOT / "node_modules/.bin/electron"
-    try:
-        if dev.is_file():
-            logger.debug("Found Electron dev binary: %s", dev)
-            return [str(dev.resolve())]
-    except OSError:
-        pass
+    dev_candidates = [
+        _MONOREPO_ROOT / "node_modules/.bin/electron",
+        _MONOREPO_ROOT / "packages/electron/node_modules/.bin/electron",
+    ]
+    for dev in dev_candidates:
+        try:
+            if dev.is_file():
+                logger.debug("Found Electron dev binary: %s", dev)
+                return [str(dev.resolve())]
+        except OSError:
+            pass
 
     try:
         r = subprocess.run(["which", "electron"], capture_output=True, text=True, timeout=5)
