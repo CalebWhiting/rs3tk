@@ -12,9 +12,9 @@ Discovery order:
         4. /usr/lib/rs3tk-electron/electron_login/main.cjs
         5. /opt/rs3tk-electron/resources/electron_login/main.cjs
     runtime:
-        1. dev checkout: <monorepo>/node_modules/.bin/electron
-        2. system PATH: `which electron`
-        3. npm-global: `npx electron` (works when global bin isn't on PATH)
+        1. dev checkout: <monorepo>/packages/electron/node_modules/.bin/electron
+        2. dev checkout: <monorepo>/node_modules/.bin/electron
+        3. system PATH: `which electron`
 
 Raises RuntimeError if neither the Electron runtime nor the login script
 can be found on the system.
@@ -98,14 +98,6 @@ def _find_runtime() -> list[str]:
         if r.returncode == 0 and r.stdout.strip():
             logger.debug("Found Electron on PATH: %s", r.stdout.strip())
             return [r.stdout.strip()]
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        pass
-
-    try:
-        r = subprocess.run(["which", "npx"], capture_output=True, text=True, timeout=5)
-        if r.returncode == 0 and r.stdout.strip():
-            logger.debug("Found npx, will use: %s electron", r.stdout.strip())
-            return [r.stdout.strip(), "electron"]
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
 
