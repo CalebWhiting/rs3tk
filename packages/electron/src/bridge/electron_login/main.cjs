@@ -1,12 +1,16 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
-const AUTH_URL = process.argv[2];
-const REDIRECT_HOST = process.argv[3];
-const USER_DATA_DIR = process.argv[4];
+// Electron may or may not consume flags like --no-sandbox from argv,
+// shifting indices.  Find the three positional args by looking for the
+// URL (starts with http) instead of relying on fixed indices.
+const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
+const AUTH_URL = args[0];
+const REDIRECT_HOST = args[1];
+const USER_DATA_DIR = args[2] ? path.resolve(args[2]) : undefined;
 
 if (!AUTH_URL || !REDIRECT_HOST || !USER_DATA_DIR) {
-    console.error(JSON.stringify({ error: 'Missing arguments' }));
+    console.error(JSON.stringify({ error: 'Missing arguments', argv: process.argv }));
     app.quit();
     process.exit(1);
 }
