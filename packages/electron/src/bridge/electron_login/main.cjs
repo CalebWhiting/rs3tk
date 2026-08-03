@@ -1,6 +1,9 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
+// Disable GPU acceleration — avoids hangs on VMs with virtio-gpu.
+app.commandLine.appendSwitch('disable-gpu');
+
 const AUTH_URL = process.argv[2];
 const REDIRECT_HOST = process.argv[3];
 const USER_DATA_DIR = process.argv[4] ? path.resolve(process.argv[4]) : undefined;
