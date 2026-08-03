@@ -2,5 +2,5 @@ packages:
   - 'packages/electron'
 
 allowBuilds:
-  - electron
-  - esbuild
+  electron: true
+  esbuild: true
