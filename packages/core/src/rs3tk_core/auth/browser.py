@@ -20,10 +20,13 @@ Discovery order:
 from __future__ import annotations
 
 import json
+import logging
 import os
 import subprocess
 import tempfile
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # Resolve dev-checkout paths relative to the monorepo root (5 levels up
 # from this file: auth/ -> rs3tk_core/ -> src/ -> core/ -> packages/ -> root).
@@ -83,11 +86,12 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
     proc = subprocess.Popen(
         [*runtime, str(script), url, redirect_host, str(_USER_DATA_DIR)],
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
         text=True,
     )
 
     result: dict[str, str | None] = {}
+    stderr_output = ""
     try:
         if proc.stdout is not None:
             for line in proc.stdout:
@@ -98,6 +102,7 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
                     result = json.loads(line)
                     break
                 except json.JSONDecodeError:
+                    logger.debug("Electron stdout (non-JSON): %s", line)
                     continue
     finally:
         if proc.stdout is not None:
@@ -108,6 +113,16 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
     except subprocess.TimeoutExpired:
         proc.kill()
         proc.wait()
+
+    if proc.stderr is not None:
+        stderr_output = proc.stderr.read()
+        proc.stderr.close()
+
+    if not result and proc.returncode != 0:
+        raise RuntimeError(f"Electron login failed (exit code {proc.returncode}).\nstderr: {stderr_output.strip()}")
+
+    if stderr_output:
+        logger.debug("Electron stderr: %s", stderr_output.strip())
 
     return result
 
