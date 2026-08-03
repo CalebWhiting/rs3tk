@@ -25,8 +25,12 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# Resolve dev-checkout paths relative to the monorepo root (5 levels up
+# from this file: auth/ -> rs3tk_core/ -> src/ -> core/ -> packages/ -> root).
+_MONOREPO_ROOT = Path(__file__).resolve().parents[5]
+
 _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
-    Path("packages/electron/src/bridge/electron_login/main.cjs"),
+    _MONOREPO_ROOT / "packages/electron/src/bridge/electron_login/main.cjs",
     Path.home() / ".local/share/rs3tk-electron/electron_login/main.cjs",
     Path("/usr/lib/rs3tk-electron/electron_login/main.cjs"),
     Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),
@@ -46,7 +50,7 @@ def find_electron_login_script() -> Path | None:
 
 def find_electron_runtime() -> list[str] | None:
     """Return a command to spawn Electron, or None if not available."""
-    dev = Path("node_modules/.bin/electron")
+    dev = _MONOREPO_ROOT / "node_modules/.bin/electron"
     try:
         if dev.is_file():
             return [str(dev.resolve())]

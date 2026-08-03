@@ -2,8 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
 // Electron may or may not consume flags like --no-sandbox from argv,
-// shifting indices.  Find the three positional args by looking for the
-// URL (starts with http) instead of relying on fixed indices.
+// shifting indices.  Strip flag args and take the three positional args.
 const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
 const AUTH_URL = args[0];
 const REDIRECT_HOST = args[1];
@@ -32,7 +31,6 @@ function createWindow() {
 
     mainWindow.loadURL(AUTH_URL);
 
-    // Monitor URL changes via JavaScript injection
     mainWindow.webContents.on('did-finish-load', () => {
         checkUrl();
     });
