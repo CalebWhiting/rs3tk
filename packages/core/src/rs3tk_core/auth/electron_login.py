@@ -6,10 +6,11 @@ ID token (consent) via stdout JSON.
 
 Discovery order:
     script:
-        1. dev checkout: <monorepo>/packages/electron/src/bridge/electron_login/main.cjs
-        2. user install: ~/.local/share/rs3tk-electron/electron_login/main.cjs
-        3. /usr/lib/rs3tk-electron/electron_login/main.cjs
-        4. /opt/rs3tk-electron/resources/electron_login/main.cjs
+        1. installed package: <site-packages>/rs3tk_core/data/electron_login.cjs
+        2. dev checkout: <monorepo>/packages/core/src/rs3tk_core/data/electron_login.cjs
+        3. user install: ~/.local/share/rs3tk-electron/electron_login/main.cjs
+        4. /usr/lib/rs3tk-electron/electron_login/main.cjs
+        5. /opt/rs3tk-electron/resources/electron_login/main.cjs
     runtime:
         1. dev checkout: <monorepo>/node_modules/.bin/electron
         2. system PATH: `which electron`
@@ -31,12 +32,16 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# Resolve paths relative to this file's package.
+_CORE_DATA = Path(__file__).resolve().parent.parent / "data"
+
 # Resolve dev-checkout paths relative to the monorepo root (5 levels up
 # from this file: auth/ -> rs3tk_core/ -> src/ -> core/ -> packages/ -> root).
 _MONOREPO_ROOT = Path(__file__).resolve().parents[5]
 
 _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
-    _MONOREPO_ROOT / "packages/electron/src/bridge/electron_login/main.cjs",
+    _CORE_DATA / "electron_login.cjs",
+    _MONOREPO_ROOT / "packages/core/src/rs3tk_core/data/electron_login.cjs",
     Path.home() / ".local/share/rs3tk-electron/electron_login/main.cjs",
     Path("/usr/lib/rs3tk-electron/electron_login/main.cjs"),
     Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),

@@ -22,7 +22,7 @@ dependencies = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-rs3tk_core = ["data/*.py", "py.typed"]
+rs3tk_core = ["data/*.py", "data/*.cjs", "py.typed"]
 
 [tool.ruff]
 target-version = "py311"
