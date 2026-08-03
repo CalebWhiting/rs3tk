@@ -50,7 +50,10 @@ def do_login() -> tuple[str, int]:
     settings = load_settings()
     existing = [a for a in settings.accounts if a.username == account_hash]
     if existing:
-        updated = [AccountInfo(username=account_hash, display_name=display_name) if a.username == account_hash else a for a in settings.accounts]
+        updated = [
+            AccountInfo(username=account_hash, display_name=display_name) if a.username == account_hash else a
+            for a in settings.accounts
+        ]
         settings = settings.model_copy(update={"accounts": updated})
         save_settings(settings)
     else:
