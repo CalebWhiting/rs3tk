@@ -150,16 +150,7 @@ class TestAuthLogin:
         result = runner.invoke(main, ["auth", "login"])
 
         assert result.exit_code == 0
-        mock_do.assert_called_once_with(system_browser=True)
-
-    @patch("rs3tk_cli.cli.do_login")
-    def test_electron_flag(self, mock_do: MagicMock, runner: CliRunner) -> None:
-        mock_do.return_value = ("u", 1)
-
-        result = runner.invoke(main, ["auth", "login", "-e"])
-
-        assert result.exit_code == 0
-        mock_do.assert_called_once_with(system_browser=False)
+        mock_do.assert_called_once_with()
 
     @patch("rs3tk_cli.cli.do_login", side_effect=AppError("login failed"))
     def test_app_error_becomes_click_exception(self, _mock: MagicMock, runner: CliRunner) -> None:

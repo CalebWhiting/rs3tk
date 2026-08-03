@@ -104,10 +104,10 @@ def _get_metrics(params: dict[str, Any]) -> dict[str, Any]:
 
 
 @method("login")
-def _login(params: dict[str, Any]) -> dict[str, Any]:
+def _login(_params: dict[str, Any]) -> dict[str, Any]:
     from rs3tk_core.app import do_login
 
-    username, count = do_login(system_browser=bool(params.get("system_browser", False)))
+    username, count = do_login()
     return {"username": username, "account_count": count}
 
 

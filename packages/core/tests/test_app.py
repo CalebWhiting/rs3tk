@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -32,6 +32,8 @@ from rs3tk_core.app import (
 )
 from rs3tk_core.config import AccountInfo, Settings
 from rs3tk_core.jagex_api import Character, UserProfile
+
+pytestmark = pytest.mark.filterwarnings("ignore:coroutine.*was never awaited:RuntimeWarning")
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -127,36 +129,37 @@ class TestDoLogin:
     @patch("rs3tk_core.app.save_settings")
     @patch("rs3tk_core.app.load_settings")
     @patch("rs3tk_core.app.run_sync")
-    def test_returns_username_and_count_for_new_account(
+    def test_returns_display_name_and_count_for_new_account(
         self, mock_run: MagicMock, mock_load: MagicMock, _save: MagicMock
     ) -> None:
-        mock_run.return_value = (MagicMock(), "newuser")
+        mock_run.return_value = (MagicMock(), "hash123", "Alice123")
         mock_load.return_value = _settings_with(accounts=[])
 
-        username, count = do_login()
+        display_name, count = do_login()
 
-        assert username == "newuser"
+        assert display_name == "Alice123"
         assert count == 1
 
     @patch("rs3tk_core.app.save_settings")
     @patch("rs3tk_core.app.load_settings")
     @patch("rs3tk_core.app.run_sync")
-    def test_does_not_duplicate_existing_account(
+    def test_updates_display_name_on_existing_account(
         self, mock_run: MagicMock, mock_load: MagicMock, mock_save: MagicMock
     ) -> None:
-        mock_run.return_value = (MagicMock(), "existing")
-        existing = _settings_with(accounts=[AccountInfo(username="existing")])
+        mock_run.return_value = (MagicMock(), "hash-existing", "Alice123")
+        existing = _settings_with(accounts=[AccountInfo(username="hash-existing")])
         mock_load.return_value = existing
 
-        username, count = do_login()
+        display_name, count = do_login()
 
-        assert username == "existing"
+        assert display_name == "Alice123"
         assert count == 1
-        mock_save.assert_not_called()
+        mock_save.assert_called_once()
+        saved_settings = mock_save.call_args[0][0]
+        assert saved_settings.accounts[0].display_name == "Alice123"
 
     @patch("rs3tk_core.app.run_sync")
     def test_propagates_app_error(self, mock_run: MagicMock) -> None:
-        # run_sync now raises AppError directly; do_login just lets it propagate.
         mock_run.side_effect = AppError("login failed")
 
         with pytest.raises(AppError, match="login failed"):
@@ -280,7 +283,7 @@ class TestGetCharactersResult:
     def test_no_accounts_does_not_call_session(self, mock_load: MagicMock) -> None:
         mock_load.return_value = _settings_with(accounts=[])
 
-        with patch("rs3tk_core.app.get_session") as mock_session:
+        with patch("rs3tk_core.app.get_session", new_callable=AsyncMock) as mock_session:
             _get_characters_result()
 
         mock_session.assert_not_called()

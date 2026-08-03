@@ -86,9 +86,8 @@ def _do_play() -> None:
 
 def _do_login() -> None:
     console.print("\n[bold]Login[/]")
-    system = Confirm.ask("Use system browser?", default=False)
     try:
-        username, count = do_login(system_browser=system)
+        username, count = do_login()
     except AppError as e:
         console.print(f"[bold red]Error:[/] {e}")
         return

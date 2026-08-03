@@ -44,16 +44,22 @@ class CharacterInfo:
     is_member: bool
 
 
-def do_login(system_browser: bool = False) -> tuple[str, int]:
-    _tokens, username = run_sync(login(system_browser=system_browser))
+def do_login() -> tuple[str, int]:
+    _tokens, account_hash, display_name = run_sync(login())
 
     settings = load_settings()
-    existing = [a for a in settings.accounts if a.username == username]
-    if not existing:
-        settings = settings.model_copy(update={"accounts": settings.accounts + [AccountInfo(username=username)]})
+    existing = [a for a in settings.accounts if a.username == account_hash]
+    if existing:
+        updated = [AccountInfo(username=account_hash, display_name=display_name) if a.username == account_hash else a for a in settings.accounts]
+        settings = settings.model_copy(update={"accounts": updated})
+        save_settings(settings)
+    else:
+        settings = settings.model_copy(
+            update={"accounts": settings.accounts + [AccountInfo(username=account_hash, display_name=display_name)]}
+        )
         save_settings(settings)
 
-    return username, len(settings.accounts)
+    return display_name, len(settings.accounts)
 
 
 def do_logout(username: str | None = None, *, all_accounts: bool = False) -> None:

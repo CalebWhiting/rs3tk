@@ -15,7 +15,7 @@ export interface BridgeAPI {
   getClients(): Promise<Client[]>
   getStatus(): Promise<{ status: string }>
   getMetrics(name: string): Promise<RuneMetrics>
-  login(systemBrowser?: boolean): Promise<{ username: string; account_count: number }>
+  login(): Promise<{ username: string; account_count: number }>
   logout(username?: string, all?: boolean): Promise<{ status: string }>
   launchGame(clientKey: string, character: string): Promise<{ status: string }>
   installClient(clientKey: string): Promise<{ status: string; message: string }>

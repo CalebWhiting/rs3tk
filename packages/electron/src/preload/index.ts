@@ -22,8 +22,7 @@ const api: RendererAPI = {
   getClients: () => ipcRenderer.invoke('api-call', 'get_clients'),
   getStatus: () => ipcRenderer.invoke('api-call', 'get_status'),
   getMetrics: (name) => ipcRenderer.invoke('api-call', 'get_metrics', { name }),
-  login: (systemBrowser = false) =>
-    ipcRenderer.invoke('api-call', 'login', { system_browser: systemBrowser }),
+  login: () => ipcRenderer.invoke('api-call', 'login'),
   logout: (username, all = false) =>
     ipcRenderer.invoke('api-call', 'logout', { username, all }),
   launchGame: (clientKey: string, character: string) =>

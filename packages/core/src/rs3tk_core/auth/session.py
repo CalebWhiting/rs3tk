@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
+from rs3tk_core.auth.electron_login import open_consent_browser, open_login_browser
 from rs3tk_core.auth.oauth import generate_pkce_pair, generate_state
 from rs3tk_core.config import (
     clear_account,
@@ -49,29 +50,27 @@ def logout_account(username: str) -> None:
     clear_account(username)
 
 
-async def login(*, system_browser: bool = True) -> tuple[Tokens, str]:
-    from rs3tk_core.auth.browser import (
-        find_electron_login_script,
-        find_electron_runtime,
-        open_consent_browser,
-        open_login_browser,
-    )
-    from rs3tk_core.auth.system_browser import open_consent_system, open_login_system
+async def login() -> tuple[Tokens, str, str]:
+    """Run the full two-phase OAuth2 login flow via Electron.
 
+    Phase 1: Authorization — opens Electron for Jagex login, exchanges
+    the authorization code for tokens, and extracts the username from
+    the ID token.
+
+    Phase 2: Consent — opens Electron again for the consent flow, validates
+    the returned token, and creates a Jagex game session.
+
+    Returns:
+        Tuple of (tokens, account_hash, display_name).
+
+    Raises:
+        RuntimeError: If any step fails (no code, state mismatch, etc.)
+    """
     verifier, challenge = generate_pkce_pair()
     state1 = generate_state()
     auth_url = build_auth_url(challenge, state1)
 
-    if system_browser:
-        code, returned_state = open_login_system(auth_url)
-    else:
-        runtime = find_electron_runtime()
-        script = find_electron_login_script() if runtime else None
-        if runtime is not None and script is not None:
-            print("A browser window has opened. Log in to your Jagex Account.")
-            code, returned_state = open_login_browser(runtime, script, auth_url)
-        else:
-            code, returned_state = open_login_system(auth_url)
+    code, returned_state = open_login_browser(auth_url)
 
     if not code:
         raise RuntimeError("Login failed — no authorization code received.")
@@ -91,19 +90,8 @@ async def login(*, system_browser: bool = True) -> tuple[Tokens, str]:
     state2, nonce = generate_state(), generate_state()
     consent_url = build_consent_url(tokens.id_token, state2, nonce)
 
-    if system_browser:
-        id_token, consent_state = open_consent_system(consent_url)
-    else:
-        runtime = find_electron_runtime()
-        script = find_electron_login_script() if runtime else None
-        if runtime is not None and script is not None:
-            print("A browser window has opened for consent.")
-            id_token, consent_state = open_consent_browser(runtime, script, consent_url)
-        else:
-            id_token, consent_state = open_consent_system(consent_url)
+    id_token, consent_state = open_consent_browser(consent_url)
 
-    if not id_token:
-        raise RuntimeError("Consent failed — no ID token received.")
     if consent_state != state2:
         raise RuntimeError("Consent failed — CSRF state mismatch.")
 
@@ -115,8 +103,11 @@ async def login(*, system_browser: bool = True) -> tuple[Tokens, str]:
         raise RuntimeError("Consent failed — could not validate token.") from e
 
     set_account_token(username, "consent_id_token", id_token)
-    set_account_token(username, "session_id", await create_session(id_token))
-    return tokens, username
+    session_id = await create_session(id_token)
+    set_account_token(username, "session_id", session_id)
+
+    display_name = str(token_body.get("nickname", username))
+    return tokens, username, display_name
 
 
 async def ensure_valid_token(username: str) -> Tokens:

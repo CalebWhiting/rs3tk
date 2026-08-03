@@ -1,9 +1,8 @@
-"""Electron-based browser for OAuth2 login.
+"""Electron-based OAuth2 login browser.
 
-The headless Electron script (`main.js`) lives in the electron module
-under `packages/electron/src/bridge/electron_login/`. This module is
-responsible for finding the script and the Electron runtime on the
-user's system, then spawning the script for the OAuth flow.
+Spawns a headless Electron window that navigates to the Jagex OAuth URL,
+intercepts the redirect, and returns the authorization code (login) or
+ID token (consent) via stdout JSON.
 
 Discovery order:
     script:
@@ -15,6 +14,9 @@ Discovery order:
         1. dev checkout: <monorepo>/node_modules/.bin/electron
         2. system PATH: `which electron`
         3. npm-global: `npx electron` (works when global bin isn't on PATH)
+
+Raises RuntimeError if neither the Electron runtime nor the login script
+can be found on the system.
 """
 
 from __future__ import annotations
@@ -40,22 +42,40 @@ _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
     Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),
 )
 
+_USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
 
-def find_electron_login_script() -> Path | None:
-    """Return the path to the headless login script, or None if not found."""
-    for c in _LOGIN_SCRIPT_CANDIDATES:
+_RUNTIME_ERROR = (
+    "Electron runtime not found. Electron is required for login.\n"
+    "Install Electron globally (npm i -g electron) or run from the dev checkout."
+)
+
+_SCRIPT_ERROR = "Electron login script not found. Electron is required for login.\nExpected at one of:\n" + "\n".join(
+    f"  {p}" for p in _LOGIN_SCRIPT_CANDIDATES
+)
+
+
+def _find_script() -> Path:
+    """Return the path to the headless login script.
+
+    Raises:
+        RuntimeError: If the script is not found at any candidate path.
+    """
+    for candidate in _LOGIN_SCRIPT_CANDIDATES:
         try:
-            if c.is_file():
-                logger.debug("Found login script: %s", c)
-                return c
+            if candidate.is_file():
+                logger.debug("Found login script: %s", candidate)
+                return candidate
         except OSError:
             continue
-    logger.warning("No Electron login script found in any of: %s", [str(p) for p in _LOGIN_SCRIPT_CANDIDATES])
-    return None
+    raise RuntimeError(_SCRIPT_ERROR)
 
 
-def find_electron_runtime() -> list[str] | None:
-    """Return a command to spawn Electron, or None if not available."""
+def _find_runtime() -> list[str]:
+    """Return a command to spawn Electron.
+
+    Raises:
+        RuntimeError: If Electron is not found on the system.
+    """
     dev = _MONOREPO_ROOT / "node_modules/.bin/electron"
     try:
         if dev.is_file():
@@ -80,14 +100,10 @@ def find_electron_runtime() -> list[str] | None:
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
 
-    logger.warning("No Electron runtime found")
-    return None
+    raise RuntimeError(_RUNTIME_ERROR)
 
 
-_USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
-
-
-def _drain_stderr(proc: subprocess.Popen[bytes], output: list[str]) -> None:  # type: ignore[type-arg]
+def _drain_stderr(proc: subprocess.Popen[bytes], output: list[str]) -> None:
     """Read stderr in a background thread to prevent pipe deadlock."""
     assert proc.stderr is not None
     chunks: list[str] = []
@@ -99,8 +115,19 @@ def _drain_stderr(proc: subprocess.Popen[bytes], output: list[str]) -> None:  # 
     output.append("".join(chunks))
 
 
-def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str) -> dict[str, str | None]:
+def _run_electron(script: Path, url: str, redirect_host: str) -> dict[str, str | None]:
+    """Spawn Electron with the login script and return the parsed JSON result.
+
+    The Electron process is given three positional arguments after the script
+    path: the OAuth URL, the expected redirect hostname, and a temporary
+    user-data directory. It outputs a single JSON line to stdout with the
+    result (code/state for login, id_token/state for consent).
+
+    Raises:
+        RuntimeError: If Electron exits with a non-zero code or produces no output.
+    """
     _USER_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    runtime = _find_runtime()
 
     proc = subprocess.Popen(
         [*runtime, "--no-sandbox", "--no-zygote", str(script), url, redirect_host, str(_USER_DATA_DIR)],
@@ -109,9 +136,6 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
         text=True,
     )
 
-    # Drain stderr in a background thread to prevent pipe buffer deadlock.
-    # Electron emits many GPU/fontconfig warnings that fill the 64KB pipe
-    # buffer, blocking the child from writing anything to stdout.
     stderr_chunks: list[str] = []
     stderr_thread = threading.Thread(target=_drain_stderr, args=(proc, stderr_chunks), daemon=True)
     stderr_thread.start()
@@ -143,7 +167,7 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
     stderr_output = stderr_chunks[0] if stderr_chunks else ""
 
     if not result and proc.returncode != 0:
-        raise RuntimeError(f"Electron login failed (exit code {proc.returncode}).\nstderr: {stderr_output.strip()}")
+        raise RuntimeError(f"Electron login failed (exit code {proc.returncode}).\n{stderr_output.strip()}")
 
     if stderr_output:
         logger.debug("Electron stderr: %s", stderr_output.strip())
@@ -151,11 +175,49 @@ def _run_electron(runtime: list[str], script: Path, url: str, redirect_host: str
     return result
 
 
-def open_login_browser(runtime: list[str], script: Path, url: str) -> tuple[str | None, str | None]:
-    result = _run_electron(runtime, script, url, "secure.runescape.com")
-    return result.get("code"), result.get("state")
+def open_login_browser(url: str) -> tuple[str, str]:
+    """Open an Electron browser window for OAuth2 login.
+
+    Navigates to the Jagex authorization URL and intercepts the redirect
+    to ``secure.runescape.com`` to extract the authorization code and state.
+
+    Args:
+        url: The full OAuth2 authorization URL to open.
+
+    Returns:
+        Tuple of (authorization_code, state).
+
+    Raises:
+        RuntimeError: If Electron is not found or the login fails.
+    """
+    script = _find_script()
+    result = _run_electron(script, url, "secure.runescape.com")
+    code = result.get("code")
+    state = result.get("state")
+    if not code or not state:
+        raise RuntimeError("Login failed — no authorization code received from Electron.")
+    return code, state
 
 
-def open_consent_browser(runtime: list[str], script: Path, url: str) -> tuple[str | None, str | None]:
-    result = _run_electron(runtime, script, url, "localhost")
-    return result.get("id_token"), result.get("state")
+def open_consent_browser(url: str) -> tuple[str, str]:
+    """Open an Electron browser window for OAuth2 consent.
+
+    Navigates to the Jagex consent URL and intercepts the redirect to
+    ``localhost`` to extract the ID token and state from the URL fragment.
+
+    Args:
+        url: The full OAuth2 consent URL to open.
+
+    Returns:
+        Tuple of (id_token, state).
+
+    Raises:
+        RuntimeError: If Electron is not found or the consent fails.
+    """
+    script = _find_script()
+    result = _run_electron(script, url, "localhost")
+    id_token = result.get("id_token")
+    state = result.get("state")
+    if not id_token or not state:
+        raise RuntimeError("Consent failed — no ID token received from Electron.")
+    return id_token, state

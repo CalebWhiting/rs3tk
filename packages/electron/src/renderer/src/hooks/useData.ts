@@ -63,8 +63,8 @@ export function useMetrics(characterName: string | null) {
   return { data, loading, error, refetch }
 }
 
-export async function login(systemBrowser = false): Promise<{ username: string; account_count: number }> {
-  return window.api.login(systemBrowser)
+export async function login(): Promise<{ username: string; account_count: number }> {
+  return window.api.login()
 }
 
 export async function logout(username?: string): Promise<void> {

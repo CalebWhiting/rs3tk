@@ -107,12 +107,11 @@ def auth() -> None:
 
 
 @auth.command("login")
-@click.option("-e", "--electron", "use_electron", is_flag=True, help="Use embedded Electron for login.")
 @click.pass_context
 @cli_error
-def auth_login(ctx: click.Context, use_electron: bool) -> None:
+def auth_login(ctx: click.Context) -> None:
     """Log in to your Jagex Account."""
-    username, count = do_login(system_browser=not use_electron)
+    username, count = do_login()
     console.print(f"[bold green]Logged in as {username}. Stored accounts: {count}[/]")
 
 
