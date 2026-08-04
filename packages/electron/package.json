@@ -31,10 +31,6 @@
       {
         "from": "resources/rs3tk-bridge",
         "to": "rs3tk-bridge"
-      },
-      {
-        "from": "src/bridge/electron_login",
-        "to": "electron_login"
       }
     ],
     "linux": {
