@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=RS3TK
 Comment=RS3TK - RuneScape 3 Toolkit (Electron GUI)
-Exec=/opt/rs3tk/rs3tk-electron --no-sandbox %U
+Exec=/opt/rs3tk/rs3tk-electron %U
 Icon=rs3tk
 Type=Application
 Categories=Game;

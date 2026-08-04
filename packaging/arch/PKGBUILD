@@ -24,16 +24,21 @@ package() {
     cp -r "${srcdir}/squashfs-root/"* "${pkgdir}/opt/rs3tk/"
     chmod -R a+rX "${pkgdir}/opt/rs3tk"
 
+    # The AppImage already has after-pack.cjs wrapping the real Electron
+    # binary as:  rs3tk-electron (wrapper) → rs3tk-electron-bin (real).
+    # We insert an outer wrapper that sets library paths and delegates to
+    # the existing one.  Use a unique name so we don't clobber the real
+    # binary that after-pack.cjs already renamed to rs3tk-electron-bin.
     local binary="${pkgdir}/opt/rs3tk/rs3tk-electron"
     if [ -f "$binary" ]; then
-        mv "$binary" "${binary}-bin"
+        mv "$binary" "${binary}_inner"
         cat > "$binary" << 'WRAPPER'
 #!/bin/sh
 APPDIR="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
 export XDG_DATA_DIRS="${APPDIR}/usr/share:${XDG_DATA_DIRS}:/usr/share/gnome:/usr/local/share:/usr/share"
 export GSETTINGS_SCHEMA_DIR="${APPDIR}/usr/share/glib-2.0/schemas:${GSETTINGS_SCHEMA_DIR}"
-exec "${APPDIR}/rs3tk-electron-bin" --no-sandbox "$@"
+exec "${APPDIR}/rs3tk-electron_inner" "$@"
 WRAPPER
         chmod 755 "$binary"
     fi

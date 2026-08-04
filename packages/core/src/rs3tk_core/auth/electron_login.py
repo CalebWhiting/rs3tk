@@ -37,11 +37,15 @@ _CORE_DATA = Path(__file__).resolve().parent.parent / "data"
 
 # Resolve dev-checkout paths relative to the monorepo root (5 levels up
 # from this file: auth/ -> rs3tk_core/ -> src/ -> core/ -> packages/ -> root).
-_MONOREPO_ROOT = Path(__file__).resolve().parents[5]
+# In a PyInstaller bundle the path depth is shorter, so we catch IndexError.
+try:
+    _MONOREPO_ROOT: Path | None = Path(__file__).resolve().parents[5]
+except IndexError:
+    _MONOREPO_ROOT = None
 
 _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
+    *((_MONOREPO_ROOT / "packages/core/src/rs3tk_core/data/electron_login.cjs",) if _MONOREPO_ROOT else ()),
     _CORE_DATA / "electron_login.cjs",
-    _MONOREPO_ROOT / "packages/core/src/rs3tk_core/data/electron_login.cjs",
     Path.home() / ".local/share/rs3tk-electron/electron_login/main.cjs",
     Path("/usr/lib/rs3tk-electron/electron_login/main.cjs"),
     Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),
@@ -81,17 +85,18 @@ def _find_runtime() -> list[str]:
     Raises:
         RuntimeError: If Electron is not found on the system.
     """
-    dev_candidates = [
-        _MONOREPO_ROOT / "node_modules/.bin/electron",
-        _MONOREPO_ROOT / "packages/electron/node_modules/.bin/electron",
-    ]
-    for dev in dev_candidates:
-        try:
-            if dev.is_file():
-                logger.debug("Found Electron dev binary: %s", dev)
-                return [str(dev.resolve())]
-        except OSError:
-            pass
+    if _MONOREPO_ROOT:
+        dev_candidates = [
+            _MONOREPO_ROOT / "node_modules/.bin/electron",
+            _MONOREPO_ROOT / "packages/electron/node_modules/.bin/electron",
+        ]
+        for dev in dev_candidates:
+            try:
+                if dev.is_file():
+                    logger.debug("Found Electron dev binary: %s", dev)
+                    return [str(dev.resolve())]
+            except OSError:
+                pass
 
     try:
         r = subprocess.run(["which", "electron"], capture_output=True, text=True, timeout=5)

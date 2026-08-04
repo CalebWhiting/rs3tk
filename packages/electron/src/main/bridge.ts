@@ -8,17 +8,30 @@ export class Bridge {
   private nextId = 1
   private pending = new Map<number, Pending>()
   private buffer = ''
+  private stderrBuffer = ''
 
   start(command: string, args: string[]): void {
     this.child = spawn(command, args, { stdio: ['pipe', 'pipe', 'pipe'] })
     this.child.stdout?.setEncoding('utf-8')
     this.child.stdout?.on('data', (chunk: string) => this.onStdout(chunk))
-    this.child.stderr?.on('data', (d) => console.error(`[bridge] ${d.toString().trim()}`))
-    this.child.on('exit', (code) => {
-      const err = new Error(`bridge exited with code ${code}`)
+    this.child.stderr?.on('data', (d) => {
+      const msg = d.toString().trim()
+      console.error(`[bridge] ${msg}`)
+      this.stderrBuffer += msg + '\n'
+    })
+    this.child.on('exit', (code, signal) => {
+      const reason = signal ? `killed by signal ${signal}` : `exit code ${code}`
+      let detail = ''
+      if (this.stderrBuffer.trim()) {
+        const lines = this.stderrBuffer.trim().split('\n')
+        const tail = lines.slice(-20).join('\n')
+        detail = `\nBridge stderr (last ${lines.length} lines):\n${tail}`
+      }
+      const err = new Error(`bridge ${reason}${detail}`)
       for (const { reject } of this.pending.values()) reject(err)
       this.pending.clear()
       this.child = null
+      this.stderrBuffer = ''
     })
   }
 

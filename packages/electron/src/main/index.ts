@@ -255,7 +255,8 @@ async function refreshTrayMenu(): Promise<void> {
 
     tray.setContextMenu(Menu.buildFromTemplate(template))
   } catch (e) {
-    console.error(`[${ts()}] [main] refreshTrayMenu failed: ${e}`)
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error(`[${ts()}] [main] refreshTrayMenu failed`, msg)
     tray.setContextMenu(buildStaticMenu())
   }
 }
@@ -427,8 +428,9 @@ app.whenReady().then(async () => {
       console.log(`[${ts()}] [main] api-call result: ${method} ok`)
       return result
     } catch (e) {
-      console.log(`[${ts()}] [main] api-call error: ${method} → ${e}`)
-      return { error: e instanceof Error ? e.message : String(e) }
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error(`[${ts()}] [main] api-call error: ${method}`, msg)
+      return { error: msg }
     }
   })
 

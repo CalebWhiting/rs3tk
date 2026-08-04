@@ -11,17 +11,25 @@ Protocol:
     Error:      {"id": <int|null>, "error": {"code": <int>, "message": <str>}}
     Notification (one-way): {"method": <str>, "params": <obj>}
 """
+
 from __future__ import annotations
 
 import json
+import signal
 import sys
-from typing import Any, Callable
+import traceback
+from collections.abc import Callable
+from typing import Any
 
 METHODS: dict[str, Callable[[dict[str, Any]], Any]] = {}
 
 
-def method(name: str) -> Callable[[Callable[[dict[str, Any]], Any]], Callable[[dict[str, Any]], Any]]:
-    def decorator(fn: Callable[[dict[str, Any]], Any]) -> Callable[[dict[str, Any]], Any]:
+def method(
+    name: str,
+) -> Callable[[Callable[[dict[str, Any]], Any]], Callable[[dict[str, Any]], Any]]:
+    def decorator(
+        fn: Callable[[dict[str, Any]], Any],
+    ) -> Callable[[dict[str, Any]], Any]:
         METHODS[name] = fn
         return fn
 
@@ -146,7 +154,9 @@ def _install(params: dict[str, Any]) -> dict[str, str]:
 # ── dispatcher ──────────────────────────────────────────────────────
 
 
-def _dispatch(req: dict[str, Any]) -> tuple[int | None, dict[str, Any] | None, dict[str, Any] | None]:
+def _dispatch(
+    req: dict[str, Any],
+) -> tuple[int | None, dict[str, Any] | None, dict[str, Any] | None]:
     """Return (id, result, error) for a request."""
     request_id: int | None = req.get("id")
     name = req.get("method")
@@ -161,33 +171,61 @@ def _dispatch(req: dict[str, Any]) -> tuple[int | None, dict[str, Any] | None, d
 
     try:
         result = handler(params)
-    except Exception as e:
-        return request_id, None, {"code": -32000, "message": str(e)}
+    except BaseException as e:  # noqa: BLE001 — must catch SystemExit etc.
+        _log(f"handler '{name}' failed: {traceback.format_exc()}")
+        return request_id, None, {"code": -32000, "message": f"{type(e).__name__}: {e}"}
     return request_id, result, None
 
 
+def _handle_signal(signum: int, _frame: Any) -> None:
+    name = signal.Signals(signum).name
+    _log(f"bridge received {name} (signal {signum}), exiting")
+    sys.exit(128 + signum)
+
+
 def main() -> None:
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGPIPE):
+        signal.signal(sig, _handle_signal)
+
     _log(f"bridge started, {len(METHODS)} methods registered: {sorted(METHODS)}")
-    for line in sys.stdin:
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            req = json.loads(line)
-        except json.JSONDecodeError as e:
-            _send({"id": None, "error": {"code": -32700, "message": f"Parse error: {e}"}})
-            continue
+    try:
+        for line in sys.stdin:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                req = json.loads(line)
+            except json.JSONDecodeError as e:
+                _send(
+                    {
+                        "id": None,
+                        "error": {"code": -32700, "message": f"Parse error: {e}"},
+                    }
+                )
+                continue
 
-        if "method" not in req:
-            _send({"id": req.get("id"), "error": {"code": -32600, "message": "missing method"}})
-            continue
+            if "method" not in req:
+                _send(
+                    {
+                        "id": req.get("id"),
+                        "error": {"code": -32600, "message": "missing method"},
+                    }
+                )
+                continue
 
-        request_id, result, error = _dispatch(req)
-        if error is not None:
-            _send({"id": request_id, "error": error})
-        elif request_id is not None:
-            _send({"id": request_id, "result": result})
-        # else: one-way notification, no response
+            request_id, result, error = _dispatch(req)
+            if error is not None:
+                _send({"id": request_id, "error": error})
+            elif request_id is not None:
+                _send({"id": request_id, "result": result})
+            # else: one-way notification, no response
+    except BaseException as e:
+        _log(
+            f"bridge main loop crashed: {type(e).__name__}: {e}\n{traceback.format_exc()}"
+        )
+        raise
+    finally:
+        _log("bridge main loop exited")
 
 
 if __name__ == "__main__":
