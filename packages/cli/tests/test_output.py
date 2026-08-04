@@ -3,9 +3,8 @@ from __future__ import annotations
 import click
 from click.testing import CliRunner
 from rich.console import Console
-from rs3tk_core.app import AppError
-
 from rs3tk_cli.output import cli_error, console
+from rs3tk_core.app import AppError
 
 runner = CliRunner()
 

@@ -100,6 +100,15 @@ jobs:
       - name: Sync workspace
         run: uv sync --all-packages
 
+      - name: Lint bridge
+        run: uv run ruff check packages/electron/src/bridge/rs3tk_bridge.py
+
+      - name: Format check bridge
+        run: uv run ruff format --check packages/electron/src/bridge/rs3tk_bridge.py
+
+      - name: Typecheck bridge
+        run: uv run mypy packages/electron/src/bridge/rs3tk_bridge.py
+
       - name: Test bridge roundtrip
         run: uv run pytest tests/test_bridge_roundtrip.py
 

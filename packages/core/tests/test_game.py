@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
-
 from rs3tk_core.game import GameError, _fetch_with_retry, check_status, fetch_news
 
 

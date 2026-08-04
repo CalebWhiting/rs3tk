@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from rs3tk_core.app import (
     AppError,
     CharacterInfo,

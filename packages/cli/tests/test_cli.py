@@ -6,11 +6,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from click.testing import CliRunner
-from rs3tk_core.app import AppError
-from rs3tk_core.config import AccountInfo, Settings
-
 from rs3tk_cli import cli
 from rs3tk_cli.cli import main
+from rs3tk_core.app import AppError
+from rs3tk_core.config import AccountInfo, Settings
 
 
 @pytest.fixture

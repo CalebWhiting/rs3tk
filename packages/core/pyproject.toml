@@ -24,22 +24,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 rs3tk_core = ["data/*.py", "data/*.cjs", "py.typed"]
 
-[tool.ruff]
-target-version = "py311"
-line-length = 120
-extend-exclude = ["src/rs3tk_core/data/"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP", "B", "SIM", "ANN"]
-
-[tool.ruff.format]
-quote-style = "double"
-
 [tool.mypy]
-python_version = "3.11"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
 exclude = ["src/rs3tk_core/data/"]
 
 [tool.pytest.ini_options]

@@ -177,7 +177,7 @@ def _dispatch(
     return request_id, result, None
 
 
-def _handle_signal(signum: int, _frame: Any) -> None:
+def _handle_signal(signum: int, _frame: Any) -> None:  # noqa: ANN401
     name = signal.Signals(signum).name
     _log(f"bridge received {name} (signal {signum}), exiting")
     sys.exit(128 + signum)
@@ -220,9 +220,7 @@ def main() -> None:
                 _send({"id": request_id, "result": result})
             # else: one-way notification, no response
     except BaseException as e:
-        _log(
-            f"bridge main loop crashed: {type(e).__name__}: {e}\n{traceback.format_exc()}"
-        )
+        _log(f"bridge main loop crashed: {type(e).__name__}: {e}\n{traceback.format_exc()}")
         raise
     finally:
         _log("bridge main loop exited")

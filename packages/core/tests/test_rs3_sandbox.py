@@ -14,7 +14,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from rs3tk_core.config import config_dir
 
 _CLIENTS_DIR = config_dir() / "clients"

@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 from rich.table import Table
-from rs3tk_core.app import CharacterInfo
-from rs3tk_core.clients import GameClient
-from rs3tk_core.config import Settings
-
 from rs3tk_cli.tables import (
     build_characters_table,
     build_clients_table,
     build_config_display,
     build_news_table,
 )
+from rs3tk_core.app import CharacterInfo
+from rs3tk_core.clients import GameClient
+from rs3tk_core.config import Settings
 
 
 def test_build_characters_table_basic() -> None:

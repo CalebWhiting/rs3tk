@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from rs3tk_core.install import InstallError, get_installer
 
 
