@@ -79,13 +79,11 @@ rs3tk/
 │   │
 │   └── electron/                   # ── the GUI app ─────────────────
 │       ├── package.json            # name = "rs3tk-electron"
-│       ├── pyproject.toml          # dev-only: rs3tk-core dep + rs3tk_bridge module
-│       ├── requirements.txt        # convenience: rs3tk-core==<pinned>
+│       ├── electron-builder.yml    # electron-builder config (Linux targets)
 │       ├── electron.vite.config.ts
 │       ├── tsconfig.json
 │       ├── tailwind.config.js
 │       ├── postcss.config.js
-│       ├── .npmrc
 │       ├── src/
 │       │   ├── main/index.ts
 │       │   ├── preload/

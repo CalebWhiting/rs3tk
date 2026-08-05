@@ -28,7 +28,7 @@ done
 if [ "$BUILD_MODE" = true ]; then
     IMAGE="rs3tk-build"
     echo "==> Building AppImage image"
-    docker build "${EXTRA_ARGS[@]}" -f "$REPO_ROOT/Dockerfile.build" -t "$IMAGE" "$REPO_ROOT"
+    docker build "${EXTRA_ARGS[@]}" --network=host -f "$REPO_ROOT/Dockerfile.build" -t "$IMAGE" "$REPO_ROOT"
 
     if [ "$SHELL_MODE" = true ]; then
         echo "==> Dropping into shell (source is at /app)"
@@ -39,7 +39,7 @@ if [ "$BUILD_MODE" = true ]; then
     fi
 else
     echo "==> Building test image"
-    docker build "${EXTRA_ARGS[@]}" -t "$IMAGE" "$REPO_ROOT"
+    docker build "${EXTRA_ARGS[@]}" --network=host -t "$IMAGE" "$REPO_ROOT"
 
     if [ "$SHELL_MODE" = true ]; then
         echo "==> Dropping into shell (source is at /app)"

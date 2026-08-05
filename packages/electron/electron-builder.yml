@@ -1,0 +1,16 @@
+appId: com.rs3tk
+productName: RS3TK
+afterPack: ./scripts/after-pack.cjs
+files:
+  - out/**/*
+  - package.json
+extraResources:
+  - from: resources/rs3tk-bridge
+    to: rs3tk-bridge
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Game
+  icon: src/renderer/public/logo-256.png
+  maintainer: CalebWhiting

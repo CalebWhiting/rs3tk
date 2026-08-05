@@ -9,6 +9,7 @@
 #
 # Requirements:
 #   - Python 3.11+ on PATH
+#   - uv on PATH
 #   - Network access (for pip install)
 #
 set -euo pipefail
@@ -29,12 +30,11 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR" "$ELECTRON_DIR/resources"
 
 echo "==> Creating build venv"
-python3 -m venv "$VENV_DIR"
+uv venv "$VENV_DIR"
 
 echo "==> Installing rs3tk-core + PyInstaller"
-"$VENV_DIR/bin/pip" install -q --upgrade pip
-"$VENV_DIR/bin/pip" install -q "$MONOREPO_ROOT/packages/core"
-"$VENV_DIR/bin/pip" install -q pyinstaller
+uv pip install --python "$VENV_DIR/bin/python" -q "$MONOREPO_ROOT/packages/core"
+uv pip install --python "$VENV_DIR/bin/python" -q pyinstaller
 
 # PyInstaller's analysis needs the bridge module to be importable from
 # the venv. We make it a package by copying the file in as __init__.py.

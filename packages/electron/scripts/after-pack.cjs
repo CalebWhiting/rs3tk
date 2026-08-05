@@ -18,15 +18,11 @@ module.exports = async function (context) {
   }
 
   // 2. Find the actual Electron binary — electron-builder lowercases the
-  //    productName for Linux, but appInfo.productFilename preserves the
-  //    original casing.  Also try with the -electron suffix since
-  //    electron-builder appends that for the DEB/AppImage targets.
+  //    product name for Linux and appends -electron for DEB/AppImage targets.
   const nameLC = context.packager.appInfo.productFilename.toLowerCase()
   const candidates = [
     path.join(outDir, nameLC),
-    path.join(outDir, context.packager.appInfo.productFilename),
     path.join(outDir, `${nameLC}-electron`),
-    path.join(outDir, `${context.packager.appInfo.productFilename}-electron`),
   ]
 
   const binary = candidates.find((p) => fs.existsSync(p))

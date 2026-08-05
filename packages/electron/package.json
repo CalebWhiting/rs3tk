@@ -14,34 +14,9 @@
     "dev": "electron-vite dev -- --no-sandbox",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "postinstall": "electron-builder install-app-deps",
     "build:bridge": "bash scripts/build-bridge.sh",
     "build:unpack": "pnpm run build && electron-builder --dir",
     "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux"
-  },
-  "build": {
-    "appId": "com.rs3tk",
-    "productName": "RS3TK",
-    "afterPack": "./scripts/after-pack.cjs",
-    "files": [
-      "out/**/*",
-      "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "resources/rs3tk-bridge",
-        "to": "rs3tk-bridge"
-      }
-    ],
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Game",
-      "icon": "src/renderer/public/logo-256.png",
-      "maintainer": "CalebWhiting"
-    }
   },
   "dependencies": {
     "electron-store": "^8.2.0"

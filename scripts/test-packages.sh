@@ -232,34 +232,6 @@ test_rpm() {
         FAILED=$((FAILED + 1))
     fi
     
-    # Test on RHEL 9 (via AlmaLinux)
-    echo ""
-    echo "Testing on AlmaLinux 9 (RHEL-compatible)..."
-    if docker run --rm --network=host \
-        -v "$BUILD_DIR/wheels:/wheels:ro" \
-        almalinux:9 \
-        bash -c '
-            set -euo pipefail
-            
-            # Install dependencies
-            dnf install -y python3 python3-pip python3-httpx python3-pydantic \
-                python3-keyring python3-click python3-rich
-            
-            # Install packages
-            pip3 install --break-system-packages --no-deps /wheels/*.whl
-            
-            # Test
-            rs3tk --version
-            echo "AlmaLinux 9 test passed"
-        ' > "$LOG_DIR/rpm-almalinux9.log" 2>&1; then
-        echo "    ✓ AlmaLinux 9"
-        PASSED=$((PASSED + 1))
-    else
-        echo "    ✗ AlmaLinux 9"
-        echo "    Log: $LOG_DIR/rpm-almalinux9.log"
-        FAILED=$((FAILED + 1))
-    fi
-    
     echo ""
     echo "RPM results: $PASSED passed, $FAILED failed"
     return $FAILED

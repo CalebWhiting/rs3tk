@@ -10,8 +10,6 @@
 #   - packages/core/src/rs3tk_core/__init__.py
 #   - packages/cli/pyproject.toml
 #   - packages/electron/package.json
-#   - packages/electron/pyproject.toml
-#   - packages/electron/requirements.txt
 #   - packaging/rpm/rs3tk.spec
 #   - packaging/rpm/rs3tk-electron.spec
 #   - packaging/alpine/APKBUILD
@@ -63,14 +61,6 @@ echo "  packages/cli/pyproject.toml"
 # ── packages/electron/package.json ──────────────────────────────
 sed -i "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/" "$ROOT/packages/electron/package.json"
 echo "  packages/electron/package.json"
-
-# ── packages/electron/pyproject.toml ────────────────────────────
-sed -i "s/^version = \"$CURRENT\"/version = \"$VERSION\"/" "$ROOT/packages/electron/pyproject.toml"
-echo "  packages/electron/pyproject.toml"
-
-# ── packages/electron/requirements.txt ──────────────────────────
-sed -i "s/rs3tk-core==$CURRENT/rs3tk-core==$VERSION/" "$ROOT/packages/electron/requirements.txt"
-echo "  packages/electron/requirements.txt"
 
 # ── packaging/rpm/rs3tk.spec ────────────────────────────────────
 sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk.spec"
