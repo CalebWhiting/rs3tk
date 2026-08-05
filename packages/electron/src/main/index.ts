@@ -8,7 +8,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { Bridge } from './bridge'
 
 if (process.platform === 'linux') {
-  app.commandLine.appendSwitch('no-sandbox')
   app.commandLine.appendSwitch('disable-dev-shm-usage')
 }
 
