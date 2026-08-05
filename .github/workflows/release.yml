@@ -42,7 +42,7 @@ jobs:
           skip-existing: true
 
   appimage:
-    name: Build AppImage + DEB
+    name: Build AppImage + DEB + RPM
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -69,12 +69,15 @@ jobs:
       - name: Set up Python
         run: uv python install 3.11
 
+      - name: Install RPM build tools
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
       - name: Install electron dependencies
         run: |
           pnpm approve-builds || true
           pnpm install
 
-      - name: Build AppImage + DEB
+      - name: Build AppImage + DEB + RPM
         working-directory: packages/electron
         run: pnpm run build:linux
 
@@ -90,6 +93,12 @@ jobs:
           files: packages/electron/dist/*.deb
           fail_on_unmatched_files: true
 
+      - name: Upload RPM
+        uses: softprops/action-gh-release@v2
+        with:
+          files: packages/electron/dist/*.rpm
+          fail_on_unmatched_files: true
+
   copr:
     name: Publish to Fedora Copr
     runs-on: ubuntu-latest
@@ -97,35 +106,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download AppImage from release
+      - name: Download RPM from release
         uses: robinraju/release-downloader@v1
         with:
           tag: ${{ github.ref_name }}
-          fileName: RS3TK-*.AppImage
+          fileName: "*.rpm"
 
-      - name: Set up RPM build environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm rpmbuild
+      - name: Install copr-cli
+        run: pip install copr-cli
 
-      - name: Prepare RPM sources
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-          cp RS3TK-*.AppImage ~/rpmbuild/SOURCES/
-          sed "s/^Version:.*/Version:        $VERSION/" packaging/rpm/rs3tk-electron.spec > ~/rpmbuild/SPECS/rs3tk-electron.spec
-
-      - name: Build SRPM
-        run: |
-          rpmbuild -bs ~/rpmbuild/SPECS/rs3tk-electron.spec --define "_topdir $HOME/rpmbuild"
-
-      - name: Publish to Copr
-        uses: fedora-infra/copr-cli-action@v1
-        with:
-          token: ${{ secrets.COPR_TOKEN }}
-          owner: calebwhiting
-          project: rs3tk
-          srpm: $HOME/rpmbuild/SRPMS/*.srpm
+      - name: Publish RPM to Copr
+        run: copr-cli create-build --rpms *.rpm calebwhiting/rs3tk
+        env:
+          COPR_LOGIN: calebwhiting
+          COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
 
   aur:
     name: Update AUR package
