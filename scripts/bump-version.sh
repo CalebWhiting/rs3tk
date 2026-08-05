@@ -74,10 +74,17 @@ echo "  packages/electron/requirements.txt"
 
 # ── packaging/rpm/rs3tk.spec ────────────────────────────────────
 sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk.spec"
+RPM_DATE=$(date -u "+%a %b %d %Y")
+sed -i "/^%changelog/a\\
+* $RPM_DATE Caleb <caleb.andrew.whiting@gmail.com> - $VERSION-1\\
+- Bump to $VERSION" "$ROOT/packaging/rpm/rs3tk.spec"
 echo "  packaging/rpm/rs3tk.spec"
 
 # ── packaging/rpm/rs3tk-electron.spec ───────────────────────────
 sed -i "s/^Version:        $CURRENT/Version:        $VERSION/" "$ROOT/packaging/rpm/rs3tk-electron.spec"
+sed -i "/^%changelog/a\\
+* $RPM_DATE Caleb <caleb.andrew.whiting@gmail.com> - $VERSION-1\\
+- Bump to $VERSION" "$ROOT/packaging/rpm/rs3tk-electron.spec"
 echo "  packaging/rpm/rs3tk-electron.spec"
 
 # ── packaging/alpine/APKBUILD ───────────────────────────────────
