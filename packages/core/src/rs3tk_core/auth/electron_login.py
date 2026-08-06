@@ -26,7 +26,6 @@ import json
 import logging
 import os
 import subprocess
-import tempfile
 import threading
 from pathlib import Path
 
@@ -51,7 +50,7 @@ _LOGIN_SCRIPT_CANDIDATES: tuple[Path, ...] = (
     Path("/opt/rs3tk-electron/resources/electron_login/main.cjs"),
 )
 
-_USER_DATA_DIR = Path(tempfile.gettempdir()) / f"rs3tk-electron-{os.getuid()}"
+_USER_DATA_DIR = Path(os.environ.get("XDG_CACHE_HOME", str(Path.home() / ".cache"))) / "rs3tk" / "electron-cache"
 
 _RUNTIME_ERROR = (
     "Electron runtime not found. Electron is required for login.\n"
