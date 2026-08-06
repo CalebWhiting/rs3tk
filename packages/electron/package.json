@@ -16,7 +16,8 @@
     "preview": "electron-vite preview",
     "build:bridge": "bash scripts/build-bridge.sh",
     "build:unpack": "pnpm run build && electron-builder --dir",
-    "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux"
+    "build:linux": "pnpm run build:bridge && pnpm run build && electron-builder --linux AppImage deb",
+    "build:release": "pnpm run build:bridge && pnpm run build && electron-builder --linux AppImage deb rpm"
   },
   "dependencies": {
     "electron-store": "^8.2.0"

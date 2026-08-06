@@ -79,7 +79,7 @@ jobs:
 
       - name: Build AppImage + DEB + RPM
         working-directory: packages/electron
-        run: pnpm run build:linux
+        run: pnpm run build:release
 
       - name: Upload AppImage
         uses: softprops/action-gh-release@v2

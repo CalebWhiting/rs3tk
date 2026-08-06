@@ -16,6 +16,7 @@
     "test": "pnpm run test:core && pnpm run test:cli && pnpm run test:bridge",
     "build:bridge": "bash packages/electron/scripts/build-bridge.sh",
     "build:linux": "pnpm --filter rs3tk-electron run build:linux",
+    "build:release": "pnpm --filter rs3tk-electron run build:release",
     "dev:electron": "pnpm --filter rs3tk-electron run dev",
     "setup-dev": "uv sync && pnpm install"
   },
