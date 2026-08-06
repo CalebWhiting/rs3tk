@@ -14,5 +14,3 @@ linux:
   category: Game
   icon: src/renderer/public/logo-256.png
   maintainer: CalebWhiting
-  environment:
-    CHROME_DISABLE_SANDBOX: "1"
