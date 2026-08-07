@@ -84,19 +84,19 @@ jobs:
       - name: Upload AppImage
         uses: softprops/action-gh-release@v2
         with:
-          files: packages/electron/dist/*.AppImage
+          files: .build/electron/*.AppImage
           fail_on_unmatched_files: true
 
       - name: Upload DEB
         uses: softprops/action-gh-release@v2
         with:
-          files: packages/electron/dist/*.deb
+          files: .build/electron/*.deb
           fail_on_unmatched_files: true
 
       - name: Upload RPM
         uses: softprops/action-gh-release@v2
         with:
-          files: packages/electron/dist/*.rpm
+          files: .build/electron/*.rpm
           fail_on_unmatched_files: true
 
   copr:

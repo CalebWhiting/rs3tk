@@ -12,6 +12,7 @@ linux:
   target:
     - AppImage
     - deb
+    - rpm
   category: Game
   icon: src/renderer/public/logo-256.png
   maintainer: CalebWhiting
