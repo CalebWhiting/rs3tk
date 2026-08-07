@@ -1,6 +1,6 @@
 # Maintainer: Caleb <caleb.andrew.whiting@gmail.com>
 pkgname=python-rs3tk
-pkgver=1.0.3
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="Open-source Jagex Launcher replacement for Linux"
 arch=('any')

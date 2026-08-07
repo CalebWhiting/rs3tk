@@ -2,7 +2,7 @@
 %global core_name rs3tk_core
 
 Name:           python3-%{pypi_name}
-Version:        1.0.3
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        Open-source Jagex Launcher replacement for Linux
 
@@ -49,6 +49,8 @@ pip3 install --no-deps --root=%{buildroot} %{_sourcedir}/*.whl
 %{_bindir}/%{pypi_name}
 
 %changelog
+* Fri Aug 07 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.1.0-1
+- Bump to 1.1.0
 * Wed Aug 05 2026 Caleb <caleb.andrew.whiting@gmail.com> - 1.0.3-1
 - Bump to 1.0.3
 
