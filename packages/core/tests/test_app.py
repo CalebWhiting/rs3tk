@@ -269,6 +269,11 @@ class TestGetSessionAndProfile:
 
 
 class TestGetCharactersResult:
+    def setup_method(self) -> None:
+        import rs3tk_core.app as app_mod
+
+        app_mod._characters_cache = None
+
     @patch("rs3tk_core.app.load_settings")
     def test_no_accounts_returns_empty(self, mock_load: MagicMock) -> None:
         mock_load.return_value = _settings_with(accounts=[])

@@ -45,6 +45,8 @@ class CharacterInfo:
 
 
 def do_login() -> tuple[str, int]:
+    global _characters_cache
+    _characters_cache = None
     _tokens, account_hash, display_name = run_sync(login())
 
     settings = load_settings()
@@ -66,6 +68,8 @@ def do_login() -> tuple[str, int]:
 
 
 def do_logout(username: str | None = None, *, all_accounts: bool = False) -> None:
+    global _characters_cache
+    _characters_cache = None
     settings = load_settings()
 
     if all_accounts:
@@ -102,11 +106,18 @@ class CharactersResult:
     auth_errors: list[str]
 
 
+_characters_cache: CharactersResult | None = None
+
+
 def get_all_characters() -> list[CharacterInfo]:
     return _get_characters_result().characters
 
 
 def _get_characters_result() -> CharactersResult:
+    global _characters_cache
+    if _characters_cache is not None:
+        return _characters_cache
+
     settings = load_settings()
     if not settings.accounts:
         return CharactersResult(characters=[], auth_errors=[])
@@ -144,7 +155,9 @@ def _get_characters_result() -> CharactersResult:
         characters = [char for batch in results for char in batch]
         return CharactersResult(characters=characters, auth_errors=auth_errors)
 
-    return run_sync(_fetch_all())
+    result = run_sync(_fetch_all())
+    _characters_cache = result
+    return result
 
 
 def get_account_for_character(character_name: str) -> str | None:
