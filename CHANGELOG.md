@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.1.0
+
+- **Launch presets** — Save named groups of client/character pairs and launch
+  them all at once with `rs3tk play --preset <name>`. New CLI commands:
+  `presets create`, `presets delete`, `presets show`, `presets list`,
+  `presets add`. Presets are stored in `~/.config/rs3tk/presets.json`.
+
+- **Character caching** — The play flow now caches character data to avoid
+  redundant network fetches when switching between characters.
+
+- **Electron cache location** — Moved the Electron user-data directory from
+  `/tmp` to `~/.cache/rs3tk/electron-cache` for more reliable persistence.
+
+- **Broader dependency compatibility** — Lowered the minimum `httpx` version
+  to 0.25.1 and `keyring` to 22.0 for wider distro support.
+
+- **Improved error messages** — The Java-not-found error for HDOS now shows
+  the actual client name instead of a hardcoded string.
+
+- **Electron packaging overhaul** — Simplified the build pipeline: removed
+  the custom `after-pack.cjs` wrapper, switched to electron-builder's native
+  RPM target, and split `build:linux` from `build:release` to handle Arch
+  RPM incompatibility.
+
+- **Build cleanup** — Consolidated build artifacts into `.build/`, removed
+  tracked files that should be gitignored, and added a `clean.sh` script.
+
 ## v1.0.3
 
 - **Login flow overhaul** — The OAuth login process was completely reworked. The
