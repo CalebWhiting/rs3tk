@@ -105,7 +105,7 @@ class GameClient:
         elif exe.suffix == ".jar":
             java = shutil.which("java")
             if not java:
-                raise FileNotFoundError("Java is required to run HDOS but was not found in PATH")
+                raise FileNotFoundError(f"Java is required to run {self.name} but was not found in PATH")
             cmd = [java, "-jar", str(exe), *self.args]
         else:
             cmd = [str(exe), *self.args]
