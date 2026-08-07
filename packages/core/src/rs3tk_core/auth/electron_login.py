@@ -22,6 +22,7 @@ can be found on the system.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import os
@@ -105,7 +106,52 @@ def _find_runtime() -> list[str]:
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
 
+    # Fallback: probe npm global root.  Handles installs where the npm global
+    # bin directory is not on PATH (e.g. ~/.npm-global/bin) and also triggers
+    # the binary download when the postinstall script didn't run.
+    electron_path = _probe_npm_global()
+    if electron_path:
+        return electron_path
+
     raise RuntimeError(_RUNTIME_ERROR)
+
+
+def _probe_npm_global() -> list[str] | None:
+    """Find or install Electron via ``npm root -g``.
+
+    Returns the command list if found, ``None`` otherwise.
+    """
+    try:
+        r = subprocess.run(["npm", "root", "-g"], capture_output=True, text=True, timeout=5)
+        if r.returncode != 0 or not r.stdout.strip():
+            return None
+        npm_root = Path(r.stdout.strip())
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+
+    electron_pkg = npm_root / "electron"
+    if not electron_pkg.is_dir():
+        return None
+
+    electron_bin = electron_pkg / "dist" / "electron"
+    if not electron_pkg.is_file():
+        # Binary not downloaded (postinstall didn't run). Trigger it.
+        install_js = electron_pkg / "install.js"
+        if install_js.is_file():
+            logger.info("Electron binary missing — running install.js")
+            with contextlib.suppress(FileNotFoundError, subprocess.TimeoutExpired):
+                subprocess.run(
+                    ["node", str(install_js)],
+                    cwd=str(electron_pkg),
+                    capture_output=True,
+                    timeout=120,
+                )
+
+    if electron_bin.is_file():
+        logger.debug("Found Electron via npm root -g: %s", electron_bin)
+        return [str(electron_bin)]
+
+    return None
 
 
 def _drain_stderr(proc: subprocess.Popen[bytes], output: list[str]) -> None:
