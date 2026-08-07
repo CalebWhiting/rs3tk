@@ -55,6 +55,7 @@ echo "  packages/core/src/rs3tk_core/__init__.py"
 
 # ── packages/cli/pyproject.toml ─────────────────────────────────
 sed -i "s/^version = \"$CURRENT\"/version = \"$VERSION\"/" "$ROOT/packages/cli/pyproject.toml"
+sed -i "s/rs3tk-core==$CURRENT/rs3tk-core==$VERSION/" "$ROOT/packages/cli/pyproject.toml"
 echo "  packages/cli/pyproject.toml"
 
 # ── packages/electron/package.json ──────────────────────────────

@@ -13,7 +13,7 @@ authors = [
     { name = "Caleb" },
 ]
 dependencies = [
-    "rs3tk-core>=1.0,<2",
+    "rs3tk-core==1.1.1",
     "click>=8.1",
     "rich>=13.0",
 ]
