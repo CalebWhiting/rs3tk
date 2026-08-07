@@ -33,6 +33,8 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+imgui.ini
+squashfs-root/
 
 # Electron (also gitignored inside packages/electron)
 node_modules/
