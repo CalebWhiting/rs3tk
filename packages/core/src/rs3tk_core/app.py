@@ -306,3 +306,19 @@ def launch_without_character(client_key: str, *, foreground: bool = False) -> No
         logger.info("PID %s", process.pid)
     except (FileNotFoundError, RuntimeError) as e:
         raise AppError(str(e)) from e
+
+
+def launch_preset(preset_name: str, *, foreground: bool = False) -> list[str]:
+    """Launch all clients in a named preset.
+
+    Returns a list of success messages, one per launched client.
+    Raises AppError on the first failure.
+    """
+    from rs3tk_core.presets import get_preset
+
+    entries = get_preset(preset_name)
+    results: list[str] = []
+    for client_key, character in entries:
+        launch_game(client_key, character, foreground=foreground)
+        results.append(f"Launched {client_key} as {character}")
+    return results

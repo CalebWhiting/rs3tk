@@ -404,6 +404,138 @@ class TestPlay:
         assert result.exit_code == 0
         mock_pick.assert_called_once()
 
+    @patch("rs3tk_cli.cli.launch_preset")
+    def test_preset_launches_preset(self, mock_lp: MagicMock, runner: CliRunner) -> None:
+        mock_lp.return_value = ["Launched rs3 as Alice"]
+
+        result = runner.invoke(main, ["play", "-p", "daily"])
+
+        assert result.exit_code == 0
+        mock_lp.assert_called_once_with("daily", foreground=False)
+
+    def test_preset_conflicts_with_foreground(self, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["play", "-p", "daily", "-f"])
+        assert result.exit_code != 0
+        assert "--foreground cannot be used with --preset" in result.output
+
+    def test_preset_conflicts_with_client(self, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["play", "runelite", "-p", "daily"])
+        assert result.exit_code != 0
+        assert "Cannot specify both" in result.output
+
+
+# ── preset ───────────────────────────────────────────────────────────────────
+
+
+class TestPresetGroup:
+    def test_no_subcommand_invokes_list(self, runner: CliRunner) -> None:
+        with patch("rs3tk_cli.cli.list_presets", return_value={}):
+            result = runner.invoke(main, ["preset"])
+        assert result.exit_code == 0
+        assert "No presets found" in result.output
+
+
+class TestPresetList:
+    @patch("rs3tk_cli.cli.list_presets")
+    def test_empty(self, mock_lp: MagicMock, runner: CliRunner) -> None:
+        mock_lp.return_value = {}
+        result = runner.invoke(main, ["preset", "list"])
+        assert result.exit_code == 0
+        assert "No presets found" in result.output
+
+    @patch("rs3tk_cli.cli.list_presets")
+    def test_with_presets(self, mock_lp: MagicMock, runner: CliRunner) -> None:
+        mock_lp.return_value = {"Daily": [["rs3", "Alice"]]}
+        result = runner.invoke(main, ["preset", "list"])
+        assert result.exit_code == 0
+        assert "Daily" in result.output
+
+
+class TestPresetShow:
+    @patch("rs3tk_cli.cli.get_preset")
+    def test_shows_entries(self, mock_gp: MagicMock, runner: CliRunner) -> None:
+        mock_gp.return_value = [["rs3", "Alice"], ["runelite", "Bob"]]
+        result = runner.invoke(main, ["preset", "show", "daily"])
+        assert result.exit_code == 0
+        assert "Alice" in result.output
+        assert "Bob" in result.output
+
+    @patch("rs3tk_cli.cli.get_preset")
+    def test_empty_preset(self, mock_gp: MagicMock, runner: CliRunner) -> None:
+        mock_gp.return_value = []
+        result = runner.invoke(main, ["preset", "show", "daily"])
+        assert result.exit_code == 0
+        assert "empty" in result.output.lower()
+
+    @patch("rs3tk_cli.cli.get_preset", side_effect=AppError("doesn't exist"))
+    def test_nonexistent(self, _mock: MagicMock, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "show", "ghost"])
+        assert result.exit_code != 0
+        assert "doesn't exist" in result.output
+
+
+class TestPresetCreate:
+    @patch("rs3tk_cli.cli.create_preset")
+    def test_success(self, mock_cp: MagicMock, runner: CliRunner) -> None:
+        mock_cp.return_value = 'Created empty preset "daily".'
+        result = runner.invoke(main, ["preset", "create", "daily"])
+        assert result.exit_code == 0
+        mock_cp.assert_called_once_with("daily")
+
+    @patch("rs3tk_cli.cli.create_preset", side_effect=AppError("already exists"))
+    def test_duplicate(self, _mock: MagicMock, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "create", "daily"])
+        assert result.exit_code != 0
+        assert "already exists" in result.output
+
+
+class TestPresetDelete:
+    @patch("rs3tk_cli.cli.delete_preset")
+    def test_whole_preset(self, mock_dp: MagicMock, runner: CliRunner) -> None:
+        mock_dp.return_value = 'Deleted preset "daily".'
+        result = runner.invoke(main, ["preset", "delete", "daily"])
+        assert result.exit_code == 0
+        mock_dp.assert_called_once_with("daily")
+
+    @patch("rs3tk_cli.cli.remove_from_preset")
+    def test_by_index(self, mock_rp: MagicMock, runner: CliRunner) -> None:
+        mock_rp.return_value = 'Removed [rs3, "Alice"] from preset "daily".'
+        result = runner.invoke(main, ["preset", "delete", "daily", "1"])
+        assert result.exit_code == 0
+        mock_rp.assert_called_once_with("daily", 1)
+
+    @patch("rs3tk_cli.cli.delete_preset", side_effect=AppError("No such preset"))
+    def test_nonexistent(self, _mock: MagicMock, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "delete", "ghost"])
+        assert result.exit_code != 0
+        assert "No such preset" in result.output
+
+
+class TestPresetAdd:
+    @patch("rs3tk_cli.cli.add_to_preset")
+    def test_success(self, mock_ap: MagicMock, runner: CliRunner) -> None:
+        mock_ap.return_value = 'Added [rs3, "Alice"] to preset "daily".'
+        result = runner.invoke(main, ["preset", "add", "daily", "rs3", "Alice"])
+        assert result.exit_code == 0
+        mock_ap.assert_called_once_with("daily", "rs3", "Alice")
+
+    @patch("rs3tk_cli.cli.add_to_preset", side_effect=AppError("Invalid client key"))
+    def test_invalid_client(self, _mock: MagicMock, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "add", "daily", "bogus", "Alice"])
+        assert result.exit_code != 0
+        # Click's Choice validator rejects the value before the function runs
+        assert "is not one of" in result.output
+
+    @patch("rs3tk_cli.cli.add_to_preset", side_effect=AppError("doesn't exist"))
+    def test_nonexistent_preset(self, _mock: MagicMock, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "add", "ghost", "rs3", "Alice"])
+        assert result.exit_code != 0
+        assert "doesn't exist" in result.output
+
+    def test_unknown_client_rejected(self, runner: CliRunner) -> None:
+        result = runner.invoke(main, ["preset", "add", "daily", "bogus", "Alice"])
+        assert result.exit_code != 0
+
 
 # ── status ───────────────────────────────────────────────────────────────────
 

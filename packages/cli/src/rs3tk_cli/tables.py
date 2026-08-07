@@ -54,3 +54,22 @@ def build_config_display(settings: Settings) -> Table:
     table.add_row("Last character", settings.last_character or "(none)")
     table.add_row("Locale", f"{settings.locale} (0=en, 1=de, 2=fr, 3=pt-br)")
     return table
+
+
+def build_presets_table(presets: dict[str, list[list[str]]]) -> Table:
+    table = Table(title="Launch Presets")
+    table.add_column("Preset", style="bold")
+    table.add_column("Entries", justify="right")
+    for name, entries in presets.items():
+        table.add_row(name, str(len(entries)))
+    return table
+
+
+def build_preset_table(name: str, entries: list[list[str]]) -> Table:
+    table = Table(title=f"Preset: {name}")
+    table.add_column("#", justify="right", style="dim")
+    table.add_column("Client", style="bold")
+    table.add_column("Character")
+    for i, (client, character) in enumerate(entries, 1):
+        table.add_row(str(i), client, character)
+    return table

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 import click
+from rich.markup import escape as _escape_markup
 from rich.prompt import Prompt
 from rich.table import Table
 from rs3tk_core import __version__
@@ -19,6 +20,7 @@ from rs3tk_core.app import (
     get_config,
     get_news,
     launch_game,
+    launch_preset,
     launch_without_character,
     list_accounts,
     set_default_character,
@@ -27,9 +29,24 @@ from rs3tk_core.app import (
 )
 from rs3tk_core.clients import detect_client, get_client_keys
 from rs3tk_core.config import CLIENT_KEYS, GAME_KEYS, Settings, load_settings, save_settings
+from rs3tk_core.presets import (
+    add_to_preset,
+    create_preset,
+    delete_preset,
+    get_preset,
+    list_presets,
+    remove_from_preset,
+)
 
 from rs3tk_cli.output import cli_error, console
-from rs3tk_cli.tables import build_characters_table, build_clients_table, build_config_display, build_news_table
+from rs3tk_cli.tables import (
+    build_characters_table,
+    build_clients_table,
+    build_config_display,
+    build_news_table,
+    build_preset_table,
+    build_presets_table,
+)
 
 
 def _censor_value(value: str) -> str:
@@ -241,6 +258,71 @@ def clients_set_default(client: str) -> None:
     console.print(f"[bold green]Default client set to {client}.[/]")
 
 
+# ── preset ───────────────────────────────────────────────────────────────────
+
+
+@main.group(invoke_without_command=True)
+@click.pass_context
+def preset(ctx: click.Context) -> None:
+    """Manage launch presets."""
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(preset_list)
+
+
+@preset.command("list")
+def preset_list() -> None:
+    """List all presets."""
+    presets = list_presets()
+    if not presets:
+        console.print("[yellow]No presets found.[/]")
+        return
+    table = build_presets_table(presets)
+    console.print(table)
+
+
+@preset.command("show")
+@click.argument("name")
+@cli_error
+def preset_show(name: str) -> None:
+    """Show entries in a preset."""
+    entries = get_preset(name)
+    if not entries:
+        console.print(f'[yellow]Preset "{name}" is empty.[/]')
+        return
+    table = build_preset_table(name, entries)
+    console.print(table)
+
+
+@preset.command("create")
+@click.argument("name")
+@cli_error
+def preset_create(name: str) -> None:
+    """Create an empty preset."""
+    result = create_preset(name)
+    console.print(f"[bold green]{result}[/]")
+
+
+@preset.command("delete")
+@click.argument("name")
+@click.argument("index", required=False, type=int)
+@cli_error
+def preset_delete(name: str, index: int | None) -> None:
+    """Delete a preset, or remove an entry by INDEX."""
+    result = remove_from_preset(name, index) if index is not None else delete_preset(name)
+    console.print(_escape_markup(result), style="bold green")
+
+
+@preset.command("add")
+@click.argument("name")
+@click.argument("client", type=click.Choice(list(CLIENT_KEYS), case_sensitive=False))
+@click.argument("character")
+@cli_error
+def preset_add(name: str, client: str, character: str) -> None:
+    """Add a CLIENT/CHARACTER pair to a preset."""
+    result = add_to_preset(name, client, character)
+    console.print(_escape_markup(result), style="bold green")
+
+
 # ── play ─────────────────────────────────────────────────────────────────────
 
 
@@ -250,6 +332,7 @@ def clients_set_default(client: str) -> None:
 @click.option("-i", "--interactive", is_flag=True, help="Interactive mode.")
 @click.option("-f", "--foreground", is_flag=True, help="Run client in foreground (show logs).")
 @click.option("-n", "--no-character", is_flag=True, help="Launch without JX_* env variables.")
+@click.option("-p", "--preset", "preset_name", default=None, help="Launch a named preset.")
 @click.pass_context
 @cli_error
 def play(
@@ -259,8 +342,19 @@ def play(
     interactive: bool,
     foreground: bool,
     no_character: bool,
+    preset_name: str | None,
 ) -> None:
     """Launch a game client. CLIENT is one of: rs3, official, runelite, hdos."""
+    if preset_name:
+        if foreground:
+            raise click.UsageError("--foreground cannot be used with --preset.")
+        if client is not None:
+            raise click.UsageError("Cannot specify both a CLIENT and --preset.")
+        results = launch_preset(preset_name, foreground=False)
+        for msg in results:
+            console.print(f"[bold green]{msg}[/]")
+        return
+
     settings = load_settings()
 
     if interactive or client is None:
