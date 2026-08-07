@@ -4,15 +4,7 @@ venv
 node_modules
 __pycache__
 *.pyc
-.mypy_cache
-.ruff_cache
-.pytest_cache
-.coverage
-htmlcov
-dist
-build
+.build
 *.egg-info
-packages/electron/build
-packages/electron/dist
 packages/electron/resources/rs3tk-bridge
 packages/electron/resources/electron_login

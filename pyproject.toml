@@ -11,6 +11,7 @@ dev = ["ruff>=0.5", "mypy>=1.10", "pytest>=7", "coverage>=7.0"]
 target-version = "py311"
 line-length = 120
 extend-exclude = ["packages/core/src/rs3tk_core/data/"]
+cache-dir = ".build/ruff/"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "ANN"]
@@ -24,3 +25,4 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 exclude = ["packages/core/src/rs3tk_core/data/"]
+cache_dir = ".build/mypy/"

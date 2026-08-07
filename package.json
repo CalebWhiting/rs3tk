@@ -18,7 +18,9 @@
     "build:linux": "pnpm --filter rs3tk-electron run build:linux",
     "build:release": "pnpm --filter rs3tk-electron run build:release",
     "dev:electron": "pnpm --filter rs3tk-electron run dev",
-    "setup-dev": "uv sync && pnpm install"
+    "setup-dev": "uv sync && pnpm install",
+    "clean": "bash scripts/clean.sh",
+    "clean:deep": "bash scripts/clean.sh --deep"
   },
   "license": "MIT"
 }

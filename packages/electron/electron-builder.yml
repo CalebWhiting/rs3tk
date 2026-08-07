@@ -1,5 +1,7 @@
 appId: com.rs3tk
 productName: RS3TK
+directories:
+  output: "../../.build/electron"
 files:
   - out/**/*
   - package.json

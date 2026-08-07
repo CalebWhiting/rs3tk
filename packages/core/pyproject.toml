@@ -26,14 +26,20 @@ rs3tk_core = ["data/*.py", "data/*.cjs", "py.typed"]
 
 [tool.mypy]
 exclude = ["src/rs3tk_core/data/"]
+cache_dir = "../../.build/mypy/"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
+cache_dir = "../../.build/pytest/"
 
 [tool.coverage.run]
 source = ["rs3tk_core"]
+data_file = "../../.build/coverage/.coverage"
 
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+
+[tool.coverage.html]
+directory = "../../.build/htmlcov"

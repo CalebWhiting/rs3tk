@@ -1,11 +1,8 @@
 # Python
-__pycache__/
 *.py[cod]
 *$py.class
 *.so
 *.egg-info/
-dist/
-build/
 *.egg
 src/*.egg-info/
 
@@ -25,25 +22,18 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Build artifacts and caches
+.build/
+
 # Project
 .rs3tk/
 *.log
-.coverage
-htmlcov/
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
-imgui.ini
 squashfs-root/
 
 # Electron (also gitignored inside packages/electron)
 node_modules/
 secure.runescape.com/
 packages/electron/secure.runescape.com/
-
-# PyInstaller build output
-packages/electron/build/
-packages/electron/dist/
 packages/electron/resources/rs3tk-bridge
 packages/electron/resources/electron_login/
 

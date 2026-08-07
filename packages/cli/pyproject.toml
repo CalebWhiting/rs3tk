@@ -24,13 +24,21 @@ rs3tk = "rs3tk_cli.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.mypy]
+cache_dir = "../../.build/mypy/"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
+cache_dir = "../../.build/pytest/"
 
 [tool.coverage.run]
 source = ["rs3tk_cli"]
+data_file = "../../.build/coverage/.coverage"
 
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+
+[tool.coverage.html]
+directory = "../../.build/htmlcov"
