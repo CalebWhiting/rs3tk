@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.1
+
+- **Fix Electron discovery for pip installs** — When Electron is installed
+  globally via npm but the global bin directory is not on PATH (e.g.
+  `~/.npm-global/bin`), the login flow now probes `npm root -g` to locate the
+  binary. If the postinstall script didn't run, it triggers `install.js`
+  automatically to download the missing binary.
+
+- **Fix release artifact upload paths** — The release workflow now looks for
+  AppImage/DEB/RPM artifacts in `.build/electron/` (where electron-builder
+  actually outputs them) instead of `packages/electron/dist/`.
+
 ## v1.1.0
 
 - **Launch presets** — Save named groups of client/character pairs and launch
