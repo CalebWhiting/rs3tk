@@ -107,7 +107,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install build tools
-        run: sudo apt-get update && sudo apt-get install -y rpm
+        run: sudo apt-get update && sudo apt-get install -y rpm-build
 
       - name: Install copr-cli
         run: pip install copr-cli
