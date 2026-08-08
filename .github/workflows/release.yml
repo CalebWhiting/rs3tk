@@ -116,7 +116,7 @@ jobs:
         run: pip install copr-cli
 
       - name: Publish RPM to Copr
-        run: copr-cli create-build --rpms *.rpm calebwhiting/rs3tk
+        run: copr-cli buildcustom --rpms *.rpm calebwhiting/rs3tk
         env:
           COPR_LOGIN: calebwhiting
           COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
