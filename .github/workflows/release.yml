@@ -102,21 +102,38 @@ jobs:
   copr:
     name: Publish to Fedora Copr
     runs-on: ubuntu-latest
-    needs: appimage
+    needs: [appimage, pypi]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download RPM from release
-        uses: robinraju/release-downloader@v1
-        with:
-          tag: ${{ github.ref_name }}
-          fileName: "*.rpm"
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y rpm
 
       - name: Install copr-cli
         run: pip install copr-cli
 
-      - name: Publish RPM to Copr
-        run: copr-cli buildcustom --rpms *.rpm calebwhiting/rs3tk
+      - name: Set up rpmbuild tree
+        run: |
+          mkdir -p ~/rpmbuild/{SPECS,SOURCES}
+          cp packaging/rpm/rs3tk.spec ~/rpmbuild/SPECS/
+
+      - name: Download wheels from PyPI
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          pip download --no-deps --only-binary :all: -d ~/rpmbuild/SOURCES \
+            "rs3tk==${VERSION}" "rs3tk-core==${VERSION}"
+
+      - name: Build SRPM
+        run: rpmbuild --bs ~/rpmbuild/SPECS/rs3tk.spec
+
+      - name: Publish SRPM to Copr
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          SRPM=$(ls ~/rpmbuild/SRPMS/rs3tk-${VERSION}*.src.rpm)
+          copr-cli build calebwhiting/rs3tk "$SRPM"
         env:
           COPR_LOGIN: calebwhiting
           COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
